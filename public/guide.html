@@ -1,0 +1,341 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Guide</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-serif-custom { font-family: 'Newsreader', serif; }
+.font-mono-custom { font-family: 'JetBrains Mono', monospace; }
+
+/* Staggered Fade In */
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(15px); filter: blur(4px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.animate-enter { animation: fade-in-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+
+/* Soft Amber Glow */
+.glass-card {
+    background: rgba(24, 24, 27, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.5s ease;
+}
+.glass-card:hover {
+    background: rgba(24, 24, 27, 0.6);
+    border-color: rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Number Circle Animation */
+@keyframes number-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+}
+.number-circle {
+    animation: number-pulse 3s infinite;
+}
+</style>
+</head>
+<body class="bg-[#09090b] text-zinc-300 min-h-screen w-full flex flex-col items-center relative selection:bg-amber-500/20 selection:text-amber-200 overflow-x-hidden">
+
+    <!-- Background -->
+    <div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+            <div data-us-project="NMlvqnkICwYYJ6lYb064" class="absolute w-full h-full left-0 top-0 -z-10"></div>
+            <script type="text/javascript">
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+
+    <!-- Back to Home Link -->
+    <nav class="fixed top-6 left-6 z-50 animate-enter">
+        <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-zinc-400 hover:text-white hover:border-white/20 transition-all group">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"></i>
+            <span class="text-xs tracking-wide">Home</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 w-full max-w-5xl px-6 py-24 flex flex-col items-center">
+
+        <!-- Header -->
+        <header class="mb-20 text-center animate-enter delay-100">
+            <h1 class="font-serif-custom italic text-4xl md:text-5xl lg:text-6xl text-zinc-100 tracking-tight leading-[1.1] drop-shadow-lg mb-4">
+                How the Fugue Works
+            </h1>
+            <p class="font-light text-zinc-300 text-sm tracking-wide">A PATHWAY TO RECOLLECTION</p>
+        </header>
+
+        <!-- Section 1: The Sequence (Enhanced) -->
+        <section class="w-full max-w-4xl mb-24 space-y-12 animate-enter delay-200">
+
+            <!-- Step Headers Visual -->
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 md:gap-4 relative mb-16">
+                <!-- Connecting Line (Desktop) -->
+                <div class="hidden md:block absolute top-6 left-10 right-10 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent -z-10"></div>
+
+                <!-- Steps -->
+                <div class="flex flex-col items-center text-center group">
+                    <div class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-zinc-400 mb-4 group-hover:text-amber-200 transition-colors duration-500">
+                        <i data-lucide="cable" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-mono-custom uppercase tracking-wider text-zinc-300 mb-1">Step 01</span>
+                    <span class="text-sm font-medium text-zinc-300">Connect</span>
+                </div>
+
+                <i data-lucide="arrow-down" class="md:hidden text-zinc-300 w-4 h-4"></i>
+
+                <div class="flex flex-col items-center text-center group">
+                    <div class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-zinc-400 mb-4 group-hover:text-amber-200 transition-colors duration-500">
+                        <i data-lucide="log-in" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-mono-custom uppercase tracking-wider text-zinc-300 mb-1">Step 02</span>
+                    <span class="text-sm font-medium text-zinc-300">Enter</span>
+                </div>
+
+                <i data-lucide="arrow-down" class="md:hidden text-zinc-300 w-4 h-4"></i>
+
+                <div class="flex flex-col items-center text-center group">
+                    <div class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-zinc-400 mb-4 group-hover:text-amber-200 transition-colors duration-500">
+                        <i data-lucide="cloud" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-mono-custom uppercase tracking-wider text-zinc-300 mb-1">Step 03</span>
+                    <span class="text-sm font-medium text-zinc-300">Dream</span>
+                </div>
+
+                <i data-lucide="arrow-down" class="md:hidden text-zinc-300 w-4 h-4"></i>
+
+                <div class="flex flex-col items-center text-center group">
+                    <div class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-zinc-400 mb-4 group-hover:text-amber-200 transition-colors duration-500">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-mono-custom uppercase tracking-wider text-zinc-300 mb-1">Step 04</span>
+                    <span class="text-sm font-medium text-zinc-300">Reflect</span>
+                </div>
+
+                <i data-lucide="arrow-down" class="md:hidden text-zinc-300 w-4 h-4"></i>
+
+                <div class="flex flex-col items-center text-center group">
+                    <div class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-zinc-400 mb-4 group-hover:text-amber-200 transition-colors duration-500">
+                        <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-mono-custom uppercase tracking-wider text-zinc-300 mb-1">Step 05</span>
+                    <span class="text-sm font-medium text-zinc-300">Create</span>
+                </div>
+            </div>
+
+            <!-- Detailed Step Explanations -->
+            <div class="space-y-8">
+                <!-- Step 1 Detail -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-200 font-mono-custom text-sm number-circle">
+                            01
+                        </div>
+                        <div>
+                            <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Connect Your Sources</h3>
+                            <p class="font-light text-zinc-300 text-sm leading-relaxed">
+                                Link your digital archives—Gmail, Google Drive, Notion, local files, or custom MCP integrations. Your data remains private and under your control. We analyse patterns without ever storing your content externally.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 Detail -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-200 font-mono-custom text-sm number-circle">
+                            02
+                        </div>
+                        <div>
+                            <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Enter the State</h3>
+                            <p class="font-light text-zinc-300 text-sm leading-relaxed">
+                                Begin your journey by selecting your Muse—an AI personality that will interpret your memories. Choose between the Analyst, Poet, Visualist, or Narrator, each offering a unique lens through which to see your data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 Detail -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-200 font-mono-custom text-sm number-circle">
+                            03
+                        </div>
+                        <div>
+                            <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Let Dameris Dream</h3>
+                            <p class="font-light text-zinc-300 text-sm leading-relaxed">
+                                As you chat with Dameris, she analyses your memories using multiple AI models selected at random, ensuring each response is unique and non-generic. She identifies emotional patterns, thematic connections, and hidden narratives within your digital life. The AI doesn't just search—it interprets.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 Detail -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-200 font-mono-custom text-sm number-circle">
+                            04
+                        </div>
+                        <div>
+                            <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Reflect on Patterns</h3>
+                            <p class="font-light text-zinc-300 text-sm leading-relaxed">
+                                Browse your curated Archive of memory fragments. See recurring themes, forgotten connections, and emotional arcs visualised as creative expressions. Each piece tells a story you might have missed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 Detail -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-200 font-mono-custom text-sm number-circle">
+                            05
+                        </div>
+                        <div>
+                            <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Create New Dreams</h3>
+                            <p class="font-light text-zinc-300 text-sm leading-relaxed">
+                                Use the Visualise mode to generate new imagery from your memories. Remix existing artefacts. Export your creations. Transform data exhaust into living expressions that evolve with you.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Divider -->
+        <div class="w-full max-w-xs h-px bg-gradient-to-r from-transparent via-amber-900/40 to-transparent mb-20 animate-enter delay-300"></div>
+
+        <!-- Section 2: Who It's For -->
+        <section class="w-full mb-24 animate-enter delay-400">
+            <h2 class="font-serif-custom text-2xl md:text-3xl text-zinc-200 text-center mb-12">Who This is For</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="glass-card p-8 rounded-xl flex flex-col items-center text-center group cursor-default">
+                    <div class="mb-4 p-3 rounded-full bg-zinc-900/50 text-zinc-400 group-hover:text-amber-100 group-hover:bg-amber-900/20 transition-all duration-500">
+                        <i data-lucide="shapes" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Creators</h3>
+                    <p class="font-light text-zinc-300 text-sm leading-relaxed">For those who shape the void into meaning. Artists, writers, and makers who see their archive as raw material.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card p-8 rounded-xl flex flex-col items-center text-center group cursor-default">
+                    <div class="mb-4 p-3 rounded-full bg-zinc-900/50 text-zinc-400 group-hover:text-amber-100 group-hover:bg-amber-900/20 transition-all duration-500">
+                        <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Thinkers</h3>
+                    <p class="font-light text-zinc-300 text-sm leading-relaxed">For those who connect the unseen threads. Researchers, strategists, and philosophers seeking patterns in chaos.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card p-8 rounded-xl flex flex-col items-center text-center group cursor-default">
+                    <div class="mb-4 p-3 rounded-full bg-zinc-900/50 text-zinc-400 group-hover:text-amber-100 group-hover:bg-amber-900/20 transition-all duration-500">
+                        <i data-lucide="telescope" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif-custom text-xl text-zinc-200 mb-2">Seekers</h3>
+                    <p class="font-light text-zinc-300 text-sm leading-relaxed">For those looking for themselves in the data. Anyone curious about the story their digital life tells.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Divider -->
+        <div class="w-full max-w-xs h-px bg-gradient-to-r from-transparent via-violet-900/40 to-transparent mb-20 animate-enter delay-500"></div>
+
+        <!-- Section 3: What You Gain -->
+        <section class="w-full mb-24 animate-enter delay-500">
+            <h2 class="font-serif-custom text-2xl md:text-3xl text-zinc-200 text-center mb-12">What You Gain</h2>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-20">
+
+                <div class="flex flex-col items-center text-center max-w-[220px]">
+                    <div class="text-amber-500/80 mb-4 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                        <i data-lucide="lightbulb" class="w-7 h-7"></i>
+                    </div>
+                    <h4 class="font-medium text-zinc-200 mb-2 tracking-tight">Insight</h4>
+                    <p class="text-sm text-zinc-300 font-light leading-relaxed">See your patterns in a new light. Discover connections you never noticed.</p>
+                </div>
+
+                <div class="w-px h-12 bg-zinc-800 hidden md:block"></div>
+
+                <div class="flex flex-col items-center text-center max-w-[220px]">
+                    <div class="text-amber-500/80 mb-4 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                        <i data-lucide="fingerprint" class="w-7 h-7"></i>
+                    </div>
+                    <h4 class="font-medium text-zinc-200 mb-2 tracking-tight">Expression</h4>
+                    <p class="text-sm text-zinc-300 font-light leading-relaxed">Turn thoughts into living expressions. Create visual and audio artefacts from your memories.</p>
+                </div>
+
+                <div class="w-px h-12 bg-zinc-800 hidden md:block"></div>
+
+                <div class="flex flex-col items-center text-center max-w-[220px]">
+                    <div class="text-amber-500/80 mb-4 drop-shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                        <i data-lucide="sun-dim" class="w-7 h-7"></i>
+                    </div>
+                    <h4 class="font-medium text-zinc-200 mb-2 tracking-tight">Peace</h4>
+                    <p class="text-sm text-zinc-300 font-light leading-relaxed">Let the noise find meaning. Transform overwhelm into contemplation.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Divider -->
+        <div class="w-full max-w-xs h-px bg-gradient-to-r from-transparent via-indigo-900/40 to-transparent mb-16 animate-enter delay-600"></div>
+
+        <!-- CTA Section -->
+        <section class="text-center animate-enter delay-700">
+            <h2 class="font-serif-custom italic text-3xl md:text-4xl text-zinc-100 mb-6">Ready to Begin?</h2>
+            <p class="text-zinc-300 mb-8 max-w-md mx-auto">Start your journey into the fugue state. Transform your digital memories into creative expressions.</p>
+            <a href="initialization/index.html" class="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-600 text-white text-sm font-medium hover:shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all">
+                <span>Enter the Fugue</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-10 z-10 animate-enter delay-800">
+        <div class="flex flex-col items-center justify-center space-y-3">
+            <span class="font-serif-custom italic text-zinc-300 text-lg">FugueState.ai</span>
+            <span class="font-mono-custom text-[10px] uppercase tracking-widest text-zinc-300/60">
+                A sanctuary for your digital self
+            </span>
+            <div class="flex items-center gap-4 text-zinc-300 mt-4">
+                <a href="about.html" class="hover:text-zinc-400 transition-colors text-xs">About</a>
+                <span>•</span>
+                <a href="index.html" class="hover:text-zinc-400 transition-colors text-xs">Home</a>
+                <span>•</span>
+                <a href="studio/workspace.html" class="hover:text-zinc-400 transition-colors text-xs">Studio</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/dameris-voice.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Add narration button after page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            const mainContent = document.querySelector('main');
+            if (mainContent) {
+                addNarrationButton(mainContent, 'Hear Dameris explain how it works');
+            }
+        });
+    </script>
+</body></html>

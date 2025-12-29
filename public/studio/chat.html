@@ -1,0 +1,2120 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Dameris Assistant</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/toast-notifications.js"></script>
+<script src="/js/ux-enhancements.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-serif-custom { font-family: 'Newsreader', serif; }
+.font-mono-custom { font-family: 'JetBrains Mono', monospace; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom Checkbox/Radio (kept for context) */
+.custom-radio { appearance: none; background-color: transparent; border: 1px solid #3f3f46; width: 14px; height: 14px; border-radius: 50%; display: inline-grid; place-content: center; margin-right: 8px; cursor: pointer; transition: all 0.2s; }
+.custom-radio::before { content: ""; width: 6px; height: 6px; transform: scale(0); border-radius: 50%; background-color: #f59e0b; transition: 120ms transform ease-in-out; }
+.custom-radio:checked { border-color: #f59e0b; }
+.custom-radio:checked::before { transform: scale(1); }
+.violet-radio:checked { border-color: #a78bfa; }
+.violet-radio::before { background-color: #a78bfa; }
+
+/* Orb Animation */
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+    50% { opacity: 0.9; transform: scale(1.05); box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+}
+.orb-pulse { animation: pulse-glow 3s infinite ease-in-out; }
+
+/* Audio Waveform Animation */
+@keyframes wave {
+    0%, 100% { height: 4px; opacity: 0.5; }
+    50% { height: 16px; opacity: 1; }
+}
+.wave-bar {
+    width: 2px;
+    background-color: #fcd34d;
+    border-radius: 99px;
+    animation: wave 1.2s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { animation-delay: 0.0s; }
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.1s; }
+.wave-bar:nth-child(6) { animation-delay: 0.0s; }
+
+/* Float Animation for Chat Window */
+@keyframes float-up {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-enter { animation: float-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Message Slide In Animations */
+@keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.message-ai { animation: slide-in-left 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.message-user { animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Typing Indicator */
+@keyframes typing-dot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-8px); opacity: 1; }
+}
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #a78bfa;
+    display: inline-block;
+    animation: typing-dot 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Progress Bar Animation */
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 45%; }
+}
+.progress-bar {
+    animation: progress 14s linear forwards;
+}
+
+/* Waveform Playing Animation */
+@keyframes waveform-play {
+    0%, 100% { height: 4px; }
+    50% { height: 16px; }
+}
+.waveform-active {
+    animation: waveform-play 0.6s ease-in-out infinite;
+}
+
+/* Pulse Animation for Status */
+@keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* Shimmer effect for file upload */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Drag over effect */
+.drag-over {
+    background: rgba(139, 92, 246, 0.1) !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    transform: scale(1.02);
+}
+
+/* Particle animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+    50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(139, 92, 246, 0.5);
+    border-radius: 50%;
+    animation: float 4s ease-in-out infinite;
+}
+
+/* Better message appearance */
+@keyframes message-appear {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.message-appear {
+    animation: message-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glow effect for active elements */
+.glow-violet {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+.glow-amber {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 0 40px rgba(245, 158, 11, 0.1);
+}
+</style>
+<script src="/js/auth-check.js"></script>
+</head>
+<body class="bg-[#050505] text-zinc-300 h-screen w-full flex overflow-hidden selection:bg-amber-500/20 selection:text-amber-200">
+
+    <!-- Background Layers -->
+    <div class="fixed inset-0 w-full h-full -z-10 pointer-events-none">
+        <div class="absolute inset-0 bg-[#020204]"></div>
+        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] bg-amber-900/10 blur-[100px] rounded-full mix-blend-screen"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 100px 100px; mask-image: radial-gradient(circle at center, black, transparent 80%); -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);"></div>
+    </div>
+
+    <!-- LEFT SIDEBAR: Filters (Collapsed visual for context) -->
+    <aside class="w-64 flex-shrink-0 border-r border-white/5 flex flex-col bg-black/20 backdrop-blur-xl z-10 hidden md:flex opacity-60 hover:opacity-100 transition-opacity duration-500">
+        <div class="p-6 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <a href="workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span class="text-xs tracking-widest uppercase">Studio</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-3 mt-4">
+                <i data-lucide="message-circle" class="w-5 h-5 text-zinc-400" stroke-width="1.5"></i>
+                <span class="font-serif-custom italic text-lg tracking-tight text-zinc-200">Chat</span>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
+            <!-- Simplified filters for background context -->
+            <div>
+                <h3 class="text-xs uppercase tracking-widest text-zinc-300 font-medium mb-4">Context</h3>
+                <div class="space-y-3 opacity-50 pointer-events-none">
+                    <div class="h-2 w-24 bg-zinc-800 rounded"></div>
+                    <div class="h-2 w-32 bg-zinc-800 rounded"></div>
+                    <div class="h-2 w-20 bg-zinc-800 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN AREA: Blurred Content -->
+    <main class="flex-1 h-full overflow-hidden relative z-0">
+        <!-- Overlay to darken background when assistant is active -->
+        <div class="absolute inset-0 bg-black/40 z-20 backdrop-blur-sm transition-all duration-700"></div>
+
+        <!-- Search / Top Bar -->
+        <div class="sticky top-0 z-10 px-8 py-6 bg-[#050505]/40 border-b border-white/5 flex items-center justify-between opacity-50">
+            <div class="flex items-center gap-4 w-full max-w-md">
+                <i data-lucide="search" class="w-4 h-4 text-zinc-300"></i>
+                <div class="h-2 w-48 bg-zinc-800/50 rounded"></div>
+            </div>
+        </div>
+
+        <!-- Grid Content (Visible but blurred) -->
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-40 grayscale-[50%]">
+             <!-- Card 1 -->
+             <div class="aspect-[4/5] bg-zinc-900/20 rounded-xl border border-white/5 p-6 flex flex-col justify-end">
+                <div class="h-4 w-3/4 bg-zinc-800/50 rounded mb-2"></div>
+                <div class="h-2 w-1/2 bg-zinc-800/30 rounded"></div>
+             </div>
+             <!-- Card 2 -->
+             <div class="aspect-[4/5] bg-zinc-900/20 rounded-xl border border-white/5 p-6 flex flex-col justify-end">
+                <div class="h-4 w-2/3 bg-zinc-800/50 rounded mb-2"></div>
+                <div class="h-2 w-full bg-zinc-800/30 rounded"></div>
+             </div>
+              <!-- Card 3 -->
+             <div class="aspect-[4/5] bg-zinc-900/20 rounded-xl border border-white/5 p-6 flex flex-col justify-end">
+                <div class="h-4 w-1/2 bg-zinc-800/50 rounded mb-2"></div>
+                <div class="h-2 w-3/4 bg-zinc-800/30 rounded"></div>
+             </div>
+        </div>
+    </main>
+
+    <!-- CENTERED CHAT INTERFACE -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 gap-4">
+
+        <!-- Chat Window (Centered & Wide) -->
+        <div class="animate-enter w-full max-w-4xl h-[90vh] max-h-[90vh] rounded-2xl bg-[#0c0c0e]/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_-10px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden relative ring-1 ring-white/5">
+
+            <!-- Window Glow Effects -->
+            <div class="absolute top-[-20%] left-[20%] w-[60%] h-[30%] bg-violet-500/10 blur-[80px] pointer-events-none mix-blend-screen"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-amber-500/10 blur-[80px] pointer-events-none mix-blend-screen"></div>
+
+            <!-- Header -->
+            <div class="flex-shrink-0 px-6 py-4 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></div>
+                    <span class="font-serif-custom italic text-base text-zinc-100 tracking-tight">Dameris</span>
+                    <div id="voice-status" class="text-xs text-zinc-500 hidden">Listening...</div>
+                </div>
+                <div class="flex items-center gap-3">
+                     <!-- Voice Recording Button -->
+                    <button id="header-mic-button" onclick="toggleVoiceRecording()" class="p-2 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-emerald-400 transition-colors relative group" title="Push to talk (Space)">
+                        <i data-lucide="mic" class="w-4 h-4"></i>
+                        <div id="header-mic-pulse" class="hidden absolute -inset-1 rounded-full border-2 border-emerald-500/50 animate-ping"></div>
+                    </button>
+                     <!-- Waveform Visualizer (Active State) -->
+                    <div id="header-waveform" class="hidden items-center gap-0.5 h-3">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                    <!-- New Chat Button -->
+                    <button onclick="startNewChat()" class="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-zinc-200 transition-colors" title="New Chat">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Menu Button -->
+                    <div class="relative">
+                        <button onclick="toggleChatMenu()" class="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-zinc-200 transition-colors" title="Menu">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="chat-menu" class="absolute right-0 top-full mt-2 w-48 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-lg shadow-xl opacity-0 pointer-events-none transition-opacity z-50">
+                            <div class="p-1">
+                                <button onclick="clearChatHistory()" class="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    <span>Clear History</span>
+                                </button>
+                                <button onclick="exportChat()" class="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                    <span>Export Chat</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="workspace.html" class="text-zinc-300 hover:text-zinc-300 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Message Stream -->
+            <div id="messages-container" class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 min-h-0 custom-scroll flex flex-col relative" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+
+                <!-- Drag & Drop Overlay -->
+                <div id="drag-drop-overlay" class="hidden fixed inset-0 bg-violet-900/20 backdrop-blur-sm z-50 flex items-center justify-center border-4 border-dashed border-violet-500/50 rounded-2xl m-4">
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-violet-500/20 flex items-center justify-center">
+                            <i data-lucide="upload-cloud" class="w-10 h-10 text-violet-400"></i>
+                        </div>
+                        <p class="text-xl font-medium text-violet-100">Drop your file here</p>
+                        <p class="text-sm text-violet-300 mt-2">Dameris will analyze it immediately</p>
+                    </div>
+                </div>
+
+                <!-- Timestamp -->
+                <div class="text-center">
+                    <span class="text-[10px] text-zinc-300 uppercase tracking-widest font-mono-custom">Today 10:42 PM</span>
+                </div>
+
+                <!-- AI Message -->
+                <div class="flex gap-4 pr-8 group message-ai">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                        <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                    </div>
+                    <div class="space-y-2 flex-1">
+                        <p class="text-sm font-light text-zinc-200 leading-relaxed">
+                            I've analyzed the recurring patterns in <span class="text-amber-300 border-b border-amber-500/20 cursor-pointer hover:border-amber-500/50 transition-colors">Fragment 99</span>. The structural decay seems to correlate with the audio distortions from Tuesday.
+                        </p>
+                        <p class="text-sm font-light text-zinc-200 leading-relaxed">
+                            Would you like me to isolate the harmonic resonance?
+                        </p>
+                        <span class="text-[9px] text-zinc-400 font-mono-custom">10:42 PM</span>
+                    </div>
+                </div>
+
+                <!-- User Message -->
+                <div class="flex flex-col items-end gap-2 pl-12 message-user">
+                    <div class="bg-gradient-to-br from-zinc-800/60 to-zinc-900/40 border border-white/10 rounded-2xl rounded-tr-sm py-3 px-4 backdrop-blur-md shadow-lg">
+                        <p class="text-sm font-light text-zinc-100">Yes, isolate it. But keep the background noise intact.</p>
+                    </div>
+                    <span class="text-[9px] text-zinc-400 font-mono-custom">10:43 PM</span>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="flex gap-4 pr-8 group message-ai">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                        <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[#0c0c0e] animate-pulse"></div>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-zinc-800/30 rounded-2xl px-4 py-3 border border-white/5">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+
+                <!-- AI Message (Processing/Active) -->
+                <div class="flex gap-4 pr-4 message-ai">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                        <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                    </div>
+                    <div class="space-y-3 w-full">
+                        <div class="flex items-center gap-2">
+                            <p class="text-sm font-light text-zinc-200 leading-relaxed">
+                                Processing isolation...
+                            </p>
+                            <div class="flex gap-0.5">
+                                <div class="w-1 h-1 rounded-full bg-violet-400 animate-pulse"></div>
+                                <div class="w-1 h-1 rounded-full bg-violet-400 animate-pulse" style="animation-delay: 0.2s;"></div>
+                                <div class="w-1 h-1 rounded-full bg-violet-400 animate-pulse" style="animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <!-- Interactive Element: Audio Player Snippet -->
+                        <div class="w-full bg-gradient-to-br from-black/40 to-zinc-900/30 border border-amber-500/20 rounded-xl p-4 flex flex-col gap-3 hover:border-amber-500/40 transition-all cursor-pointer group shadow-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform border border-amber-500/20">
+                                    <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-xs text-zinc-200 font-medium mb-1">Harmonic Isolation</div>
+                                    <div class="h-8 flex items-center gap-1">
+                                        <!-- Animated waveform for player -->
+                                        <div class="w-1 h-2 bg-zinc-400 rounded-full waveform-active" style="animation-delay: 0s;"></div>
+                                        <div class="w-1 h-4 bg-zinc-300 rounded-full waveform-active" style="animation-delay: 0.1s;"></div>
+                                        <div class="w-1 h-3 bg-zinc-400 rounded-full waveform-active" style="animation-delay: 0.2s;"></div>
+                                        <div class="w-1 h-5 bg-amber-400 rounded-full waveform-active" style="animation-delay: 0.3s;"></div>
+                                        <div class="w-1 h-6 bg-amber-500 rounded-full waveform-active" style="animation-delay: 0.4s;"></div>
+                                        <div class="w-1 h-5 bg-amber-400 rounded-full waveform-active" style="animation-delay: 0.5s;"></div>
+                                        <div class="w-1 h-3 bg-zinc-300 rounded-full waveform-active" style="animation-delay: 0.6s;"></div>
+                                        <div class="w-1 h-4 bg-zinc-400 rounded-full waveform-active" style="animation-delay: 0.7s;"></div>
+                                        <div class="w-1 h-2 bg-zinc-400 rounded-full waveform-active" style="animation-delay: 0.8s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] font-mono-custom text-amber-300 font-medium">00:14</span>
+                            </div>
+                            <!-- Progress Bar -->
+                            <div class="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-amber-500 to-violet-500 progress-bar"></div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-zinc-400 font-mono-custom">10:43 PM</span>
+                    </div>
+                </div>
+
+                <div class="h-4"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-black/20 backdrop-blur-xl border-t border-white/5">
+                <!-- Waveform Visualization (shown when recording) -->
+                <div id="waveform-container" class="hidden mb-3 relative w-full h-32 rounded-xl overflow-hidden bg-zinc-950/50 border border-emerald-500/20">
+                    <canvas id="waveform-canvas" width="800" height="128" class="w-full h-full" style="filter: blur(0.5px);"></canvas>
+                    <div class="absolute inset-0 pointer-events-none bg-gradient-to-r from-zinc-950/50 via-transparent to-zinc-950/50"></div>
+                    <div class="absolute top-2 left-2 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                        <span class="text-xs font-mono text-emerald-300 uppercase tracking-wider">Live Audio</span>
+                    </div>
+                </div>
+
+                <!-- Prominent Voice Button -->
+                <div id="voice-input-prompt" class="mb-3 p-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                            <i data-lucide="mic" class="w-5 h-5 text-emerald-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-emerald-200">Speak with Dameris</div>
+                            <div class="text-xs text-emerald-400/70">Press Space or click to start</div>
+                        </div>
+                    </div>
+                    <button onclick="toggleVoiceRecording()" class="px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-lg text-emerald-200 text-sm font-medium transition-all hover:scale-105">
+                        Start
+                    </button>
+                </div>
+
+                <div class="relative group">
+                    <div class="relative flex items-center bg-[#1a1a1c] rounded-lg border border-white/10 px-3 py-2 shadow-inner">
+                        <input type="text" placeholder="Ask Dameris..." class="bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-600 w-full font-light focus:ring-0">
+
+                        <div class="flex items-center gap-1 pl-2 border-l border-white/5 ml-2">
+                            <button id="mic-button-input" onclick="toggleVoiceRecording()" class="p-1.5 text-zinc-300 hover:text-emerald-400 transition-colors rounded-lg hover:bg-white/5 relative" title="Push to talk (Space)">
+                                <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+                                <div id="mic-pulse-input" class="hidden absolute -inset-1 rounded-full border-2 border-emerald-500/50 animate-ping"></div>
+                            </button>
+                            <button type="submit" class="p-1.5 text-zinc-300 hover:text-violet-200 transition-colors rounded-lg hover:bg-white/5" title="Send message">
+                                <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 flex justify-center gap-4">
+                     <a href="../modes/index.html#creative" class="text-[10px] text-zinc-300 cursor-pointer hover:text-zinc-400 transition-colors">Create Image</a>
+                     <a href="archive.html" class="text-[10px] text-zinc-300 cursor-pointer hover:text-zinc-400 transition-colors">Search Logs</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR: Upload & Artefacts -->
+        <div id="context-panel" class="animate-enter w-96 h-[90vh] max-h-[90vh] rounded-2xl bg-[#0c0c0e]/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_-10px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden relative ring-1 ring-white/5">
+
+            <!-- Header -->
+            <div class="flex-shrink-0 px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+                <div class="flex items-center justify-between">
+                    <span class="font-serif-custom italic text-base text-zinc-100 tracking-tight">Context</span>
+                    <button onclick="toggleContextPanel()" class="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-zinc-200 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+
+                <!-- File Upload Section -->
+                <div class="space-y-3">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-400 font-medium flex items-center gap-2">
+                        <i data-lucide="folder-open" class="w-3 h-3"></i>
+                        Upload Files
+                    </h3>
+                    <div class="relative group">
+                        <input type="file" id="file-upload" class="hidden" accept=".txt,.md,.doc,.docx,.pdf" multiple onchange="handleFileUpload(event)">
+                        <label for="file-upload" class="block w-full p-6 border-2 border-dashed border-zinc-700 hover:border-violet-500/70 rounded-xl cursor-pointer transition-all duration-300 group-hover:bg-violet-500/5 group-hover:shadow-lg group-hover:shadow-violet-500/20">
+                            <div class="flex flex-col items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <i data-lucide="upload-cloud" class="w-6 h-6 text-violet-400 group-hover:text-violet-300 transition-colors"></i>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors block">Drop files or click</span>
+                                    <span class="text-xs text-zinc-600 group-hover:text-zinc-500 transition-colors">txt, md, doc, docx, pdf</span>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Upload progress indicator -->
+                        <div id="upload-progress" class="hidden mt-2">
+                            <div class="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full shimmer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="upload-status" class="hidden text-xs px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"></div>
+                </div>
+
+                <!-- First Scan Results -->
+                <div id="first-scan-section" class="hidden space-y-3 message-appear">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-400 font-medium flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-3 h-3"></i>
+                        Analysis
+                    </h3>
+                    <div class="p-5 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border border-violet-500/30 rounded-xl backdrop-blur-sm shadow-lg shadow-violet-500/10">
+                        <div id="first-scan-content" class="text-sm text-zinc-200 leading-relaxed"></div>
+                    </div>
+                </div>
+
+                <!-- Recent Artefacts -->
+                <div id="artefacts-section" class="hidden space-y-4">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-400 font-medium flex items-center gap-2">
+                        <i data-lucide="stars" class="w-3 h-3"></i>
+                        Recent Creations
+                    </h3>
+
+                    <!-- Image Artefact -->
+                    <div id="artefact-image" class="hidden rounded-xl overflow-hidden border border-violet-500/20 shadow-lg shadow-violet-500/10 message-appear group">
+                        <img src="" alt="Generated" class="w-full h-auto transform group-hover:scale-105 transition-transform duration-500">
+                    </div>
+
+                    <!-- Poem Artefact -->
+                    <div id="artefact-poem" class="hidden p-5 bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-xl backdrop-blur-sm shadow-lg shadow-amber-500/10 message-appear">
+                        <div class="flex items-center gap-2 text-xs text-amber-400 mb-3">
+                            <i data-lucide="feather" class="w-3 h-3"></i>
+                            <span>Poem</span>
+                        </div>
+                        <div id="artefact-poem-text" class="text-sm whitespace-pre-wrap text-zinc-200 leading-relaxed font-serif-custom italic"></div>
+                    </div>
+
+                    <!-- Collection Artefact -->
+                    <div id="artefact-collection" class="hidden p-5 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-500/20 rounded-xl backdrop-blur-sm shadow-lg shadow-emerald-500/10 message-appear">
+                        <div id="artefact-collection-content"></div>
+                    </div>
+                </div>
+
+                <!-- Sync Options -->
+                <div class="space-y-3">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-400 font-medium flex items-center gap-2">
+                        <i data-lucide="cloud" class="w-3 h-3"></i>
+                        Data Sources
+                    </h3>
+                    <div class="space-y-2">
+                        <button onclick="syncSource('gmail')" class="w-full px-4 py-3 text-sm text-left text-zinc-300 hover:text-zinc-100 bg-gradient-to-r from-red-500/10 to-red-600/5 hover:from-red-500/20 hover:to-red-600/10 rounded-xl border border-red-500/20 hover:border-red-500/40 transition-all duration-300 flex items-center gap-3 group">
+                            <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="mail" class="w-4 h-4 text-red-400"></i>
+                            </div>
+                            <span>Sync Gmail</span>
+                        </button>
+                        <button onclick="syncSource('drive')" class="w-full px-4 py-3 text-sm text-left text-zinc-300 hover:text-zinc-100 bg-gradient-to-r from-blue-500/10 to-blue-600/5 hover:from-blue-500/20 hover:to-blue-600/10 rounded-xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 flex items-center gap-3 group">
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="hard-drive" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                            <span>Sync Drive</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Keyboard Shortcuts -->
+                <div class="space-y-3 pt-6 border-t border-white/5">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-400 font-medium flex items-center gap-2">
+                        <i data-lucide="keyboard" class="w-3 h-3"></i>
+                        Shortcuts
+                    </h3>
+                    <div class="space-y-2 text-xs text-zinc-500">
+                        <div class="flex items-center justify-between">
+                            <span>Voice recording</span>
+                            <kbd class="px-2 py-1 bg-zinc-800 rounded border border-zinc-700 font-mono">Space</kbd>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>New chat</span>
+                            <kbd class="px-2 py-1 bg-zinc-800 rounded border border-zinc-700 font-mono">Ctrl N</kbd>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Focus input</span>
+                            <kbd class="px-2 py-1 bg-zinc-800 rounded border border-zinc-700 font-mono">/</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggle Button for Context Panel (Mobile) -->
+        <button id="context-toggle" onclick="toggleContextPanel()" class="lg:hidden fixed bottom-24 right-6 w-12 h-12 rounded-full bg-violet-600 hover:bg-violet-500 text-white shadow-lg flex items-center justify-center z-50">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+        </button>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Chat Functionality - Shared State (same as workspace)
+        const CHAT_STORAGE_KEY = 'fuguestate_chat_history';
+        const CONVERSATION_ID_KEY = 'fuguestate_conversation_id';
+        const chatMessages = document.getElementById('messages-container');
+        const chatInput = document.querySelector('input[type="text"]');
+        const chatForm = chatInput?.closest('form') || chatInput?.parentElement;
+        let isTyping = false;
+        let currentConversationId = localStorage.getItem(CONVERSATION_ID_KEY) || null;
+
+        // Load chat history from localStorage
+        function loadChatHistory() {
+            const chatMessages = document.getElementById('messages-container');
+            try {
+                const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+                if (history.length > 0 && chatMessages) {
+                    // Clear existing demo messages if we have real history
+                    const existingMessages = chatMessages.querySelectorAll('.message-ai, .message-user, .text-center');
+                    if (existingMessages.length > 0) {
+                        existingMessages.forEach(msg => msg.remove());
+                    }
+                    
+                    // Restore messages
+                    history.forEach(msg => {
+                        if (msg.role === 'user') {
+                            addUserMessageToDOM(msg.text, msg.time);
+                        } else if (msg.role === 'assistant') {
+                            addAIMessageToDOM(msg.text, msg.time);
+                        }
+                    });
+                    scrollToBottom();
+                }
+            } catch (e) {
+                console.error('Error loading chat history:', e);
+            }
+        }
+
+        // Save message to localStorage
+        function saveMessage(role, text, time) {
+            try {
+                const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+                history.push({ role, text, time });
+                localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history));
+            } catch (e) {
+                console.error('Error saving message:', e);
+            }
+        }
+
+        // Scroll to bottom with smooth behavior
+        function scrollToBottom() {
+            if (chatMessages) {
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Get time string
+        function getTimeString() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        // Add user message to DOM
+        function addUserMessageToDOM(text, time = null) {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            const timeStr = time || getTimeString();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex flex-col items-end gap-2 pl-12 message-user';
+            messageDiv.innerHTML = `
+                <div class="bg-gradient-to-br from-zinc-800/60 to-zinc-900/40 border border-white/10 rounded-2xl rounded-tr-sm py-3 px-4 backdrop-blur-md shadow-lg">
+                    <p class="text-sm font-light text-zinc-100">${text}</p>
+                </div>
+                <span class="text-[9px] text-zinc-400 font-mono-custom">${timeStr}</span>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Add AI message to DOM
+        function addAIMessageToDOM(text, time = null) {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            removeTypingIndicator();
+            const timeStr = time || getTimeString();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex gap-4 pr-8 group message-ai';
+            
+            // Convert markdown to HTML
+            const renderedContent = window.renderMarkdown ? window.renderMarkdown(text) : text.replace(/\n/g, '<br>');
+            
+            messageDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                    <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                </div>
+                <div class="space-y-2 flex-1">
+                    <div class="text-sm font-light text-zinc-200 leading-relaxed prose prose-invert prose-violet max-w-none">${renderedContent}</div>
+                    <span class="text-[9px] text-zinc-400 font-mono-custom">${timeStr}</span>
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            lucide.createIcons();
+        }
+
+        // Add typing indicator
+        function addTypingIndicator() {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'flex gap-4 pr-8 group message-ai';
+            typingDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                    <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[#0c0c0e] animate-pulse"></div>
+                </div>
+                <div class="flex items-center gap-1.5 bg-zinc-800/30 rounded-2xl px-4 py-3 border border-white/5">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        // Get AI response from API
+        async function getAIResponse(userMessage, conversationId = null) {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    credentials: 'include', // Include cookies for authentication
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        conversationId: conversationId
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Failed to get response' }));
+                    
+                    // Handle authentication errors
+                    if (response.status === 401) {
+                        // Session expired - redirect to login
+                        window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+                        throw new Error('Session expired. Please refresh the page and try again.');
+                    }
+                    
+                    throw new Error(errorData.error || 'Failed to get response');
+                }
+
+                const data = await response.json();
+                removeTypingIndicator();
+                
+                // Store conversation ID if we got a new one
+                if (data.conversationId) {
+                    currentConversationId = data.conversationId;
+                    localStorage.setItem(CONVERSATION_ID_KEY, currentConversationId);
+                }
+                
+                return data.response || data.message || 'I apologize, but I couldn\'t generate a response.';
+            } catch (error) {
+                removeTypingIndicator();
+                console.error('Error getting AI response:', error);
+                throw error;
+            }
+        }
+
+        // Start new chat
+        function startNewChat() {
+            if (confirm('Start a new conversation? Current chat will be saved in history.')) {
+                // Clear current conversation
+                currentConversationId = null;
+                localStorage.removeItem(CONVERSATION_ID_KEY);
+
+                // Optionally clear messages
+                const clearMessages = confirm('Clear message history too?');
+                if (clearMessages) {
+                    localStorage.removeItem(CHAT_STORAGE_KEY);
+                    location.reload();
+                }
+            }
+        }
+
+        // Clear chat history
+        function clearChatHistory() {
+            if (confirm('Clear all chat history? This cannot be undone.')) {
+                localStorage.removeItem(CHAT_STORAGE_KEY);
+                localStorage.removeItem(CONVERSATION_ID_KEY);
+                location.reload();
+            }
+        }
+
+        // Export chat
+        function exportChat() {
+            try {
+                const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+                const text = history.map(msg => `[${msg.time}] ${msg.role === 'user' ? 'You' : 'Dameris'}: ${msg.text}`).join('\n\n');
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `dameris-chat-${Date.now()}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export chat');
+            }
+        }
+
+        // Toggle chat menu
+        function toggleChatMenu() {
+            const menu = document.getElementById('chat-menu');
+            if (menu) {
+                menu.classList.toggle('opacity-0');
+                menu.classList.toggle('pointer-events-none');
+            }
+        }
+
+        // Handle form submission
+        if (chatForm && chatInput) {
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message || isTyping) return;
+                
+                addUserMessageToDOM(message);
+                saveMessage('user', message, getTimeString());
+                chatInput.value = '';
+                
+                isTyping = true;
+                addTypingIndicator();
+                
+                try {
+                    const response = await getAIResponse(message, currentConversationId);
+                    addAIMessageToDOM(response);
+                    saveMessage('assistant', response, getTimeString());
+                } catch (error) {
+                    removeTypingIndicator();
+                    const errorMessage = error.message?.includes('Failed') 
+                        ? "I'm having trouble connecting right now. Please check your connection and try again."
+                        : "I'm having trouble processing that right now. Could you try rephrasing your question?";
+                    addAIMessageToDOM(errorMessage);
+                    
+                    if (window.toastNotifications) {
+                        window.toastNotifications.error('Failed to get response from Dameris');
+                    }
+                    console.error('Chat error:', error);
+                } finally {
+                    isTyping = false;
+                    chatInput.focus();
+                }
+            });
+
+            // Handle Enter key
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+
+        // Voice Input Functionality
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingStartTime = null;
+        const MIN_RECORDING_DURATION = 500; // Minimum 500ms recording
+        const micButton = document.getElementById('mic-button');
+        const micIcon = micButton?.querySelector('i[data-lucide]');
+
+        // Check if browser supports MediaRecorder
+        const canRecord = typeof MediaRecorder !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+
+        async function startRecording() {
+            if (!canRecord) {
+                alert('Voice recording is not supported in your browser. Please use Chrome, Edge, or Firefox.');
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+                recordingStartTime = Date.now();
+                
+                // Use WebM format (Chrome/Edge) or fallback to default
+                const options = { mimeType: 'audio/webm' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    delete options.mimeType; // Use browser default
+                }
+
+                mediaRecorder = new MediaRecorder(stream, options);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const recordingDuration = Date.now() - recordingStartTime;
+                    
+                    // Check minimum recording duration
+                    if (recordingDuration < MIN_RECORDING_DURATION) {
+                        alert('Recording too short. Please speak for at least half a second.');
+                        stream.getTracks().forEach(track => track.stop());
+                        return;
+                    }
+                    
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                    
+                    // Check audio blob size
+                    if (audioBlob.size < 1000) { // Less than 1KB is likely empty
+                        alert('No audio detected. Please check your microphone and try again.');
+                        stream.getTracks().forEach(track => track.stop());
+                        return;
+                    }
+                    
+                    await sendAudioToSTT(audioBlob);
+                    
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Update UI
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'mic-off');
+                    micIcon.classList.add('text-red-400', 'animate-pulse');
+                    lucide.createIcons();
+                }
+                micButton.classList.add('bg-red-500/20', 'border-red-500/30');
+                micButton.title = 'Recording... Click to stop';
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                    alert('Microphone permission denied. Please allow microphone access and try again.');
+                } else {
+                    alert('Failed to access microphone. Please check your settings and try again.');
+                }
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                // Update UI
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'mic');
+                    micIcon.classList.remove('text-red-400', 'animate-pulse');
+                    lucide.createIcons();
+                }
+                micButton.classList.remove('bg-red-500/20', 'border-red-500/30');
+                micButton.title = 'Voice input';
+            }
+        }
+
+        async function sendAudioToSTT(audioBlob) {
+            try {
+                // Show transcribing indicator
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'loader-2');
+                    micIcon.classList.add('animate-spin');
+                    lucide.createIcons();
+                }
+                micButton.title = 'Transcribing...';
+
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+                formData.append('language', 'en-US');
+
+                const response = await fetch('/api/stt', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Speech-to-text failed');
+                }
+
+                const data = await response.json();
+                const transcript = data.transcript?.trim();
+
+                if (!transcript) {
+                    // Show a more helpful error message
+                    const errorMsg = data.error || 'No speech detected.';
+                    alert(`${errorMsg}\n\nTips:\n• Speak clearly into your microphone\n• Ensure your microphone is not muted\n• Try speaking for at least 1-2 seconds\n• Check your browser microphone permissions`);
+                    return;
+                }
+
+                // Auto-submit transcribed text
+                if (chatInput && transcript) {
+                    chatInput.value = transcript;
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+
+            } catch (error) {
+                console.error('STT error:', error);
+                alert('Failed to transcribe audio. Please try again or type your message.');
+            } finally {
+                // Reset UI
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'mic');
+                    micIcon.classList.remove('animate-spin');
+                    lucide.createIcons();
+                }
+                micButton.title = 'Voice input';
+            }
+        }
+
+        // Add click handler to mic button
+        if (micButton) {
+            micButton.addEventListener('click', () => {
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            });
+        }
+
+        // Load chat history on page load
+        loadChatHistory();
+
+        // Check for upload confirmation from initialization
+        function checkUploadConfirmation() {
+            try {
+                const uploadInfo = localStorage.getItem('fugue_upload_complete');
+                if (uploadInfo) {
+                    const info = JSON.parse(uploadInfo);
+                    const timeElapsed = Date.now() - info.timestamp;
+
+                    // Only show if upload happened in last 30 seconds (user just came from initialization)
+                    if (timeElapsed < 30000) {
+                        const welcomeMsg = `Your memories have been uploaded successfully. I've indexed ${info.fileName} (${info.fileSize}). What would you like to create from this?`;
+
+                        // Add welcome message from Dameris
+                        setTimeout(() => {
+                            addAIMessageToDOM(welcomeMsg);
+                        }, 500);
+
+                        // Clear the flag so it doesn't show again
+                        localStorage.removeItem('fugue_upload_complete');
+                    } else {
+                        // Old upload, just clear it
+                        localStorage.removeItem('fugue_upload_complete');
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking upload confirmation:', e);
+            }
+        }
+
+        checkUploadConfirmation();
+
+        // ============================================
+        // VOICE FEATURES: Push-to-Talk, Waveform, TTS
+        // ============================================
+
+        let voiceState = {
+            isRecording: false,
+            mediaStream: null,
+            mediaRecorder: null,
+            audioChunks: [],
+            audioContext: null,
+            analyser: null,
+            animationFrame: null,
+            audioElement: null,
+            audioUrl: null
+        };
+
+        const waveformCanvas = document.getElementById('waveform-canvas');
+        const waveformContainer = document.getElementById('waveform-container');
+        const micButton = document.getElementById('mic-button');
+        const micPulse = document.getElementById('mic-pulse');
+
+        // Draw waveform visualization
+        function drawWaveform() {
+            if (!waveformCanvas || !voiceState.analyser) return;
+
+            const canvas = waveformCanvas;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            const analyser = voiceState.analyser;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                if (!voiceState.isRecording) return;
+                voiceState.animationFrame = requestAnimationFrame(draw);
+
+                analyser.getByteTimeDomainData(dataArray);
+
+                // Clear with fade effect
+                ctx.fillStyle = 'rgba(9, 9, 11, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw waveform
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#10b981'; // Emerald
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#10b981';
+                ctx.beginPath();
+
+                const sliceWidth = canvas.width / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = (v * canvas.height) / 2;
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+
+                    x += sliceWidth;
+                }
+
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+            }
+
+            draw();
+        }
+
+        // Start recording
+        async function startRecording() {
+            console.log('[Voice] Starting recording...');
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log('[Voice] Microphone access granted');
+
+                voiceState.mediaStream = stream;
+                voiceState.audioChunks = [];
+
+                // Setup Web Audio API for waveform
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                voiceState.audioContext = audioContext;
+
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 2048;
+                voiceState.analyser = analyser;
+
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+
+                // Setup MediaRecorder
+                const recorder = new MediaRecorder(stream);
+                voiceState.mediaRecorder = recorder;
+
+                recorder.ondataavailable = (event) => {
+                    if (event.data && event.data.size > 0) {
+                        voiceState.audioChunks.push(event.data);
+                    }
+                };
+
+                recorder.onstop = async () => {
+                    console.log('[Voice] Recording stopped, transcribing...');
+                    const blob = new Blob(voiceState.audioChunks, { type: recorder.mimeType || 'audio/webm' });
+                    await transcribeAudio(blob);
+                    cleanupRecording();
+                };
+
+                recorder.start();
+                voiceState.isRecording = true;
+
+                console.log('[Voice] Recording started');
+
+                // Show waveform
+                const waveformContainer = document.getElementById('waveform-container');
+                waveformContainer?.classList.remove('hidden');
+
+                // Update UI
+                const voicePrompt = document.getElementById('voice-input-prompt');
+                if (voicePrompt) {
+                    voicePrompt.innerHTML = `
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/20 to-red-600/20 flex items-center justify-center animate-pulse">
+                                    <i data-lucide="mic-off" class="w-5 h-5 text-red-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-red-200">Recording...</div>
+                                    <div class="text-xs text-red-400/70">Release Space or click Stop</div>
+                                </div>
+                            </div>
+                            <button onclick="toggleVoiceRecording()" class="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg text-red-200 text-sm font-medium transition-all hover:scale-105">
+                                Stop
+                            </button>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                }
+
+                // Start waveform animation
+                drawWaveform();
+            } catch (error) {
+                console.error('[Voice] Microphone error:', error);
+                const errorMsg = error.name === 'NotAllowedError'
+                    ? 'Microphone permission denied. Please allow microphone access in your browser settings.'
+                    : 'Could not access microphone. Please check your settings.';
+                alert(errorMsg);
+                cleanupRecording();
+            }
+        }
+
+        // Stop recording
+        function stopRecording() {
+            if (voiceState.mediaRecorder && voiceState.mediaRecorder.state !== 'inactive') {
+                voiceState.mediaRecorder.stop();
+            }
+        }
+
+        // Cleanup recording resources
+        function cleanupRecording() {
+            console.log('[Voice] Cleaning up recording resources');
+
+            if (voiceState.animationFrame) {
+                cancelAnimationFrame(voiceState.animationFrame);
+                voiceState.animationFrame = null;
+            }
+
+            if (voiceState.audioContext) {
+                voiceState.audioContext.close();
+                voiceState.audioContext = null;
+            }
+
+            if (voiceState.mediaStream) {
+                voiceState.mediaStream.getTracks().forEach(track => track.stop());
+                voiceState.mediaStream = null;
+            }
+
+            voiceState.mediaRecorder = null;
+            voiceState.analyser = null;
+            voiceState.audioChunks = [];
+            voiceState.isRecording = false;
+
+            // Hide waveform
+            const waveformContainer = document.getElementById('waveform-container');
+            waveformContainer?.classList.add('hidden');
+
+            // Restore voice prompt UI
+            const voicePrompt = document.getElementById('voice-input-prompt');
+            if (voicePrompt) {
+                voicePrompt.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                                <i data-lucide="mic" class="w-5 h-5 text-emerald-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-emerald-200">Speak with Dameris</div>
+                                <div class="text-xs text-emerald-400/70">Press Space or click to start</div>
+                            </div>
+                        </div>
+                        <button onclick="toggleVoiceRecording()" class="px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-lg text-emerald-200 text-sm font-medium transition-all hover:scale-105">
+                            Start
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        }
+
+        // Transcribe audio using STT API
+        async function transcribeAudio(audioBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'voice.webm');
+
+                const response = await fetch('/api/stt', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Transcription failed');
+                }
+
+                const transcript = data.transcript || data.text || '';
+                if (!transcript) {
+                    throw new Error('No transcript returned');
+                }
+
+                // Set transcript in input and send
+                if (chatInput) {
+                    chatInput.value = transcript;
+                    // Trigger form submission
+                    if (chatForm) {
+                        chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                    }
+                }
+            } catch (error) {
+                console.error('Transcription error:', error);
+                alert('Failed to transcribe audio: ' + error.message);
+            }
+        }
+
+        // Speak text using TTS API
+        async function speakText(text) {
+            try {
+                // Stop any existing playback
+                if (voiceState.audioElement) {
+                    voiceState.audioElement.pause();
+                    voiceState.audioElement = null;
+                }
+                if (voiceState.audioUrl) {
+                    URL.revokeObjectURL(voiceState.audioUrl);
+                    voiceState.audioUrl = null;
+                }
+
+                // ONLY use female voices - randomly select from whitelist
+                const FEMALE_VOICES = [
+                    '21m00Tcm4TlvDq8ikWAM', // Rachel
+                    'EXAVITQu4vr4xnSDxMaL', // Bella
+                    'MF3mGyEYCl7XYWbV9V6O', // Elli
+                    'ThT5KcBeYPX3keUQqHPh', // Dorothy
+                    'pNInz6obpgDQGcFmaJgB', // Grace
+                    'oWAxZDx7w5VEj9dCyTzz', // Charlotte
+                    'AZnzlk1XvdvUeBnXmlld', // Domi
+                    'XB0fDUnXU5powFXDhCwa'  // Matilda
+                ];
+                const voiceId = FEMALE_VOICES[Math.floor(Math.random() * FEMALE_VOICES.length)];
+
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, voiceId })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json().catch(() => null);
+                    throw new Error(data?.error || 'Failed to generate speech');
+                }
+
+                const audioBlob = await response.blob();
+                const url = URL.createObjectURL(audioBlob);
+                voiceState.audioUrl = url;
+
+                const audio = new Audio(url);
+                voiceState.audioElement = audio;
+
+                audio.onended = () => {
+                    if (voiceState.audioUrl) {
+                        URL.revokeObjectURL(voiceState.audioUrl);
+                        voiceState.audioUrl = null;
+                    }
+                    voiceState.audioElement = null;
+                };
+
+                audio.onerror = () => {
+                    console.error('Audio playback failed');
+                    if (voiceState.audioUrl) {
+                        URL.revokeObjectURL(voiceState.audioUrl);
+                        voiceState.audioUrl = null;
+                    }
+                    voiceState.audioElement = null;
+                };
+
+                await audio.play();
+            } catch (error) {
+                console.error('TTS error:', error);
+                // Fail silently for TTS - don't interrupt the chat experience
+            }
+        }
+
+        // Mic button click handler
+        if (micButton) {
+            micButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (voiceState.isRecording) {
+                    stopRecording();
+                } else {
+                    await startRecording();
+                }
+            });
+        }
+
+        // Spacebar shortcut for push-to-talk
+        window.addEventListener('keydown', async (e) => {
+            if (e.code === 'Space') {
+                const target = e.target;
+                const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+                if (isTyping) return; // Don't interfere with typing
+
+                e.preventDefault();
+                if (!voiceState.isRecording) {
+                    await startRecording();
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                const target = e.target;
+                const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+                if (isTyping) return;
+
+                e.preventDefault();
+                if (voiceState.isRecording) {
+                    stopRecording();
+                }
+            }
+        });
+
+        // Auto-speak AI responses
+        const originalGetAIResponse = getAIResponse;
+        getAIResponse = async function(userMessage, conversationId = null) {
+            const response = await originalGetAIResponse(userMessage, conversationId);
+            // Speak the response
+            await speakText(response);
+            return response;
+        };
+
+        // Check for initialization completion and welcome user with first scan
+        async function checkForInitializationWelcome() {
+            try {
+                const shouldIntroduce = localStorage.getItem('fuguestate_should_introduce_dameris');
+                const firstScanBriefing = localStorage.getItem('fuguestate_first_scan_briefing');
+
+                if (shouldIntroduce === 'true' && firstScanBriefing) {
+                    // Parse the briefing
+                    const briefing = JSON.parse(firstScanBriefing);
+
+                    // Create welcome message
+                    const welcomeMessage = `Welcome. I'm Dameris, your muse. I've analyzed your memories and discovered ${briefing.insights?.length || 'several'} insights. ${briefing.summary || 'Let me share what I found.'}`;
+
+                    // Display the message in chat
+                    const messagesContainer = document.getElementById('chat-messages');
+                    if (messagesContainer) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message assistant-message';
+                        messageDiv.innerHTML = `
+                            <div class="message-avatar">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                    <span class="text-xs font-medium text-white">D</span>
+                                </div>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-text">${welcomeMessage}</div>
+                                <div class="message-timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(messageDiv);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+
+                    // Auto-speak the welcome message
+                    await speakText(welcomeMessage);
+
+                    // Clear the flags so this doesn't repeat
+                    localStorage.removeItem('fuguestate_should_introduce_dameris');
+                }
+            } catch (error) {
+                console.error('Error checking initialization welcome:', error);
+            }
+        }
+
+        // Run the welcome check when page loads
+        setTimeout(checkForInitializationWelcome, 1000);
+
+        // ============================================
+        // CONTEXT PANEL: Upload, First Scan, Artefacts
+        // ============================================
+
+        // Toggle context panel visibility
+        function toggleContextPanel() {
+            const panel = document.getElementById('context-panel');
+            if (panel) {
+                panel.classList.toggle('hidden');
+                panel.classList.toggle('lg:flex');
+                lucide.createIcons();
+            }
+        }
+
+        // Handle file upload
+        async function handleFileUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            console.log('[Upload] Starting upload:', files[0].name);
+
+            const statusEl = document.getElementById('upload-status');
+            statusEl.classList.remove('hidden');
+            statusEl.textContent = 'Uploading...';
+            statusEl.className = 'text-xs px-3 py-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
+
+            // Add upload message to chat
+            const uploadMsg = `📎 Uploading "${files[0].name}"...`;
+            addUserMessageToDOM(uploadMsg);
+
+            // Show Dameris is analyzing
+            addTypingIndicator();
+
+            try {
+                const formData = new FormData();
+                formData.append('file', files[0]);
+
+                console.log('[Upload] Sending to /api/uploads');
+
+                const response = await fetch('/api/uploads', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                const data = await response.json();
+                console.log('[Upload] Response:', data);
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Upload failed');
+                }
+
+                statusEl.textContent = `✓ ${files[0].name}`;
+                statusEl.className = 'text-xs px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+
+                // Add confirmation to chat
+                removeTypingIndicator();
+                const confirmMsg = `I've received your file. Let me analyze it...`;
+                addAIMessageToDOM(confirmMsg);
+                await speakText(confirmMsg);
+
+                // Trigger first scan with the memory ID
+                const memoryId = data.memory?.id || data.id;
+                console.log('[Upload] Memory ID:', memoryId);
+
+                if (memoryId) {
+                    await runFirstScan(memoryId);
+                } else {
+                    throw new Error('No memory ID returned from upload');
+                }
+
+            } catch (error) {
+                console.error('[Upload] Error:', error);
+                statusEl.textContent = 'Upload failed';
+                statusEl.className = 'text-xs px-3 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20';
+
+                removeTypingIndicator();
+                const errorMsg = `I couldn't process that file. ${error.message}`;
+                addAIMessageToDOM(errorMsg);
+                await speakText(errorMsg);
+            }
+        }
+
+        // Run first scan on uploaded memory
+        async function runFirstScan(memoryId) {
+            try {
+                const response = await fetch('/api/muse/first-scan', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        museType: 'synthesis',
+                        memoryId,
+                        limit: 8
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'First scan failed');
+                }
+
+                const result = data.result;
+                if (result?.briefing) {
+                    // Display first scan results
+                    displayFirstScan(result);
+
+                    // Have Dameris speak the briefing
+                    await speakText(result.briefing);
+
+                    // Run auto-create to generate artefacts
+                    await runAutoCreate(memoryId, result);
+                }
+            } catch (error) {
+                console.error('First scan error:', error);
+            }
+        }
+
+        // Display first scan results
+        function displayFirstScan(result) {
+            const section = document.getElementById('first-scan-section');
+            const content = document.getElementById('first-scan-content');
+
+            if (section && content) {
+                content.textContent = result.briefing;
+                section.classList.remove('hidden');
+                lucide.createIcons();
+            }
+
+            // Format the briefing nicely for chat
+            let formattedMessage = `**Dameris Analysis (Synthesis)**\n\n${result.briefing}`;
+
+            // Add insights if available
+            if (result.reflect?.truths?.length > 0) {
+                formattedMessage += '\n\n**Key Insights:**\n';
+                result.reflect.truths.slice(0, 3).forEach(truth => {
+                    formattedMessage += `• ${truth}\n`;
+                });
+            }
+
+            // Add questions if available
+            if (result.reflect?.questions?.length > 0) {
+                formattedMessage += '\n\n**Questions to Explore:**\n';
+                result.reflect.questions.slice(0, 3).forEach(q => {
+                    formattedMessage += `• ${q}\n`;
+                });
+            }
+
+            // Add to chat with nice formatting
+            addAIMessageToDOM(formattedMessage);
+            saveMessage('assistant', formattedMessage, getTimeString());
+        }
+
+        // Toggle voice recording from header button
+        function toggleVoiceRecording() {
+            const headerButton = document.getElementById('header-mic-button');
+            const headerWaveform = document.getElementById('header-waveform');
+            const headerPulse = document.getElementById('header-mic-pulse');
+            const voiceStatus = document.getElementById('voice-status');
+            const voicePrompt = document.getElementById('voice-input-prompt');
+
+            if (voiceState.isRecording) {
+                stopRecording();
+                headerWaveform?.classList.add('hidden');
+                headerPulse?.classList.add('hidden');
+                voiceStatus?.classList.add('hidden');
+                headerButton?.classList.remove('text-emerald-400');
+                voicePrompt?.classList.remove('hidden'); // Show prompt again
+            } else {
+                startRecording();
+                headerWaveform?.classList.remove('hidden');
+                headerWaveform?.classList.add('flex');
+                headerPulse?.classList.remove('hidden');
+                voiceStatus?.classList.remove('hidden');
+                headerButton?.classList.add('text-emerald-400');
+                voicePrompt?.classList.add('hidden'); // Hide prompt while recording
+            }
+            lucide.createIcons();
+        }
+
+        // Run auto-create to generate artefacts
+        async function runAutoCreate(memoryId, firstScan) {
+            try {
+                const response = await fetch('/api/muse/auto-create', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        museType: 'synthesis',
+                        memoryId,
+                        firstScan
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Auto-create failed');
+                }
+
+                // Display artefacts
+                if (data.success) {
+                    displayArtefacts({
+                        image: data.imageArtefact ? {
+                            id: data.imageArtefact.id,
+                            url: data.imageArtefact.file_url || data.image
+                        } : null,
+                        poem: data.poemArtefact ? {
+                            id: data.poemArtefact.id,
+                            text: data.poemText || ''
+                        } : null,
+                        collection: data.collectionArtefact ? {
+                            id: data.collectionArtefact.id,
+                            data: data.collection
+                        } : null
+                    });
+
+                    // Have Dameris announce the creations
+                    const message = "I've created some artefacts from your memories. Check the context panel to see them.";
+                    addAIMessageToDOM(message);
+                    saveMessage('assistant', message, getTimeString());
+                    await speakText(message);
+                }
+            } catch (error) {
+                console.error('Auto-create error:', error);
+            }
+        }
+
+        // Display artefacts in the context panel AND inline in chat
+        function displayArtefacts(artefacts) {
+            const section = document.getElementById('artefacts-section');
+            if (!section) return;
+
+            let hasArtefacts = false;
+            let inlineChatHTML = '';
+
+            // Display image
+            if (artefacts.image?.url) {
+                const imageEl = document.getElementById('artefact-image');
+                if (imageEl) {
+                    const img = imageEl.querySelector('img');
+                    if (img) {
+                        img.src = artefacts.image.url;
+                        imageEl.classList.remove('hidden');
+                        hasArtefacts = true;
+
+                        // Add inline to chat
+                        inlineChatHTML += `
+                            <div class="mt-4 rounded-xl overflow-hidden border border-violet-500/20 shadow-lg">
+                                <img src="${artefacts.image.url}" alt="Generated Image" class="w-full h-auto">
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            // Display poem
+            if (artefacts.poem?.text) {
+                const poemEl = document.getElementById('artefact-poem');
+                const textEl = document.getElementById('artefact-poem-text');
+                if (poemEl && textEl) {
+                    textEl.textContent = artefacts.poem.text;
+                    poemEl.classList.remove('hidden');
+                    hasArtefacts = true;
+
+                    // Add inline to chat
+                    inlineChatHTML += `
+                        <div class="mt-4 p-5 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/30 rounded-xl">
+                            <div class="flex items-center gap-2 text-xs text-amber-400 mb-3">
+                                <i data-lucide="feather" class="w-3 h-3"></i>
+                                <span>Poem</span>
+                            </div>
+                            <div class="text-sm whitespace-pre-wrap text-zinc-200 leading-relaxed font-serif-custom italic">${artefacts.poem.text}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Display collection
+            if (artefacts.collection?.data) {
+                const collectionEl = document.getElementById('artefact-collection');
+                const contentEl = document.getElementById('artefact-collection-content');
+                if (collectionEl && contentEl) {
+                    const coll = artefacts.collection.data;
+                    let html = `<div class="flex items-center gap-2 text-xs text-emerald-400 mb-2">
+                        <i data-lucide="layers" class="w-3 h-3"></i>
+                        <span>${coll.name || 'Collection'}</span>
+                    </div>`;
+                    if (coll.description) {
+                        html += `<div class="text-sm text-zinc-300 mb-3">${coll.description}</div>`;
+                    }
+                    if (Array.isArray(coll.items)) {
+                        html += '<div class="text-sm text-zinc-200 space-y-1">';
+                        coll.items.slice(0, 6).forEach(item => {
+                            html += `<div class="flex items-start gap-2"><span class="text-emerald-400 mt-1">•</span><span>${item}</span></div>`;
+                        });
+                        html += '</div>';
+                    }
+                    contentEl.innerHTML = html;
+                    collectionEl.classList.remove('hidden');
+                    hasArtefacts = true;
+
+                    // Add inline to chat
+                    inlineChatHTML += `
+                        <div class="mt-4 p-5 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/30 rounded-xl">
+                            ${html}
+                        </div>
+                    `;
+                }
+            }
+
+            if (hasArtefacts) {
+                section.classList.remove('hidden');
+
+                // Add artefacts inline to the last AI message in chat
+                const messages = document.querySelectorAll('.message-ai');
+                if (messages.length > 0) {
+                    const lastMessage = messages[messages.length - 1];
+                    const contentDiv = lastMessage.querySelector('.space-y-2');
+                    if (contentDiv) {
+                        contentDiv.innerHTML += inlineChatHTML;
+                    }
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // Sync data source
+        async function syncSource(sourceType) {
+            try {
+                const response = await fetch('/api/data-sources/sync', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sourceType })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || `Failed to sync ${sourceType}`);
+                }
+
+                const message = `Synced ${sourceType}: imported ${data.memoriesCreated ?? 0} memories`;
+                alert(message);
+
+                // Have Dameris comment on the sync
+                const damerisMessage = `I've synced your ${sourceType} and found ${data.memoriesCreated ?? 0} new memories to explore.`;
+                addAIMessageToDOM(damerisMessage);
+                saveMessage('assistant', damerisMessage, getTimeString());
+                await speakText(damerisMessage);
+            } catch (error) {
+                console.error('Sync error:', error);
+                alert('Failed to sync: ' + error.message);
+            }
+        }
+
+        // Load pending artefacts on page load
+        async function loadPendingArtefacts() {
+            try {
+                // Check localStorage first
+                const pending = localStorage.getItem('fugue_pending_artefacts');
+                if (pending) {
+                    const artefacts = JSON.parse(pending);
+                    displayArtefacts(artefacts);
+                    localStorage.removeItem('fugue_pending_artefacts');
+                    return;
+                }
+
+                // Fallback: load recent artefacts from API
+                const response = await fetch('/api/artefacts/recent?limit=3&within=60', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data?.success && data?.artefacts?.length > 0) {
+                    const poem = data.artefacts.find(a => a.metadata?.kind === 'poem');
+                    const image = data.artefacts.find(a => a.artefact_type === 'image');
+                    const collection = data.artefacts.find(a => a.metadata?.kind === 'collection');
+
+                    if (poem || image || collection) {
+                        displayArtefacts({
+                            poem: poem ? { id: poem.id, text: poem.metadata?.text || poem.description } : null,
+                            image: image ? { id: image.id, url: image.file_url } : null,
+                            collection: collection ? { id: collection.id, data: collection.metadata?.collection } : null
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load pending artefacts:', error);
+            }
+        }
+
+        // Load first scan from localStorage
+        function loadFirstScan() {
+            try {
+                const raw = localStorage.getItem('fugue_pending_first_scan');
+                if (!raw) return;
+
+                const parsed = JSON.parse(raw);
+                if (parsed?.briefing) {
+                    displayFirstScan(parsed);
+                    localStorage.removeItem('fugue_pending_first_scan');
+                }
+            } catch (error) {
+                console.error('Failed to load first scan:', error);
+            }
+        }
+
+        // Load existing memories on page load
+        async function loadExistingMemories() {
+            try {
+                const response = await fetch('/api/memories?limit=10', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data?.memories && data.memories.length > 0) {
+                    console.log('[Memories] Found existing memories:', data.memories.length);
+
+                    // Show the most recent memory
+                    const latestMemory = data.memories[0];
+
+                    // Display in upload status area
+                    const statusEl = document.getElementById('upload-status');
+                    if (statusEl) {
+                        statusEl.classList.remove('hidden');
+                        statusEl.innerHTML = `
+                            <div class="text-xs">
+                                <div class="font-medium text-violet-300 mb-1">Latest: ${latestMemory.title || 'Untitled'}</div>
+                                <div class="text-violet-400/70">${data.memories.length} total memories</div>
+                            </div>
+                        `;
+                        statusEl.className = 'px-3 py-2 rounded-lg bg-violet-500/10 border border-violet-500/20';
+                    }
+
+                    // Show welcome message with context
+                    const welcomeMsg = `Welcome back! I see you have "${latestMemory.title || 'a file'}" and ${data.memories.length - 1} other memories. Shall I analyze them?`;
+                    addAIMessageToDOM(welcomeMsg);
+                    await speakText(welcomeMsg);
+
+                    // Automatically run first scan on the latest memory
+                    console.log('[Memories] Auto-scanning latest memory:', latestMemory.id);
+                    setTimeout(() => {
+                        runFirstScan(latestMemory.id);
+                    }, 2000); // Give user time to see welcome message
+
+                } else {
+                    console.log('[Memories] No existing memories found');
+
+                    // Show helpful prompt
+                    const promptMsg = "Upload a file to begin. I'll analyze it and create insights, images, and poems from your memories.";
+                    addAIMessageToDOM(promptMsg);
+                    await speakText(promptMsg);
+                }
+            } catch (error) {
+                console.error('[Memories] Error loading:', error);
+            }
+        }
+
+        // Initialize on page load
+        setTimeout(async () => {
+            loadFirstScan();
+            loadPendingArtefacts();
+            await loadExistingMemories();
+            lucide.createIcons();
+        }, 500);
+
+        // ============================================
+        // DRAG & DROP FILE UPLOAD
+        // ============================================
+
+        const dragDropOverlay = document.getElementById('drag-drop-overlay');
+        const chatWindow = document.querySelector('.animate-enter');
+        let dragCounter = 0;
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop zone when dragging
+        ['dragenter', 'dragover'].forEach(eventName => {
+            document.body.addEventListener(eventName, () => {
+                if (dragDropOverlay) {
+                    dragCounter++;
+                    dragDropOverlay.classList.remove('hidden');
+                    dragDropOverlay.classList.add('flex');
+                }
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, () => {
+                dragCounter--;
+                if (dragCounter === 0 && dragDropOverlay) {
+                    dragDropOverlay.classList.add('hidden');
+                    dragDropOverlay.classList.remove('flex');
+                }
+            }, false);
+        });
+
+        // Handle dropped files
+        document.body.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                const fileInput = document.getElementById('file-upload');
+                if (fileInput) {
+                    // Create a new FileList-like object
+                    const event = {
+                        target: { files: files }
+                    };
+                    handleFileUpload(event);
+                }
+            }
+            dragCounter = 0;
+        }
+
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + N: New chat
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                startNewChat();
+            }
+
+            // /: Focus input
+            if (e.key === '/' && !isInputFocused()) {
+                e.preventDefault();
+                chatInput?.focus();
+            }
+
+            // Esc: Clear input or stop recording
+            if (e.key === 'Escape') {
+                if (voiceState.isRecording) {
+                    stopRecording();
+                } else if (chatInput) {
+                    chatInput.value = '';
+                    chatInput.blur();
+                }
+            }
+        });
+
+        function isInputFocused() {
+            const activeEl = document.activeElement;
+            return activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+        }
+
+        // ============================================
+        // ENHANCED MESSAGE DISPLAY
+        // ============================================
+
+        // Override addAIMessageToDOM to add animations
+        const originalAddAIMessageToDOM = addAIMessageToDOM;
+        addAIMessageToDOM = function(text, time = null) {
+            originalAddAIMessageToDOM(text, time);
+
+            // Add animation class to last message
+            const messages = document.querySelectorAll('.message-ai');
+            if (messages.length > 0) {
+                const lastMessage = messages[messages.length - 1];
+                lastMessage.classList.add('message-appear');
+            }
+
+            lucide.createIcons();
+        };
+
+        // Override addUserMessageToDOM to add animations
+        const originalAddUserMessageToDOM = addUserMessageToDOM;
+        addUserMessageToDOM = function(text, time = null) {
+            originalAddUserMessageToDOM(text, time);
+
+            // Add animation class to last message
+            const messages = document.querySelectorAll('.message-user');
+            if (messages.length > 0) {
+                const lastMessage = messages[messages.length - 1];
+                lastMessage.classList.add('message-appear');
+            }
+        };
+
+        // ============================================
+        // IMPROVED UPLOAD EXPERIENCE
+        // ============================================
+
+        // Show upload progress
+        function showUploadProgress() {
+            const progress = document.getElementById('upload-progress');
+            if (progress) {
+                progress.classList.remove('hidden');
+            }
+        }
+
+        function hideUploadProgress() {
+            const progress = document.getElementById('upload-progress');
+            if (progress) {
+                progress.classList.add('hidden');
+            }
+        }
+
+        // Update handleFileUpload to show progress
+        const originalHandleFileUpload = handleFileUpload;
+        handleFileUpload = async function(event) {
+            showUploadProgress();
+            try {
+                await originalHandleFileUpload(event);
+            } finally {
+                setTimeout(hideUploadProgress, 500);
+            }
+        };
+
+        console.log('🎨 Enhanced chat interface loaded');
+    </script>
+
+    <!-- Markdown Renderer -->
+    <script src="/js/markdown-renderer.js"></script>
+    
+    <!-- FugueState Sound Engine -->
+    <script src="/js/fugue-sound-engine.js"></script>
+    <script src="/js/sound-control-widget.js"></script>
+    <script>
+        console.log('🎵 FugueState Sound Engine loaded');
+        // Auto-initializes on first user interaction
+    </script>
+
+</body></html>

@@ -1,0 +1,252 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome - FugueState.ai</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-serif-custom { font-family: 'Newsreader', serif; }
+
+    /* Quote rotation animation */
+    .quote-container {
+        position: relative;
+        min-height: 120px;
+    }
+
+    .quote-item {
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        pointer-events: none;
+    }
+
+    .quote-item.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    /* Background Color Shift Animation */
+    @keyframes hue-rotate {
+        0% {
+            filter: hue-rotate(0deg) saturate(1.2);
+        }
+        100% {
+            filter: hue-rotate(360deg) saturate(1.2);
+        }
+    }
+
+    .color-shift-bg {
+        animation: hue-rotate 20s linear infinite;
+    }
+</style>
+</head>
+<body class="bg-[#09090b] min-h-screen flex flex-col antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Background -->
+    <div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full color-shift-bg">
+            <div data-us-project="NMlvqnkICwYYJ6lYb064" class="absolute w-full h-full left-0 top-0 -z-10"></div>
+            <script type="text/javascript">
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="relative z-50 flex items-center justify-between px-6 py-6 md:px-12 md:py-8">
+        <a href="../index.html" class="flex items-center gap-3 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer">
+            <i data-lucide="brain-circuit" class="w-5 h-5 text-indigo-400" stroke-width="1.5"></i>
+            <span class="text-sm font-medium tracking-tight text-white font-serif-custom italic">FugueState.ai</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center px-6 py-12">
+        <div class="max-w-2xl w-full">
+            <!-- Welcome Section -->
+            <div class="text-center mb-6">
+                <div class="mb-8">
+                    <div class="relative w-24 h-24 mx-auto mb-6">
+                        <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500/20 via-purple-500/10 to-amber-500/20 blur-2xl animate-pulse"></div>
+                        <div class="relative w-24 h-24 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.15)]">
+                            <i data-lucide="sparkles" class="w-10 h-10 text-indigo-400 animate-pulse" stroke-width="1.5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="text-4xl md:text-6xl font-light text-white tracking-tight font-serif-custom mb-6 leading-tight">
+                    Welcome to your <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">Dream Studio</span>
+                </h1>
+
+                <!-- Rotating Quotes -->
+                <div class="quote-container" id="quote-container">
+                    <!-- Quotes will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Name Input Section -->
+            <div class="max-w-md mx-auto space-y-6">
+                <div>
+                    <label for="userName" class="block text-sm text-zinc-200 mb-3 text-center">
+                        What shall <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">Dameris</span> call you?
+                    </label>
+                    <input
+                        type="text"
+                        id="userName"
+                        placeholder="Enter your name..."
+                        class="w-full bg-zinc-950/50 border border-white/10 rounded-xl px-6 py-4 text-base text-zinc-200 text-center focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 placeholder-zinc-600 transition-all"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button
+                    onclick="enterStudio()"
+                    class="group w-full relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="enterButton"
+                >
+                    <span class="mr-2">Enter Studio</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
+                </button>
+
+                <p class="text-xs text-zinc-300 text-center">
+                    Your memories are indexed. Your dreams await.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-6 text-center">
+        <p class="text-xs text-zinc-300">
+            FugueState Studio • Where memories become dreams
+        </p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Quote rotation system
+        const quotes = [
+            {
+                text: 'We are such stuff as <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-indigo-300">dreams</span> are made on, and our little life is rounded with a <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-purple-300">sleep</span>.',
+                author: 'William Shakespeare'
+            },
+            {
+                text: 'Reality is that which, when you stop believing in it, doesn\'t go away.',
+                author: 'Philip K. Dick',
+                highlight: 'Reality'
+            },
+            {
+                text: 'The only way of discovering the limits of the possible is to venture a little way past them into the <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300">impossible</span>.',
+                author: 'Arthur C. Clarke'
+            },
+            {
+                text: 'What is a dream, if not <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-300">memory</span> reimagined?',
+                author: 'Dameris'
+            },
+            {
+                text: 'We are not going in circles, we are going upwards. The path is a <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-300">spiral</span>.',
+                author: 'Hermann Hesse'
+            },
+            {
+                text: 'The shaman is not merely a sick man, or a madman; he is a sick man who has <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-purple-300">healed himself</span>.',
+                author: 'Terence McKenna'
+            },
+            {
+                text: 'Time is an <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-300 to-pink-300">illusion</span>. Lunchtime doubly so.',
+                author: 'Douglas Adams'
+            },
+            {
+                text: 'The cosmos is within us. We are made of <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-300 to-amber-300">star-stuff</span>. We are a way for the universe to know itself.',
+                author: 'Carl Sagan'
+            },
+            {
+                text: 'In the province of the mind, what one believes to be true either is true or becomes true.',
+                author: 'John C. Lilly',
+                highlight: 'mind'
+            },
+            {
+                text: 'The future is already here – it\'s just not evenly <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">distributed</span>.',
+                author: 'William Gibson'
+            }
+        ];
+
+        let currentQuoteIndex = 0;
+
+        function renderQuotes() {
+            const container = document.getElementById('quote-container');
+            container.innerHTML = '';
+
+            quotes.forEach((quote, index) => {
+                const quoteDiv = document.createElement('div');
+                quoteDiv.className = `quote-item ${index === 0 ? 'active' : ''}`;
+
+                quoteDiv.innerHTML = `
+                    <p class="text-lg text-zinc-200 mb-2 font-light italic font-serif-custom">
+                        "${quote.text}"
+                    </p>
+                    <p class="text-sm text-zinc-300">— ${quote.author}</p>
+                `;
+
+                container.appendChild(quoteDiv);
+            });
+        }
+
+        function rotateQuote() {
+            const allQuotes = document.querySelectorAll('.quote-item');
+
+            // Fade out current
+            allQuotes[currentQuoteIndex].classList.remove('active');
+
+            // Move to next quote
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+
+            // Fade in next
+            allQuotes[currentQuoteIndex].classList.add('active');
+        }
+
+        // Initialize quotes
+        renderQuotes();
+
+        // Rotate every 3 seconds
+        setInterval(rotateQuote, 3000);
+
+        function enterStudio() {
+            const userName = document.getElementById('userName').value.trim();
+
+            if (userName) {
+                // Store the name in localStorage
+                localStorage.setItem('fuguestate_username', userName);
+
+                // Redirect to initialization (Choose Muse) page
+                window.location.href = '/initialization';
+            } else {
+                // Shake animation if empty
+                const input = document.getElementById('userName');
+                input.classList.add('animate-pulse');
+                input.focus();
+                setTimeout(() => {
+                    input.classList.remove('animate-pulse');
+                }, 500);
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('userName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                enterStudio();
+            }
+        });
+
+        // Auto-focus input on load
+        window.addEventListener('load', function() {
+            document.getElementById('userName').focus();
+        });
+    </script>
+
+</body></html>

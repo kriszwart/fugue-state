@@ -1,0 +1,135 @@
+/**
+ * FugueState Design System
+ * CSS Variables for consistent styling across all pages
+ */
+
+:root {
+  /* Colors - Primary Palette */
+  --color-primary: #6366f1; /* indigo-500 */
+  --color-primary-dark: #4f46e5; /* indigo-600 */
+  --color-primary-light: #818cf8; /* indigo-400 */
+  
+  --color-secondary: #8b5cf6; /* violet-500 */
+  --color-secondary-dark: #7c3aed; /* violet-600 */
+  --color-secondary-light: #a78bfa; /* violet-400 */
+  
+  --color-accent: #fbbf24; /* amber-400 */
+  --color-accent-dark: #f59e0b; /* amber-500 */
+  --color-accent-light: #fcd34d; /* amber-300 */
+  
+  /* Neutral Colors */
+  --color-bg-primary: #09090b; /* zinc-950 */
+  --color-bg-secondary: #18181b; /* zinc-900 */
+  --color-bg-tertiary: #27272a; /* zinc-800 */
+  
+  --color-text-primary: #f4f4f5; /* zinc-100 */
+  --color-text-secondary: #a1a1aa; /* zinc-400 */
+  --color-text-tertiary: #71717a; /* zinc-500 */
+  
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.05);
+  --color-border-dark: rgba(255, 255, 255, 0.2);
+  
+  /* Typography */
+  --font-serif: 'Newsreader', serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-5xl: 3rem; /* 48px */
+  --font-size-6xl: 3.75rem; /* 60px */
+  
+  --line-height-tight: 1.1;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  
+  /* Spacing */
+  --spacing-unit: 0.25rem; /* 4px */
+  --spacing-xs: calc(var(--spacing-unit) * 1); /* 4px */
+  --spacing-sm: calc(var(--spacing-unit) * 2); /* 8px */
+  --spacing-md: calc(var(--spacing-unit) * 4); /* 16px */
+  --spacing-lg: calc(var(--spacing-unit) * 6); /* 24px */
+  --spacing-xl: calc(var(--spacing-unit) * 8); /* 32px */
+  --spacing-2xl: calc(var(--spacing-unit) * 12); /* 48px */
+  --spacing-3xl: calc(var(--spacing-unit) * 16); /* 64px */
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.3);
+  --shadow-glow-secondary: 0 0 20px rgba(139, 92, 246, 0.3);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 300ms ease-out;
+  --transition-slow: 500ms ease-out;
+  
+  /* Layout */
+  --container-max-width: 1280px;
+  --container-padding: 1.5rem; /* 24px */
+  
+  /* Z-index layers */
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* Dark mode support (already dark by default, but can extend) */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Keep dark theme as default */
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-base: 0ms;
+    --transition-slow: 0ms;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

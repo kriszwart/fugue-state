@@ -1,0 +1,313 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Getting Started</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/toast-notifications.js"></script>
+<script src="/js/ux-enhancements.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-serif-custom { font-family: 'Newsreader', serif; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+.float-animation {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+    50% { opacity: 0.8; box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+}
+.pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+</style>
+</head>
+<body class="bg-[#050505] text-zinc-300 min-h-screen flex flex-col overflow-hidden selection:bg-violet-500/20 selection:text-violet-200">
+
+    <!-- Background -->
+    <div class="fixed inset-0 w-full h-full -z-10 pointer-events-none">
+        <div class="absolute inset-0 bg-[#020204]"></div>
+        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] bg-amber-900/10 blur-[100px] rounded-full mix-blend-screen"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/40 backdrop-blur-xl shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="text-xs tracking-widest uppercase">Back</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Setup Banner (if skipped initialization) -->
+    <div id="setup-banner" class="hidden relative z-40 mx-6 mt-4 p-4 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 backdrop-blur-sm">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-indigo-300"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-zinc-200">Complete Your Setup</h3>
+                    <p class="text-xs text-zinc-400">Connect your data sources to unlock pattern detection and personalized insights.</p>
+                </div>
+            </div>
+            <a href="../initialization/index.html?return=workspace" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors whitespace-nowrap">
+                Complete Setup
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-6 relative z-10">
+        <div class="max-w-4xl w-full text-center space-y-8">
+            
+            <!-- Icon/Illustration -->
+            <div class="flex justify-center mb-8">
+                <div class="relative w-32 h-32 float-animation">
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500/20 via-purple-500/20 to-indigo-500/20 pulse-glow"></div>
+                    <div class="absolute inset-4 rounded-full bg-zinc-900/50 border border-violet-500/30 flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-12 h-12 text-violet-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <div class="space-y-4">
+                <h1 class="text-4xl md:text-5xl font-serif-custom italic text-zinc-200 font-light tracking-tight">
+                    Your memory stream is <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-purple-300">empty</span>
+                </h1>
+                <p class="text-lg text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed">
+                    But that doesn't mean you can't explore. Fugue State is a creative playground even without your data.
+                </p>
+                <!-- Complete Setup CTA -->
+                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="../initialization/index.html?return=workspace" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-medium hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all btn btn-primary">
+                        <i data-lucide="link" class="w-4 h-4"></i>
+                        <span>Complete Setup</span>
+                    </a>
+                    <a href="chat.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 text-sm font-medium transition-all btn btn-secondary">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>Explore First</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- What You Can Do -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                
+                <!-- Creative Generation -->
+                <div class="p-6 rounded-xl border border-violet-500/20 bg-zinc-900/30 hover:border-violet-500/40 hover:bg-zinc-900/50 transition-all group">
+                    <div class="w-12 h-12 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mb-4 group-hover:bg-violet-500/30 transition-colors mx-auto">
+                        <i data-lucide="palette" class="w-6 h-6 text-violet-300"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-zinc-200 mb-2">Creative Generation</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Generate images from any prompt. Create art, explore ideas, visualize concepts—no memories needed.
+                    </p>
+                    <button onclick="startCreativeGeneration()" class="mt-4 px-4 py-2 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 text-sm text-violet-300 transition-all">
+                        Try It
+                    </button>
+                </div>
+
+                <!-- Chat with Dameris -->
+                <div class="p-6 rounded-xl border border-amber-500/20 bg-zinc-900/30 hover:border-amber-500/40 hover:bg-zinc-900/50 transition-all group">
+                    <div class="w-12 h-12 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center mb-4 group-hover:bg-amber-500/30 transition-colors mx-auto">
+                        <i data-lucide="message-circle" class="w-6 h-6 text-amber-300"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-zinc-200 mb-2">Chat with Dameris</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Have conversations, ask questions, explore ideas. Dameris is ready to talk even without your memories.
+                    </p>
+                    <a href="chat.html" class="mt-4 inline-block px-4 py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-sm text-amber-300 transition-all">
+                        Start Chatting
+                    </a>
+                </div>
+
+                <!-- Connect Sources -->
+                <div class="p-6 rounded-xl border border-indigo-500/20 bg-zinc-900/30 hover:border-indigo-500/40 hover:bg-zinc-900/50 transition-all group">
+                    <div class="w-12 h-12 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mb-4 group-hover:bg-indigo-500/30 transition-colors mx-auto">
+                        <i data-lucide="link" class="w-6 h-6 text-indigo-300"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-zinc-200 mb-2">Connect Your Data</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Link Gmail, Notion, Drive, or upload files. Transform your digital life into explorable memories.
+                    </p>
+                    <a href="privacy.html" class="mt-4 inline-block px-4 py-2 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-sm text-indigo-300 transition-all">
+                        Connect Sources
+                    </a>
+                </div>
+            </div>
+
+            <!-- Demo Mode -->
+            <div class="mt-12 p-6 rounded-xl border border-white/5 bg-zinc-900/20">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <i data-lucide="play-circle" class="w-5 h-5 text-zinc-400"></i>
+                    <h3 class="text-lg font-medium text-zinc-200">Explore Demo Mode</h3>
+                </div>
+                <p class="text-sm text-zinc-400 mb-4 max-w-xl mx-auto">
+                    See what Fugue State can do with sample data. Experience pattern detection, memory analysis, and creative generation.
+                </p>
+                <button onclick="loadDemoData()" class="px-6 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-zinc-300 transition-all">
+                    Load Demo Memories
+                </button>
+            </div>
+
+            <!-- Inspiration Prompts -->
+            <div class="mt-12 text-left">
+                <h3 class="text-sm uppercase tracking-widest text-zinc-400 mb-4 text-center">Try These Prompts</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button onclick="generateFromPrompt('A dreamscape of floating islands connected by bridges of light')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "A dreamscape of floating islands connected by bridges of light"
+                    </button>
+                    <button onclick="generateFromPrompt('Neon city at night, cyberpunk aesthetic, rain-soaked streets')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "Neon city at night, cyberpunk aesthetic, rain-soaked streets"
+                    </button>
+                    <button onclick="generateFromPrompt('Abstract representation of memory and time, ethereal and flowing')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "Abstract representation of memory and time, ethereal and flowing"
+                    </button>
+                    <button onclick="generateFromPrompt('A library of infinite books, each containing a different universe')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "A library of infinite books, each containing a different universe"
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Check if user skipped initialization and show banner
+        window.addEventListener('DOMContentLoaded', () => {
+            const skippedInit = localStorage.getItem('fuguestate_skipped_init') === 'true';
+            const setupBanner = document.getElementById('setup-banner');
+            
+            if (skippedInit && setupBanner) {
+                setupBanner.classList.remove('hidden');
+            }
+        });
+
+        function startCreativeGeneration() {
+            // Redirect to visualise mode or open generation interface
+            window.location.href = '../modes/index.html#creative';
+        }
+
+        async function generateFromPrompt(prompt) {
+            try {
+                const response = await fetch('/api/generate/image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        width: 1024,
+                        height: 1024
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate image');
+                }
+
+                const data = await response.json();
+                
+                // Handle onboarding events
+                if (data.onboardingEvent) {
+                    document.dispatchEvent(new CustomEvent(data.onboardingEvent, { 
+                        detail: data 
+                    }));
+                }
+                
+                // Open in new tab or show in modal
+                if (data.image) {
+                    window.open(data.image, '_blank');
+                } else if (data.artefact?.file_url) {
+                    window.open(data.artefact.file_url, '_blank');
+                }
+            } catch (error) {
+                console.error('Error generating image:', error);
+                if (window.toastNotifications) {
+                    window.toastNotifications.error('Failed to generate image. Please try again.');
+                } else {
+                    alert('Failed to generate image. Please try again.');
+                }
+            }
+        }
+
+        async function loadDemoData() {
+            // Create sample memories for demonstration
+            const demoMemories = [
+                {
+                    content: "Watched the sunset from the coastal cliffs. The way the light fractured across the water reminded me of something I can't quite place.",
+                    themes: ["nature", "reflection", "coastal"],
+                    emotional_tags: ["calm", "nostalgic"],
+                    temporal_marker: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    content: "Found an old notebook in the attic. Pages filled with sketches and half-formed thoughts from years ago.",
+                    themes: ["memory", "past", "creativity"],
+                    emotional_tags: ["curious", "reflective"],
+                    temporal_marker: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    content: "The city at 3am has a different energy. Empty streets, neon reflections, the feeling of being the only person awake.",
+                    themes: ["urban", "night", "solitude"],
+                    emotional_tags: ["contemplative", "peaceful"],
+                    temporal_marker: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+
+            try {
+                for (const memory of demoMemories) {
+                    const response = await fetch('/api/memories', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            content: memory.content,
+                            themes: memory.themes,
+                            emotional_tags: memory.emotional_tags,
+                            temporal_marker: memory.temporal_marker,
+                            content_type: 'text'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    // Handle onboarding events
+                    if (data.onboardingEvent) {
+                        document.dispatchEvent(new CustomEvent(data.onboardingEvent, { 
+                            detail: data 
+                        }));
+                    }
+                }
+                
+                if (window.toastNotifications) {
+                    window.toastNotifications.success('Demo memories loaded! Redirecting...');
+                } else {
+                    alert('Demo memories loaded! Refresh the page to see them.');
+                }
+                setTimeout(() => {
+                    window.location.href = 'workspace.html';
+                }, 1000);
+            } catch (error) {
+                console.error('Error loading demo data:', error);
+                if (window.toastNotifications) {
+                    window.toastNotifications.error('Failed to load demo data. Please try again.');
+                } else {
+                    alert('Failed to load demo data. Please try again.');
+                }
+            }
+        }
+    </script>
+</body></html>
+

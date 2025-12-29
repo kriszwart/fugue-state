@@ -1,0 +1,1091 @@
+<html lang="en"><head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FugueState.ai</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet">
+
+<style>
+
+body { font-family: 'Inter', sans-serif; }
+
+.font-serif-custom { font-family: 'Newsreader', serif; }
+
+html { scroll-behavior: smooth; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+
+/* Floating animation for subtle movement */
+
+@keyframes float-subtle {
+
+    0%, 100% { transform: translateY(0); }
+
+    50% { transform: translateY(-8px); }
+
+}
+
+.animate-float { animation: float-subtle 6s ease-in-out infinite; }
+
+
+
+/* Beam Animation */
+
+@keyframes dash-flow {
+
+    0% { stroke-dashoffset: 0; }
+
+    100% { stroke-dashoffset: -1000; }
+
+}
+
+.animate-beam {
+
+    stroke-dasharray: 40 400;
+
+    animation: dash-flow 10s linear infinite;
+
+}
+
+
+
+/* Button Gradient Border & Glows */
+
+[style*="--border-gradient"]::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    padding: 1px;
+
+    border-radius: var(--border-radius-before, inherit);
+
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite: xor;
+
+    mask-composite: exclude;
+
+    background: var(--border-gradient);
+
+    pointer-events: none;
+
+}
+
+/* Gradient Shimmer Animation - Full Color Spectrum */
+@keyframes shimmer-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.gradient-shimmer {
+    background: linear-gradient(90deg,
+        #a78bfa 0%,      /* violet */
+        #c084fc 8%,      /* purple */
+        #e879f9 16%,     /* fuchsia */
+        #f472b6 24%,     /* pink */
+        #fb7185 32%,     /* rose */
+        #fca5a5 40%,     /* red-light */
+        #fdba74 48%,     /* orange */
+        #fcd34d 56%,     /* amber */
+        #fde047 64%,     /* yellow */
+        #bef264 72%,     /* lime */
+        #86efac 80%,     /* green */
+        #6ee7b7 88%,     /* emerald */
+        #5eead4 96%,     /* teal */
+        #67e8f9 104%,    /* cyan */
+        #7dd3fc 112%,    /* sky */
+        #93c5fd 120%,    /* blue */
+        #a78bfa 128%     /* violet - back to start */
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer-gradient 8s linear infinite;
+}
+
+/* Background Color Shift Animation */
+@keyframes hue-rotate {
+    0% {
+        filter: hue-rotate(0deg) saturate(1.2);
+    }
+    100% {
+        filter: hue-rotate(360deg) saturate(1.2);
+    }
+}
+
+.color-shift-bg {
+    animation: hue-rotate 20s linear infinite;
+}
+
+/* White Shimmer Animation */
+@keyframes shimmer-white {
+    0% {
+        background-position: -200% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+.shimmer-white {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.8) 25%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(255, 255, 255, 0.8) 75%,
+        rgba(255, 255, 255, 0.3) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer-white 3s ease-in-out infinite;
+}
+
+/* Custom Cursor Effects - Neural Pathways & Synaptic Firing */
+* {
+    cursor: none !important;
+}
+
+.custom-cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(139, 92, 246, 0.9);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: border-color 0.2s ease;
+    mix-blend-mode: screen;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+}
+
+.custom-cursor::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 50%;
+    animation: neural-pulse-outer 2s ease-in-out infinite;
+}
+
+.custom-cursor::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 1px solid rgba(139, 92, 246, 0.6);
+    border-radius: 50%;
+    animation: neural-pulse-inner 1.5s ease-in-out infinite;
+}
+
+@keyframes neural-pulse-outer {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.8);
+    }
+}
+
+@keyframes neural-pulse-inner {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.4);
+    }
+}
+
+.custom-cursor.hover {
+    border-color: rgba(168, 85, 247, 1);
+}
+
+.custom-cursor.hover::before,
+.custom-cursor.hover::after {
+    border-color: rgba(168, 85, 247, 0.8);
+    animation-duration: 0.8s;
+}
+
+/* Dameris Portrait Animation */
+.dameris-portrait-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 60px;
+}
+
+.dameris-portrait {
+    position: relative;
+    width: 520px;
+    height: 650px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    animation: spectral-float 6s ease-in-out infinite, ghostly-fade 8s ease-in-out infinite;
+    transform: translateY(-80px);
+    opacity: 0.6;
+}
+
+@keyframes spectral-float {
+    0%, 100% {
+        transform: translateY(-80px);
+    }
+    50% {
+        transform: translateY(-90px);
+    }
+}
+
+@keyframes ghostly-fade {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    25% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    75% {
+        opacity: 0.8;
+    }
+}
+
+/* Voice Reactive Aura - Matching Unicorn Studio Colors */
+.dameris-aura {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    background: rgba(251, 146, 60, 0.4); /* orange-400 to match background */
+    border-radius: 50%;
+    filter: blur(50px);
+    transition: all 0.075s ease-out;
+    mix-blend-mode: screen;
+    animation: ether-pulse 6s infinite ease-in-out, ghostly-aura 10s ease-in-out infinite;
+}
+
+.dameris-aura-secondary {
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    background: rgba(239, 68, 68, 0.3); /* red-500 to match background */
+    border-radius: 50%;
+    filter: blur(40px);
+    transition: all 0.1s ease-out;
+    mix-blend-mode: screen;
+    animation: ghostly-aura 12s ease-in-out infinite;
+}
+
+@keyframes ether-pulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+        filter: blur(40px);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+        filter: blur(50px);
+    }
+}
+
+@keyframes ghostly-aura {
+    0%, 100% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Spectral Mask */
+.dameris-spectral-mask {
+    position: relative;
+    width: 480px;
+    height: 600px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+    animation: ghostly-mask 9s ease-in-out infinite;
+}
+
+@keyframes ghostly-mask {
+    0%, 100% {
+        opacity: 0.4;
+    }
+    25% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    75% {
+        opacity: 0.9;
+    }
+}
+
+/* Holographic Filter - Matching Unicorn Studio Warm Colors */
+.dameris-hologram-filter {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%) sepia(100%) hue-rotate(15deg) brightness(1.2) contrast(1.3) saturate(1.4);
+    mix-blend-mode: screen;
+    transition: opacity 1.5s ease-in-out, filter 0.5s ease-in-out;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.dameris-hologram-filter.active {
+    opacity: 0.8;
+    animation: ghostly-image 7s ease-in-out infinite;
+}
+
+@keyframes ghostly-image {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    20% {
+        opacity: 0.9;
+    }
+    40% {
+        opacity: 0.6;
+    }
+    60% {
+        opacity: 0.85;
+    }
+    80% {
+        opacity: 0.7;
+    }
+}
+
+.dameris-hologram-filter.face-glitch {
+    opacity: 0.2;
+    filter: grayscale(100%) sepia(100%) hue-rotate(25deg) brightness(2.0) contrast(2.0) blur(4px) saturate(1.6);
+}
+
+/* Scanline Overlay - Warm Tones */
+.dameris-scanline {
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%),
+                linear-gradient(90deg, rgba(251,146,60,0.08), rgba(239,68,68,0.05), rgba(251,146,60,0.08));
+    background-size: 100% 4px, 6px 100%;
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* Neural Pathway Effect for Dameris */
+.dameris-neural-pathway {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.dameris-synaptic-node {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+    animation: synapse-fire 1.5s ease-in-out infinite;
+}
+
+@keyframes synapse-fire {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5);
+        box-shadow: 0 0 15px rgba(139, 92, 246, 1);
+    }
+}
+
+.dameris-memory-pulse {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 1);
+    animation: pulse-travel 2s linear infinite;
+}
+
+@keyframes pulse-travel {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+.dameris-circuit-path {
+    stroke: rgba(139, 92, 246, 0.4);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 3 3;
+    animation: circuit-flow 3s linear infinite;
+    filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.5));
+}
+
+@keyframes circuit-flow {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -20;
+    }
+}
+
+</style>
+
+</head>
+
+<body class="bg-[#09090b] lg:bg-[#020408] min-h-screen flex flex-col lg:items-center lg:justify-center p-0 lg:p-8 antialiased selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden">
+
+
+
+    <!-- Background (component) from Original -->
+
+    <div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full color-shift-bg">
+
+            <div data-us-project="NMlvqnkICwYYJ6lYb064" class="absolute w-full h-full left-0 top-0 -z-10"></div>
+
+            <script type="text/javascript">
+
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+
+            </script>
+
+        </div>
+
+    </div>
+
+    <!-- Custom Cursor Element -->
+    <div class="custom-cursor"></div>
+
+
+
+    <!-- Main Container -->
+
+    <main class="min-h-screen lg:h-[90vh] flex flex-col lg:max-w-[1400px] lg:rounded-[2.5rem] lg:border lg:border-white/10 lg:shadow-2xl lg:shadow-black bg-black/20 w-full relative backdrop-blur-xl overflow-hidden">
+
+
+
+        <!-- Grid Lines Background -->
+
+        <div class="absolute inset-0 w-full h-full pointer-events-none z-0 flex justify-between px-6 md:px-12 opacity-50 md:opacity-100">
+
+            <div class="w-px h-full bg-white/5"></div>
+
+            <div class="w-px h-full bg-white/5 hidden sm:block"></div>
+
+            <div class="w-px h-full bg-white/5 hidden md:block"></div>
+
+            <div class="w-px h-full bg-white/5 hidden lg:block"></div>
+
+            <div class="w-px h-full bg-white/5 hidden xl:block"></div>
+
+            <div class="w-px h-full bg-white/5"></div>
+
+        </div>
+
+
+
+        <!-- Navigation (Minimal) -->
+
+        <nav class="relative z-50 flex items-center justify-between px-6 py-6 md:px-12 md:py-8">
+
+            <!-- Logo -->
+
+            <div class="flex items-center gap-3">
+
+                <div class="flex text-white bg-gradient-to-br from-indigo-500 to-violet-600 w-8 h-8 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.4)] items-center justify-center">
+
+                    <i data-lucide="brain-circuit" class="w-5 h-5 text-white" stroke-width="1.5"></i>
+
+                </div>
+
+                <span class="text-lg font-medium tracking-tight text-white font-serif-custom italic">FugueState.ai</span>
+
+            </div>
+
+
+
+            <!-- Navigation Links -->
+
+            <div class="hidden md:flex items-center gap-8">
+
+                <a href="about.html" class="text-sm font-light text-zinc-400 hover:text-white transition-colors duration-300 tracking-wide">About</a>
+
+                <a href="guide.html" class="text-sm font-light text-zinc-400 hover:text-white transition-colors duration-300 tracking-wide">How It Works</a>
+
+                <a href="architecture.html" class="text-sm font-light text-zinc-400 hover:text-amber-300 transition-colors duration-300 tracking-wide">Architecture</a>
+
+                <a href="dameris.html" class="text-sm font-light text-zinc-400 hover:text-violet-300 transition-colors duration-300 tracking-wide flex items-center gap-1.5">
+                    <span>Dameris</span>
+                    <span class="w-1 h-1 rounded-full bg-violet-400 animate-pulse"></span>
+                </a>
+
+            </div>
+
+
+
+            <!-- Minimal Right Side -->
+
+            <div class="hidden sm:flex items-center gap-6">
+
+                <span class="text-xs font-normal text-zinc-400 uppercase tracking-widest">Experimental Build v0.9</span>
+
+            </div>
+
+        </nav>
+
+
+
+        <!-- Hero Content Area -->
+
+        <div class="flex-1 z-20 flex flex-col md:flex-row h-full relative items-center">
+
+
+
+            <!-- Mobile Gradient Overlay -->
+
+            <div class="absolute inset-0 bg-gradient-to-b from-[#09090b]/90 via-[#09090b]/60 to-transparent md:hidden z-10 pointer-events-none"></div>
+
+
+
+            <!-- Left: Text Content -->
+
+            <div class="w-full md:w-[55%] lg:w-[50%] px-6 md:px-12 z-30 flex flex-col justify-center h-full pb-20 md:pb-0">
+
+                <div class="max-w-2xl mx-auto md:mx-0">
+
+                    
+
+                    <!-- Headline -->
+
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-7xl font-light text-white tracking-tight font-serif-custom mb-6 drop-shadow-2xl leading-[1.1]">
+
+                        <span class="block">The machine</span><span class="block">that <span id="rotating-verb" class="italic gradient-shimmer">dreams</span></span><span class="block italic gradient-shimmer">your memories.</span>
+
+                    </h1>
+
+
+
+                    <!-- Subheadline -->
+
+                    <p class="text-lg md:text-xl text-zinc-400 mb-10 max-w-md font-light leading-relaxed">
+
+                        What do you wish you could remember?
+
+                    </p>
+
+
+
+                    <!-- CTA Actions -->
+
+                    <div class="flex flex-col items-start gap-6 w-full sm:w-auto">
+
+                        <!-- Primary Button -->
+
+                        <a href="initialization/index.html" class="group inline-flex overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] rounded-full pt-[1px] pr-[1px] pb-[1px] pl-[1px] relative items-center justify-center w-full sm:w-auto">
+
+                            <span class="absolute inset-[-100%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#818cf8_100%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+
+                            <span class="absolute inset-0 rounded-full bg-zinc-900 transition-opacity duration-500 group-hover:opacity-0"></span>
+
+                            <span class="flex items-center justify-center gap-3 transition-colors duration-500 text-white text-base font-normal bg-gradient-to-b from-zinc-800 to-black w-full h-full rounded-full pt-4 pr-8 pb-4 pl-8 relative shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] group-hover:bg-gradient-to-b group-hover:from-indigo-950 group-hover:to-black">
+
+                                <span class="relative z-10 tracking-tight">Enter the Fugue</span>
+
+                                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-300 relative z-10" stroke-width="1.5"></i>
+
+                            </span>
+
+                        </a>
+
+
+
+                        <!-- Secondary Link -->
+
+                        <a href="#" class="group flex items-center gap-2 text-sm text-zinc-400 hover:text-indigo-300 transition-colors duration-300 pl-4">
+
+                            <span class="border-b border-transparent group-hover:border-indigo-300 pb-0.5">View Demo</span>
+
+                            <i data-lucide="arrow-right" class="w-3 h-3 transition-transform group-hover:translate-x-1" stroke-width="1.5"></i>
+
+                        </a>
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Right: Dameris Portrait - Ethereal -->
+            <div class="absolute inset-0 md:static md:w-[45%] lg:w-[50%] w-full h-full overflow-hidden z-0 md:z-10 flex items-center justify-center pointer-events-none">
+                <div class="dameris-portrait-container">
+                    <div class="dameris-portrait">
+                        <!-- Voice Reactive Aura -->
+                        <div id="dameris-aura" class="dameris-aura"></div>
+                        <div id="dameris-aura-secondary" class="dameris-aura-secondary"></div>
+                        
+                        <!-- Holographic Image Container -->
+                        <div class="dameris-spectral-mask">
+                            <img id="dameris-spectral-face" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop" alt="Dameris Spectral Form" class="dameris-hologram-filter active" onerror="this.src='https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1000'">
+                        </div>
+                        
+                        <!-- Scanline Overlay -->
+                        <div class="dameris-scanline"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Original Abstract Visualization (Hidden) -->
+            <div class="absolute inset-0 md:static md:w-[45%] lg:w-[50%] w-full h-full overflow-hidden z-0 md:z-10 opacity-0 pointer-events-none mix-blend-screen hidden">
+
+                <svg class="w-full h-full" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+
+                    <defs>
+
+                        <linearGradient id="dreamGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.2"></stop>
+
+                            <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.1"></stop>
+
+                            <stop offset="100%" style="stop-color:#000000;stop-opacity:0.0"></stop>
+
+                        </linearGradient>
+
+                    </defs>
+
+
+
+                    <!-- Main Flow Paths -->
+
+                    <path id="pathMain" d="M 400 1000 C 600 900, 900 600, 1300 200" fill="none"></path>
+
+
+
+                    <!-- Abstract Noodles (Flows) -->
+
+                    <g class="hidden lg:block">
+
+                        <!-- Stream 1 -->
+
+                        <rect x="580" y="600" width="120" height="400" rx="60" transform="rotate(-15 640 800)" fill="none" stroke="#27272a" stroke-width="0.5" opacity="0.3"></rect>
+
+                        <rect x="580" y="600" width="120" height="400" rx="60" transform="rotate(-15 640 800)" fill="none" stroke="#818cf8" stroke-width="1" stroke-linecap="round" class="animate-beam" opacity="0.3"></rect>
+
+
+
+                        <!-- Stream 2 -->
+
+                        <rect x="880" y="300" width="140" height="450" rx="70" transform="rotate(-25 950 525)" fill="none" stroke="#27272a" stroke-width="0.5" opacity="0.3"></rect>
+
+                        <rect x="880" y="300" width="140" height="450" rx="70" transform="rotate(-25 950 525)" fill="none" stroke="#a855f7" stroke-width="1" stroke-linecap="round" class="animate-beam" opacity="0.2" style="animation-delay: -3s;"></rect>
+
+
+
+                        <!-- Stream 3 -->
+
+                        <rect x="1050" y="50" width="100" height="300" rx="50" transform="rotate(-35 1100 200)" fill="none" stroke="#27272a" stroke-width="0.5" opacity="0.3"></rect>
+
+                        <rect x="1050" y="50" width="100" height="300" rx="50" transform="rotate(-35 1100 200)" fill="none" stroke="#6366f1" stroke-width="1" stroke-linecap="round" class="animate-beam" opacity="0.3" style="animation-delay: -6s;"></rect>
+
+                    </g>
+
+
+
+                    <!-- Background Roads -->
+
+                    <path d="M 600 1000 C 700 900, 800 700, 1300 550" fill="none" stroke="#18181b" stroke-width="30" opacity="0.3" stroke-linecap="round"></path>
+
+                    <path d="M 900 1000 C 950 900, 900 700, 1300 450" fill="none" stroke="#18181b" stroke-width="20" opacity="0.3" stroke-linecap="round"></path>
+
+
+
+                    <!-- Main Highway -->
+
+                    <path d="M 400 1000 C 600 900, 900 600, 1300 200" fill="none" stroke="url(#dreamGradient)" stroke-width="50" opacity="0.6" stroke-linecap="butt"></path>
+
+                    <path d="M 400 1000 C 600 900, 900 600, 1300 200" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="20 40" opacity="0.4"></path>
+
+
+
+                    <!-- Moving Memory Packet -->
+
+                    <rect x="-30" y="-15" width="40" height="4" rx="2" fill="#a855f7" opacity="0.8" filter="drop-shadow(0 0 15px rgba(168,85,247,0.8))">
+
+                        <animateMotion dur="8s" repeatCount="indefinite" rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="linear">
+
+                            <mpath href="#pathMain"></mpath>
+
+                        </animateMotion>
+
+                    </rect>
+
+                     <circle cx="0" cy="0" r="3" fill="#fff" opacity="0.9" filter="drop-shadow(0 0 10px white)">
+
+                        <animateMotion dur="8s" repeatCount="indefinite" rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="linear" begin="0.5s">
+
+                            <mpath href="#pathMain"></mpath>
+
+                        </animateMotion>
+
+                    </circle>
+
+                </svg>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Footer -->
+
+        <footer class="w-full border-t border-white/5 py-8 md:px-12 px-6 z-20 bg-black/40 backdrop-blur-md mt-auto">
+
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+
+                <div class="text-xs text-zinc-300 font-mono tracking-wide uppercase">
+
+                    Zwartifydesign © 2025
+
+                </div>
+
+
+
+                <div class="flex items-center gap-6">
+
+                    <a href="architecture.html" class="text-xs text-zinc-300 hover:text-white transition-colors">Architecture</a>
+
+                </div>
+
+
+
+                <p class="text-sm font-light font-serif-custom italic tracking-wide text-center md:text-right shimmer-white">
+
+                    An experiment in memory, creativity, and machine dreaming.
+
+                </p>
+
+            </div>
+
+        </footer>
+
+
+
+    </main>
+
+
+
+    <script>
+
+        lucide.createIcons();
+
+
+
+        // Rotating verb animation
+
+        const verbs = [
+
+            'dreams',
+
+            'remembers',
+
+            'rewrites',
+
+            'recomposes',
+
+            'reimagines',
+
+            'restores',
+
+            'reflects',
+
+            'rearranges',
+
+            'narrates',
+
+            'maps',
+
+            'revives'
+
+        ];
+
+
+
+        let currentIndex = 0;
+
+        const verbElement = document.getElementById('rotating-verb');
+
+
+
+        function rotateVerb() {
+
+            if (!verbElement) return;
+
+
+
+            // Fade out
+
+            verbElement.style.opacity = '0';
+
+            verbElement.style.transform = 'translateY(-10px)';
+
+
+
+            setTimeout(() => {
+
+                // Change text
+
+                currentIndex = (currentIndex + 1) % verbs.length;
+
+                verbElement.textContent = verbs[currentIndex];
+
+
+
+                // Fade in
+
+                verbElement.style.opacity = '1';
+
+                verbElement.style.transform = 'translateY(0)';
+
+            }, 300);
+
+        }
+
+
+
+        // Add transition styles
+
+        if (verbElement) {
+
+            verbElement.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+
+        }
+
+
+
+        // Rotate every 2.5 seconds
+
+        setInterval(rotateVerb, 2500);
+
+        // Custom Cursor Effect - Simple Tesla Coil Pulse
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+
+        // Smooth cursor following with magnetic attraction
+        function animateCursor() {
+            const dx = mouseX - cursorX;
+            const dy = mouseY - cursorY;
+            // Magnetic attraction effect - smooth following
+            cursorX += dx * 0.15;
+            cursorY += dy * 0.15;
+            
+            if (cursor) {
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+            }
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Dameris Portrait Animation - Ethereal Face Cycling
+        const faceImage = document.getElementById('dameris-spectral-face');
+        const aura = document.getElementById('dameris-aura');
+        const auraSec = document.getElementById('dameris-aura-secondary');
+
+        // Expanded array of faces for morphing (matching Dameris page)
+        const faces = [
+            "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1618151313441-bc79b11e5090?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1515202913167-d9a2986914b8?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1552699609-8cf048551712?q=80&w=1000&auto=format&fit=crop"
+        ];
+
+        let currentFaceIndex = 0;
+
+        function changeDamerisFace() {
+            if (!faceImage) return;
+
+            // Pick a random next face (that isn't the current one)
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * faces.length);
+            } while (nextIndex === currentFaceIndex);
+
+            currentFaceIndex = nextIndex;
+
+            // Apply glitch effect
+            faceImage.classList.add('face-glitch');
+            faceImage.classList.remove('active');
+
+            // Swap image after short delay
+            setTimeout(() => {
+                faceImage.src = faces[currentFaceIndex];
+                faceImage.onerror = function() {
+                    // Fallback to Pexels if Unsplash fails
+                    const pexelsFaces = [
+                        "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1000",
+                        "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1000",
+                        "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=1000",
+                        "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1000"
+                    ];
+                    this.src = pexelsFaces[Math.floor(Math.random() * pexelsFaces.length)];
+                };
+            }, 200);
+
+            // Remove glitch and fade in
+            setTimeout(() => {
+                faceImage.classList.remove('face-glitch');
+                faceImage.classList.add('active');
+            }, 600);
+        }
+
+        // Change face every 4-8 seconds randomly
+        function scheduleNextFaceChange() {
+            const delay = Math.random() * 4000 + 4000; // 4000ms to 8000ms
+            setTimeout(() => {
+                changeDamerisFace();
+                scheduleNextFaceChange();
+            }, delay);
+        }
+
+        // Start the cycle
+        if (faceImage) {
+            scheduleNextFaceChange();
+        }
+
+        // Audio simulation for aura
+        function simulateDamerisVoice() {
+            if (!aura || !auraSec) return;
+            
+            const noise = Math.random();
+            const noise2 = Math.random();
+
+            const scale1 = 1 + (noise * 0.4);
+            const scale2 = 0.8 + (noise2 * 0.5);
+            const op1 = 0.3 + (noise * 0.2);
+
+            aura.style.transform = `scale(${scale1})`;
+            aura.style.opacity = op1;
+            auraSec.style.transform = `scale(${scale2}) translate(${noise * 10}px, ${noise2 * 10}px)`;
+        }
+        
+        if (aura && auraSec) {
+            setInterval(simulateDamerisVoice, 80);
+        }
+
+        // Track mouse movement
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Activate neural pathway
+            if (neuralPathway) {
+                neuralPathway.classList.add('active');
+            }
+        });
+
+        // Hover effects on interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, [role="button"]');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                if (cursor) cursor.classList.add('hover');
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                if (cursor) cursor.classList.remove('hover');
+            });
+        });
+
+        // Hide default cursor on mobile
+        if (window.matchMedia('(pointer: coarse)').matches) {
+            document.querySelectorAll('*').forEach(el => {
+                el.style.cursor = 'default';
+            });
+        }
+    </script>
+
+    <!-- FugueState Sound Engine -->
+    <script src="/js/fugue-sound-engine.js"></script>
+    <script src="/js/sound-control-widget.js"></script>
+    <script>
+        console.log('🎵 FugueState Sound Engine loaded');
+        // Auto-initializes on first user interaction
+    </script>
+
+</body></html>

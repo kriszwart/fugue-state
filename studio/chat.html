@@ -1,0 +1,1844 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Dameris Assistant</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-serif-custom { font-family: 'Newsreader', serif; }
+.font-mono-custom { font-family: 'JetBrains Mono', monospace; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom Checkbox/Radio (kept for context) */
+.custom-radio { appearance: none; background-color: transparent; border: 1px solid #3f3f46; width: 14px; height: 14px; border-radius: 50%; display: inline-grid; place-content: center; margin-right: 8px; cursor: pointer; transition: all 0.2s; }
+.custom-radio::before { content: ""; width: 6px; height: 6px; transform: scale(0); border-radius: 50%; background-color: #f59e0b; transition: 120ms transform ease-in-out; }
+.custom-radio:checked { border-color: #f59e0b; }
+.custom-radio:checked::before { transform: scale(1); }
+.violet-radio:checked { border-color: #a78bfa; }
+.violet-radio::before { background-color: #a78bfa; }
+
+/* Orb Animation */
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+    50% { opacity: 0.9; transform: scale(1.05); box-shadow: 0 0 30px rgba(245, 158, 11, 0.4); }
+}
+.orb-pulse { animation: pulse-glow 3s infinite ease-in-out; }
+
+/* Audio Waveform Animation */
+@keyframes wave {
+    0%, 100% { height: 4px; opacity: 0.5; }
+    50% { height: 16px; opacity: 1; }
+}
+.wave-bar {
+    width: 2px;
+    background-color: #fcd34d;
+    border-radius: 99px;
+    animation: wave 1.2s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { animation-delay: 0.0s; }
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.1s; }
+.wave-bar:nth-child(6) { animation-delay: 0.0s; }
+
+/* Float Animation for Chat Window */
+@keyframes float-up {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-enter { animation: float-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Message Slide In Animations */
+@keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.message-ai { animation: slide-in-left 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.message-user { animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Typing Indicator */
+@keyframes typing-dot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-8px); opacity: 1; }
+}
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #a78bfa;
+    display: inline-block;
+    animation: typing-dot 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Progress Bar Animation */
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 45%; }
+}
+.progress-bar {
+    animation: progress 14s linear forwards;
+}
+
+/* Waveform Playing Animation */
+@keyframes waveform-play {
+    0%, 100% {
+        transform: scaleY(0.5);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scaleY(1.5);
+        opacity: 1;
+    }
+}
+
+.waveform-bar {
+    transition: all 0.3s ease;
+}
+
+.waveform-active {
+    animation: waveform-play 0.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+}
+
+/* Audio Player Glow Effect */
+@keyframes player-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.1), 0 0 40px rgba(139, 92, 246, 0.05);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(251, 191, 36, 0.2), 0 0 60px rgba(139, 92, 246, 0.1);
+    }
+}
+
+.audio-playing {
+    animation: player-glow 2s ease-in-out infinite;
+}
+
+/* Pulse Animation for Status */
+@keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    50% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+</style>
+</head>
+<body class="bg-[#050505] text-zinc-300 h-screen w-full flex overflow-hidden selection:bg-amber-500/20 selection:text-amber-200">
+
+    <!-- Background Layers with UnicornStudio -->
+    <div class="fixed inset-0 w-full h-full -z-10 pointer-events-none">
+        <div class="absolute inset-0 bg-[#020204]"></div>
+        <div data-us-project="X0ErZR3QhPzMHfKgBbJJ" class="absolute top-0 left-0 -z-10 w-full h-full"></div>
+        <script type="text/javascript">
+            !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+        </script>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-100 contrast-150"></div>
+    </div>
+
+    <!-- LEFT SIDEBAR: Your Memories -->
+    <aside class="w-64 flex-shrink-0 border-r border-white/5 flex flex-col bg-black/20 backdrop-blur-xl z-10 flex opacity-100 transition-opacity duration-500">
+        <div class="p-6 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <a href="workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span class="text-xs tracking-widest uppercase">Studio</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-3 mt-4">
+                <i data-lucide="message-circle" class="w-5 h-5 text-zinc-400" stroke-width="1.5"></i>
+                <span class="font-serif-custom italic text-lg tracking-tight text-zinc-200">Chat</span>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+            <!-- Recent Memories Section -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-300 font-medium">Your Memories</h3>
+                    <button id="refresh-memories" class="p-1 text-zinc-500 hover:text-zinc-300 transition-colors" title="Refresh">
+                        <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                    </button>
+                </div>
+                <div id="memories-list" class="space-y-2">
+                    <!-- Loading state -->
+                    <div class="text-xs text-zinc-500 italic">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Memory Stats -->
+            <div id="memory-stats" class="pt-4 border-t border-white/5">
+                <div class="text-xs text-zinc-500">
+                    <div class="flex justify-between mb-1">
+                        <span>Total memories:</span>
+                        <span id="total-memories" class="text-zinc-400">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN AREA: Blurred Content -->
+    <main class="flex-1 h-full overflow-hidden relative z-0">
+        <!-- Overlay to darken background when assistant is active -->
+        <div class="absolute inset-0 bg-black/40 z-20 backdrop-blur-sm transition-all duration-700"></div>
+
+        <!-- Search / Top Bar -->
+        <div class="sticky top-0 z-10 px-8 py-6 bg-[#050505]/40 border-b border-white/5 flex items-center justify-between opacity-50">
+            <div class="flex items-center gap-4 w-full max-w-md">
+                <i data-lucide="search" class="w-4 h-4 text-zinc-300"></i>
+                <div class="h-2 w-48 bg-zinc-800/50 rounded"></div>
+            </div>
+        </div>
+
+        <!-- Grid Content (Visible but blurred) -->
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-40 grayscale-[50%]">
+             <!-- Card 1 -->
+             <div class="aspect-[4/5] bg-zinc-900/20 rounded-xl border border-white/5 p-6 flex flex-col justify-end">
+                <div class="h-4 w-3/4 bg-zinc-800/50 rounded mb-2"></div>
+                <div class="h-2 w-1/2 bg-zinc-800/30 rounded"></div>
+             </div>
+             <!-- Card 2 -->
+             <div class="aspect-[4/5] bg-zinc-900/20 rounded-xl border border-white/5 p-6 flex flex-col justify-end">
+                <div class="h-4 w-2/3 bg-zinc-800/50 rounded mb-2"></div>
+                <div class="h-2 w-full bg-zinc-800/30 rounded"></div>
+             </div>
+              <!-- Card 3 -->
+             <div class="aspect-[4/5] bg-zinc-900/20 rounded-xl border border-white/5 p-6 flex flex-col justify-end">
+                <div class="h-4 w-1/2 bg-zinc-800/50 rounded mb-2"></div>
+                <div class="h-2 w-3/4 bg-zinc-800/30 rounded"></div>
+             </div>
+        </div>
+    </main>
+
+    <!-- CENTERED CHAT INTERFACE -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+        <!-- Chat Window (Centered & Wide) -->
+        <div class="animate-enter w-full max-w-3xl h-[600px] max-h-[85vh] rounded-2xl bg-[#0c0c0e]/90 backdrop-blur-3xl border border-white/20 shadow-[0_0_80px_-10px_rgba(139,92,246,0.3)] flex flex-col overflow-hidden relative ring-1 ring-violet-500/20">
+
+            <!-- Window Glow Effects -->
+            <div class="absolute top-[-20%] left-[20%] w-[60%] h-[30%] bg-violet-500/20 blur-[100px] pointer-events-none mix-blend-screen"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[40%] bg-amber-500/20 blur-[100px] pointer-events-none mix-blend-screen"></div>
+            <div class="absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br from-violet-500/5 via-transparent to-amber-500/5 pointer-events-none"></div>
+
+            <!-- Header -->
+            <div class="flex-shrink-0 px-6 py-4 flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-white/[0.02] to-white/[0.04] backdrop-blur-xl relative z-10">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_12px_#f59e0b] animate-pulse"></div>
+                        <div class="absolute inset-0 w-2 h-2 rounded-full bg-amber-500 animate-ping opacity-75"></div>
+                    </div>
+                    <span class="font-serif-custom italic text-lg text-zinc-100 tracking-tight">Dameris</span>
+                </div>
+                <div class="flex items-center gap-3">
+                     <!-- Waveform Visualizer (Active State) -->
+                    <div class="flex items-center gap-0.5 h-3">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                    <!-- New Chat Button -->
+                    <button onclick="startNewChat()" class="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-zinc-200 transition-colors" title="New Chat">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                    <!-- Menu Button -->
+                    <div class="relative">
+                        <button onclick="toggleChatMenu()" class="p-1.5 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-zinc-200 transition-colors" title="Menu">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="chat-menu" class="absolute right-0 top-full mt-2 w-48 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-lg shadow-xl opacity-0 pointer-events-none transition-opacity z-50">
+                            <div class="p-1">
+                                <button onclick="clearChatHistory()" class="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    <span>Clear History</span>
+                                </button>
+                                <button onclick="exportChat()" class="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                    <span>Export Chat</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="workspace.html" class="text-zinc-300 hover:text-zinc-300 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Message Stream -->
+            <div id="messages-container" class="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar flex flex-col">
+
+                <!-- Timestamp -->
+                <div class="text-center">
+                    <span class="text-[10px] text-zinc-300 uppercase tracking-widest font-mono-custom">Today 10:42 PM</span>
+                </div>
+
+                <!-- AI Message -->
+                <div class="flex gap-4 pr-8 group message-ai">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                        <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                    </div>
+                    <div class="space-y-2 flex-1">
+                        <p class="text-sm font-light text-zinc-200 leading-relaxed">
+                            I've analyzed the recurring patterns in <span class="text-amber-300 border-b border-amber-500/20 cursor-pointer hover:border-amber-500/50 transition-colors">Fragment 99</span>. The structural decay seems to correlate with the audio distortions from Tuesday.
+                        </p>
+                        <p class="text-sm font-light text-zinc-200 leading-relaxed">
+                            Would you like me to isolate the harmonic resonance?
+                        </p>
+                        <span class="text-[9px] text-zinc-400 font-mono-custom">10:42 PM</span>
+                    </div>
+                </div>
+
+                <!-- User Message -->
+                <div class="flex flex-col items-end gap-2 pl-12 message-user">
+                    <div class="bg-gradient-to-br from-zinc-800/60 to-zinc-900/40 border border-white/10 rounded-2xl rounded-tr-sm py-3 px-4 backdrop-blur-md shadow-lg">
+                        <p class="text-sm font-light text-zinc-100">Yes, isolate it. But keep the background noise intact.</p>
+                    </div>
+                    <span class="text-[9px] text-zinc-400 font-mono-custom">10:43 PM</span>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="flex gap-4 pr-8 group message-ai">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                        <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[#0c0c0e] animate-pulse"></div>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-zinc-800/30 rounded-2xl px-4 py-3 border border-white/5">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+
+                <!-- AI Message (Processing/Active) -->
+                <div class="flex gap-4 pr-4 message-ai">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                        <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                    </div>
+                    <div class="space-y-3 w-full">
+                        <div class="flex items-center gap-2">
+                            <p class="text-sm font-light text-zinc-200 leading-relaxed">
+                                Processing isolation...
+                            </p>
+                            <div class="flex gap-0.5">
+                                <div class="w-1 h-1 rounded-full bg-violet-400 animate-pulse"></div>
+                                <div class="w-1 h-1 rounded-full bg-violet-400 animate-pulse" style="animation-delay: 0.2s;"></div>
+                                <div class="w-1 h-1 rounded-full bg-violet-400 animate-pulse" style="animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                        <!-- Interactive Element: Audio Player Snippet -->
+                        <div class="w-full bg-gradient-to-br from-black/40 to-zinc-900/30 border border-amber-500/20 rounded-xl p-4 flex flex-col gap-3 hover:border-amber-500/40 transition-all cursor-pointer group shadow-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform border border-amber-500/20">
+                                    <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-xs text-zinc-200 font-medium mb-1">Harmonic Isolation</div>
+                                    <div class="h-8 flex items-center gap-1">
+                                        <!-- Animated waveform for player (animates only when playing) -->
+                                        <div class="w-1 h-2 bg-zinc-400 rounded-full waveform-bar" style="animation-delay: 0s;"></div>
+                                        <div class="w-1 h-4 bg-zinc-300 rounded-full waveform-bar" style="animation-delay: 0.1s;"></div>
+                                        <div class="w-1 h-3 bg-zinc-400 rounded-full waveform-bar" style="animation-delay: 0.2s;"></div>
+                                        <div class="w-1 h-5 bg-amber-400 rounded-full waveform-bar" style="animation-delay: 0.3s;"></div>
+                                        <div class="w-1 h-6 bg-amber-500 rounded-full waveform-bar" style="animation-delay: 0.4s;"></div>
+                                        <div class="w-1 h-5 bg-amber-400 rounded-full waveform-bar" style="animation-delay: 0.5s;"></div>
+                                        <div class="w-1 h-3 bg-zinc-300 rounded-full waveform-bar" style="animation-delay: 0.6s;"></div>
+                                        <div class="w-1 h-4 bg-zinc-400 rounded-full waveform-bar" style="animation-delay: 0.7s;"></div>
+                                        <div class="w-1 h-2 bg-zinc-400 rounded-full waveform-bar" style="animation-delay: 0.8s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] font-mono-custom text-amber-300 font-medium">00:14</span>
+                            </div>
+                            <!-- Progress Bar -->
+                            <div class="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-amber-500 to-violet-500 progress-bar"></div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-zinc-400 font-mono-custom">10:43 PM</span>
+                    </div>
+                </div>
+
+                <div class="h-4"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 bg-gradient-to-t from-black/30 to-black/20 backdrop-blur-xl border-t border-white/10 relative z-10">
+                <!-- Waveform Visualizer (hidden by default, shown when recording) -->
+                <div id="waveform-container" class="hidden mb-3 p-4 bg-zinc-900/50 rounded-lg border border-red-500/30">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                        <span class="text-xs text-red-400 font-medium">Recording...</span>
+                    </div>
+                    <canvas id="waveform-canvas" class="w-full h-16 rounded"></canvas>
+                </div>
+
+                <!-- Voice-First Interface -->
+                <div class="space-y-3">
+                    <!-- Big Voice Button -->
+                    <div id="voice-cta" class="flex justify-center">
+                        <button id="big-voice-button" class="group relative">
+                            <div class="absolute inset-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                            <div class="relative flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 rounded-full shadow-xl transition-all duration-300 group-hover:scale-105">
+                                <i data-lucide="mic" class="w-6 h-6 text-white"></i>
+                                <span class="text-white font-medium">Talk to Dameris</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Voice Status Indicator -->
+                    <div id="voice-status" class="hidden text-center">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-violet-500/10 border border-violet-500/20 rounded-full">
+                            <div class="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-violet-300" id="voice-status-text">Listening...</span>
+                        </div>
+                    </div>
+
+                    <div class="relative group">
+                        <!-- Glow effect on focus -->
+                        <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500/0 via-violet-500/20 to-amber-500/0 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+
+                        <div class="relative flex items-center bg-[#1a1a1c]/80 rounded-xl border border-white/10 px-4 py-3 shadow-lg group-focus-within:border-violet-500/30 transition-all duration-300">
+                            <input type="text" placeholder="Or type to Dameris..." class="bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 w-full font-light focus:ring-0 placeholder:italic">
+
+                            <div class="flex items-center gap-2 pl-3 border-l border-white/10 ml-3">
+                                <!-- Voice Response Toggle -->
+                                <button id="voice-toggle" class="p-2 text-violet-400 hover:text-violet-300 transition-all rounded-lg hover:bg-white/5" title="Voice responses enabled (click to toggle)">
+                                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                </button>
+                                <button id="mic-button" class="p-2 text-zinc-400 hover:text-amber-300 transition-all rounded-lg hover:bg-white/5 hover:scale-110" title="Voice input">
+                                    <i data-lucide="mic" class="w-4 h-4"></i>
+                                </button>
+                                <button type="submit" class="p-2 text-zinc-400 hover:text-violet-300 transition-all rounded-lg hover:bg-violet-500/10 bg-violet-500/5 hover:scale-110" title="Send message">
+                                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex justify-center gap-6">
+                     <a href="../modes/index.html#creative" class="text-[10px] text-zinc-400 cursor-pointer hover:text-violet-300 transition-colors uppercase tracking-wider">Create Image</a>
+                     <a href="archive.html" class="text-[10px] text-zinc-400 cursor-pointer hover:text-amber-300 transition-colors uppercase tracking-wider">Search Logs</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Chat Functionality - Shared State (same as workspace)
+        const CHAT_STORAGE_KEY = 'fuguestate_chat_history';
+        const CONVERSATION_ID_KEY = 'fuguestate_conversation_id';
+        const chatMessages = document.getElementById('messages-container');
+        const chatInput = document.querySelector('input[type="text"]');
+        const chatForm = chatInput?.closest('form') || chatInput?.parentElement;
+        let isTyping = false;
+        let currentConversationId = localStorage.getItem(CONVERSATION_ID_KEY) || null;
+
+        // Load chat history from localStorage
+        function loadChatHistory() {
+            const chatMessages = document.getElementById('messages-container');
+            try {
+                const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+                if (history.length > 0 && chatMessages) {
+                    // Clear existing demo messages if we have real history
+                    const existingMessages = chatMessages.querySelectorAll('.message-ai, .message-user, .text-center');
+                    if (existingMessages.length > 0) {
+                        existingMessages.forEach(msg => msg.remove());
+                    }
+                    
+                    // Restore messages
+                    history.forEach(msg => {
+                        if (msg.role === 'user') {
+                            addUserMessageToDOM(msg.text, msg.time);
+                        } else if (msg.role === 'assistant') {
+                            addAIMessageToDOM(msg.text, msg.time);
+                        }
+                    });
+                    scrollToBottom();
+                }
+            } catch (e) {
+                console.error('Error loading chat history:', e);
+            }
+        }
+
+        // Save message to localStorage
+        function saveMessage(role, text, time) {
+            try {
+                const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+                history.push({ role, text, time });
+                localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history));
+            } catch (e) {
+                console.error('Error saving message:', e);
+            }
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Get time string
+        function getTimeString() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        // Add user message to DOM
+        function addUserMessageToDOM(text, time = null) {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            const timeStr = time || getTimeString();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex flex-col items-end gap-2 pl-12 message-user';
+            messageDiv.innerHTML = `
+                <div class="bg-gradient-to-br from-zinc-800/60 to-zinc-900/40 border border-white/10 rounded-2xl rounded-tr-sm py-3 px-4 backdrop-blur-md shadow-lg">
+                    <p class="text-sm font-light text-zinc-100">${text}</p>
+                </div>
+                <span class="text-[9px] text-zinc-400 font-mono-custom">${timeStr}</span>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            checkAndHideBigVoiceButton();
+        }
+
+        // Add AI message to DOM
+        function addAIMessageToDOM(text, time = null) {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            removeTypingIndicator();
+            const timeStr = time || getTimeString();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex gap-4 pr-8 group message-ai';
+
+            // Convert markdown to HTML
+            const renderedContent = window.renderMarkdown ? window.renderMarkdown(text) : text.replace(/\n/g, '<br>');
+
+            messageDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                    <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-violet-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                </div>
+                <div class="space-y-2 flex-1">
+                    <div class="text-sm font-light text-zinc-200 leading-relaxed prose prose-invert prose-violet max-w-none">${renderedContent}</div>
+                    <span class="text-[9px] text-zinc-400 font-mono-custom">${timeStr}</span>
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            lucide.createIcons();
+            checkAndHideBigVoiceButton();
+        }
+
+        // Add rich creative card for mode outputs
+        function addCreativeCard(modeType, result, memoryTitle = '') {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            removeTypingIndicator();
+            const timeStr = getTimeString();
+
+            const modeConfig = {
+                dream: {
+                    icon: 'moon',
+                    color: 'violet',
+                    gradient: 'from-violet-500/20 to-purple-500/20',
+                    title: 'Dream State'
+                },
+                echo: {
+                    icon: 'radio',
+                    color: 'cyan',
+                    gradient: 'from-cyan-500/20 to-blue-500/20',
+                    title: 'Echo Analysis'
+                },
+                fugue: {
+                    icon: 'music',
+                    color: 'indigo',
+                    gradient: 'from-indigo-500/20 to-violet-500/20',
+                    title: 'Fugue Structure'
+                },
+                journey: {
+                    icon: 'map',
+                    color: 'amber',
+                    gradient: 'from-amber-500/20 to-orange-500/20',
+                    title: 'Journey Map'
+                },
+                weave: {
+                    icon: 'network',
+                    color: 'emerald',
+                    gradient: 'from-emerald-500/20 to-teal-500/20',
+                    title: 'Knowledge Weave'
+                },
+                metamorphosis: {
+                    icon: 'sparkles',
+                    color: 'rose',
+                    gradient: 'from-rose-500/20 to-pink-500/20',
+                    title: 'Metamorphosis'
+                }
+            };
+
+            const config = modeConfig[modeType] || modeConfig.dream;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex gap-4 pr-8 group message-ai';
+
+            let contentHTML = '';
+
+            // Build rich content based on mode type
+            if (modeType === 'echo' && result.patterns) {
+                contentHTML = `
+                    <div class="space-y-3">
+                        ${result.patterns.slice(0, 3).map((p, i) => `
+                            <div class="bg-zinc-900/50 border border-${config.color}-500/20 rounded-lg p-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-${config.color}-500/20 flex items-center justify-center flex-shrink-0">
+                                        <span class="text-${config.color}-400 font-semibold text-sm">${i + 1}</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-zinc-100 mb-1">${p.pattern}</h4>
+                                        <p class="text-xs text-zinc-400">Frequency: ${p.frequency} times</p>
+                                        ${p.contexts && p.contexts[0] ? `
+                                            <blockquote class="mt-2 pl-3 border-l-2 border-${config.color}-500/30 text-xs text-zinc-300 italic">
+                                                "${p.contexts[0]}"
+                                            </blockquote>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+
+                        ${result.themes && result.themes.length > 0 ? `
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                ${result.themes.slice(0, 5).map(t => `
+                                    <span class="px-3 py-1 bg-${config.color}-500/10 border border-${config.color}-500/20 rounded-full text-xs text-${config.color}-300">
+                                        ${t.theme} <span class="opacity-60">${t.intensity}/10</span>
+                                    </span>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (modeType === 'dream' && result.narrative) {
+                contentHTML = `
+                    <div class="space-y-4">
+                        <div class="prose prose-invert prose-violet max-w-none">
+                            <p class="text-sm text-zinc-200 leading-relaxed italic">${result.narrative}</p>
+                        </div>
+
+                        ${result.symbols && result.symbols.length > 0 ? `
+                            <div class="grid grid-cols-2 gap-2">
+                                ${result.symbols.slice(0, 4).map(s => `
+                                    <div class="bg-violet-500/5 border border-violet-500/10 rounded-lg p-3">
+                                        <div class="text-xs font-medium text-violet-300 mb-1">${s.symbol}</div>
+                                        <div class="text-xs text-zinc-400">${s.meaning}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${result.atmosphere ? `
+                            <div class="flex gap-2 flex-wrap">
+                                ${result.atmosphere.colors?.slice(0, 5).map(c => `
+                                    <div class="w-6 h-6 rounded-full border border-white/10" style="background: ${c}"></div>
+                                `).join('') || ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                    <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-${config.color}-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="bg-gradient-to-br ${config.gradient} border border-white/10 rounded-xl p-5 backdrop-blur-sm">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-${config.color}-500/20 flex items-center justify-center">
+                                <i data-lucide="${config.icon}" class="w-5 h-5 text-${config.color}-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-medium text-zinc-100">${config.title}</h3>
+                                ${memoryTitle ? `<p class="text-xs text-zinc-400">From: ${memoryTitle}</p>` : ''}
+                            </div>
+                        </div>
+
+                        ${contentHTML}
+
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-white/5">
+                            ${result.imagePrompt ? `
+                                <button onclick="generateImage('${result.imagePrompt.replace(/'/g, "\\'")}', this)"
+                                    class="px-3 py-1.5 bg-${config.color}-500/10 hover:bg-${config.color}-500/20 border border-${config.color}-500/20 rounded-lg text-xs text-${config.color}-300 transition-colors flex items-center gap-2">
+                                    <i data-lucide="sparkles" class="w-3 h-3"></i>
+                                    Generate Image
+                                </button>
+                            ` : ''}
+                            <button onclick="speakText(\`${(result.narrative || result.synthesis || '').replace(/`/g, '\\`')}\`)"
+                                class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-zinc-300 transition-colors flex items-center gap-2">
+                                <i data-lucide="volume-2" class="w-3 h-3"></i>
+                                Listen
+                            </button>
+                            <button onclick="saveToArtifacts('${modeType}', ${JSON.stringify(result).replace(/'/g, "\\'")})"
+                                class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-zinc-300 transition-colors flex items-center gap-2">
+                                <i data-lucide="save" class="w-3 h-3"></i>
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                    <span class="text-[9px] text-zinc-400 font-mono-custom">${timeStr}</span>
+                </div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            lucide.createIcons();
+        }
+
+        // Add typing indicator
+        function addTypingIndicator() {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'flex gap-4 pr-8 group message-ai';
+            typingDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                    <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[#0c0c0e] animate-pulse"></div>
+                </div>
+                <div class="flex items-center gap-1.5 bg-zinc-800/30 rounded-2xl px-4 py-3 border border-white/5">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        // Get AI response from API
+        async function getAIResponse(userMessage, conversationId = null) {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    credentials: 'include', // Include cookies for authentication
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        conversationId: conversationId
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Failed to get response' }));
+                    
+                    // Handle authentication errors
+                    if (response.status === 401) {
+                        // Session expired - redirect to login
+                        window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+                        throw new Error('Session expired. Please refresh the page and try again.');
+                    }
+                    
+                    throw new Error(errorData.error || 'Failed to get response');
+                }
+
+                const data = await response.json();
+                // Store conversation ID if we got a new one
+                if (data.conversationId) {
+                    localStorage.setItem(CONVERSATION_ID_KEY, data.conversationId);
+                    currentConversationId = data.conversationId;
+                }
+                return data.response;
+            } catch (error) {
+                console.error('Error getting AI response:', error);
+                throw error;
+            }
+        }
+
+        // Speak AI response using TTS
+        async function speakResponse(text) {
+            if (!voiceResponseEnabled) return;
+
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        voiceId: '21m00Tcm4TlvDq8ikWAM' // Rachel voice
+                    })
+                });
+
+                if (!response.ok) {
+                    console.warn('TTS failed, continuing without voice');
+                    return;
+                }
+
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+
+                audio.onended = () => {
+                    URL.revokeObjectURL(audioUrl);
+                };
+
+                await audio.play();
+            } catch (error) {
+                console.warn('TTS error:', error);
+                // Silently fail - user can still read the text
+            }
+        }
+
+        // Handle form submission
+        if (chatForm && chatInput) {
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message || isTyping) return;
+
+                addUserMessageToDOM(message);
+                saveMessage('user', message, getTimeString());
+                chatInput.value = '';
+
+                isTyping = true;
+                addTypingIndicator();
+                showVoiceStatus('Dameris is thinking...');
+
+                try {
+                    const response = await getAIResponse(message, currentConversationId);
+                    addAIMessageToDOM(response);
+                    saveMessage('assistant', response, getTimeString());
+
+                    // Speak response if voice is enabled
+                    if (voiceResponseEnabled) {
+                        showVoiceStatus('Dameris is speaking...');
+                        await speakResponse(response);
+                        hideVoiceStatus();
+                    } else {
+                        hideVoiceStatus();
+                    }
+                } catch (error) {
+                    // Don't show error message if redirecting to login
+                    if (!error.message?.includes('Session expired')) {
+                        addAIMessageToDOM("I'm having trouble processing that right now. Could you try again?");
+                    }
+                    console.error('Chat error:', error);
+                    hideVoiceStatus();
+                } finally {
+                    isTyping = false;
+                    removeTypingIndicator();
+                }
+            });
+
+            // Handle Enter key
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+
+        // Voice Input Functionality
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let audioContext = null;
+        let analyser = null;
+        let animationId = null;
+        const micButton = document.getElementById('mic-button');
+        const micIcon = micButton?.querySelector('i[data-lucide]');
+        const waveformContainer = document.getElementById('waveform-container');
+        const waveformCanvas = document.getElementById('waveform-canvas');
+        const waveformCtx = waveformCanvas?.getContext('2d');
+
+        // Voice Response Toggle
+        const VOICE_RESPONSE_KEY = 'dameris_voice_response_enabled';
+        let voiceResponseEnabled = localStorage.getItem(VOICE_RESPONSE_KEY) !== 'false'; // Default to true
+        const voiceToggleButton = document.getElementById('voice-toggle');
+        const voiceToggleIcon = voiceToggleButton?.querySelector('i[data-lucide]');
+
+        // Initialize voice toggle UI
+        function updateVoiceToggleUI() {
+            if (!voiceToggleIcon) return;
+            if (voiceResponseEnabled) {
+                voiceToggleIcon.setAttribute('data-lucide', 'volume-2');
+                voiceToggleButton.classList.add('text-violet-400');
+                voiceToggleButton.classList.remove('text-zinc-500');
+                voiceToggleButton.title = 'Voice responses enabled (click to disable)';
+            } else {
+                voiceToggleIcon.setAttribute('data-lucide', 'volume-x');
+                voiceToggleButton.classList.remove('text-violet-400');
+                voiceToggleButton.classList.add('text-zinc-500');
+                voiceToggleButton.title = 'Voice responses disabled (click to enable)';
+            }
+            lucide.createIcons();
+        }
+
+        if (voiceToggleButton) {
+            updateVoiceToggleUI();
+            voiceToggleButton.addEventListener('click', () => {
+                voiceResponseEnabled = !voiceResponseEnabled;
+                localStorage.setItem(VOICE_RESPONSE_KEY, voiceResponseEnabled.toString());
+                updateVoiceToggleUI();
+            });
+        }
+
+        // Check if browser supports MediaRecorder
+        const canRecord = typeof MediaRecorder !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+
+        // Waveform Visualization
+        function drawWaveform(dataArray, bufferLength) {
+            if (!waveformCanvas || !waveformCtx) return;
+
+            const WIDTH = waveformCanvas.width;
+            const HEIGHT = waveformCanvas.height;
+
+            waveformCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+            const barWidth = (WIDTH / bufferLength) * 2.5;
+            let barHeight;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                barHeight = (dataArray[i] / 255) * HEIGHT * 0.8;
+
+                // Gradient for bars
+                const gradient = waveformCtx.createLinearGradient(0, HEIGHT - barHeight, 0, HEIGHT);
+                gradient.addColorStop(0, '#ef4444');
+                gradient.addColorStop(1, '#dc2626');
+
+                waveformCtx.fillStyle = gradient;
+                waveformCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+                x += barWidth + 1;
+            }
+        }
+
+        function startWaveformVisualization() {
+            if (!analyser || !waveformCanvas) return;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function animate() {
+                if (!isRecording) return;
+
+                animationId = requestAnimationFrame(animate);
+                analyser.getByteFrequencyData(dataArray);
+                drawWaveform(dataArray, bufferLength);
+            }
+
+            animate();
+        }
+
+        function stopWaveformVisualization() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            if (waveformCtx && waveformCanvas) {
+                waveformCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+            }
+        }
+
+        async function startRecording() {
+            if (!canRecord) {
+                alert('Voice recording is not supported in your browser. Please use Chrome, Edge, or Firefox.');
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+
+                // Set up audio context for waveform visualization
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 256;
+
+                // Set canvas size
+                if (waveformCanvas) {
+                    waveformCanvas.width = waveformCanvas.offsetWidth;
+                    waveformCanvas.height = waveformCanvas.offsetHeight;
+                }
+
+                // Use WebM format (Chrome/Edge) or fallback to default
+                const options = { mimeType: 'audio/webm' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    delete options.mimeType; // Use browser default
+                }
+
+                mediaRecorder = new MediaRecorder(stream, options);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+
+                    // Stop visualization and clean up audio context
+                    stopWaveformVisualization();
+                    if (audioContext) {
+                        audioContext.close();
+                        audioContext = null;
+                    }
+
+                    await sendAudioToSTT(audioBlob);
+
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                // Show waveform container and start visualization
+                if (waveformContainer) {
+                    waveformContainer.classList.remove('hidden');
+                }
+                startWaveformVisualization();
+
+                // Update UI
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'mic-off');
+                    micIcon.classList.add('text-red-400', 'animate-pulse');
+                    lucide.createIcons();
+                }
+                micButton.classList.add('bg-red-500/20', 'border-red-500/30');
+                micButton.title = 'Recording... Click to stop';
+
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                    alert('Microphone permission denied. Please allow microphone access and try again.');
+                } else {
+                    alert('Failed to access microphone. Please check your settings and try again.');
+                }
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+
+                // Hide waveform container
+                if (waveformContainer) {
+                    waveformContainer.classList.add('hidden');
+                }
+
+                // Update UI
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'mic');
+                    micIcon.classList.remove('text-red-400', 'animate-pulse');
+                    lucide.createIcons();
+                }
+                micButton.classList.remove('bg-red-500/20', 'border-red-500/30');
+                micButton.title = 'Voice input';
+            }
+        }
+
+        // Auto-hide big voice button once chat has messages
+        function checkAndHideBigVoiceButton() {
+            const messagesContainer = document.getElementById('messages-container');
+            if (messagesContainer && messagesContainer.children.length > 0 && voiceCTA) {
+                voiceCTA.style.display = 'none';
+            }
+        }
+
+        async function sendAudioToSTT(audioBlob) {
+            try {
+                // Show transcribing indicator
+                showVoiceStatus('Transcribing...');
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'loader-2');
+                    micIcon.classList.add('animate-spin');
+                    lucide.createIcons();
+                }
+                micButton.title = 'Transcribing...';
+
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+                formData.append('language', 'en-US');
+
+                const response = await fetch('/api/stt', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Speech-to-text failed');
+                }
+
+                const data = await response.json();
+                const transcript = data.transcript?.trim();
+
+                if (!transcript) {
+                    alert('No speech detected. Please try again.');
+                    hideVoiceStatus();
+                    return;
+                }
+
+                // Auto-submit transcribed text
+                if (chatInput && transcript) {
+                    chatInput.value = transcript;
+                    // Trigger submit and let the form handler update voice status
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+
+            } catch (error) {
+                console.error('STT error:', error);
+                alert('Failed to transcribe audio. Please try again or type your message.');
+                hideVoiceStatus();
+            } finally {
+                // Reset UI
+                if (micIcon) {
+                    micIcon.setAttribute('data-lucide', 'mic');
+                    micIcon.classList.remove('animate-spin');
+                    lucide.createIcons();
+                }
+                micButton.title = 'Voice input';
+            }
+        }
+
+        // Add click handler to mic button
+        if (micButton) {
+            micButton.addEventListener('click', () => {
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            });
+        }
+
+        // Wire up big voice button
+        const bigVoiceButton = document.getElementById('big-voice-button');
+        const voiceCTA = document.getElementById('voice-cta');
+        const voiceStatus = document.getElementById('voice-status');
+        const voiceStatusText = document.getElementById('voice-status-text');
+
+        function showVoiceStatus(text, pulse = true) {
+            if (voiceStatus && voiceStatusText) {
+                voiceStatusText.textContent = text;
+                voiceStatus.classList.remove('hidden');
+                if (voiceCTA) voiceCTA.classList.add('hidden');
+            }
+        }
+
+        function hideVoiceStatus() {
+            if (voiceStatus && voiceCTA) {
+                voiceStatus.classList.add('hidden');
+                voiceCTA.classList.remove('hidden');
+            }
+        }
+
+        if (bigVoiceButton) {
+            bigVoiceButton.addEventListener('click', () => {
+                startRecording();
+                showVoiceStatus('Listening...');
+            });
+        }
+
+        // Load chat history on page load
+        loadChatHistory();
+
+        // Check if we should hide the big voice button (if chat has messages)
+        setTimeout(() => checkAndHideBigVoiceButton(), 100);
+
+        // ===== MEMORIES SIDEBAR =====
+        const memoriesList = document.getElementById('memories-list');
+        const totalMemoriesSpan = document.getElementById('total-memories');
+        const refreshMemoriesBtn = document.getElementById('refresh-memories');
+
+        async function loadMemories() {
+            console.log('Loading memories...');
+            try {
+                if (memoriesList) {
+                    memoriesList.innerHTML = '<div class="text-xs text-zinc-500 italic">Loading...</div>';
+                }
+
+                const response = await fetch('/api/memories?limit=10&count=true', {
+                    credentials: 'include'
+                });
+                console.log('Memories API response:', response.status);
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Not logged in - show login message
+                        if (memoriesList) {
+                            memoriesList.innerHTML = `
+                                <div class="text-xs text-amber-400 p-3 bg-amber-900/10 rounded border border-amber-500/20">
+                                    Please log in to see your memories.
+                                </div>
+                            `;
+                        }
+                        return;
+                    }
+                    throw new Error('Failed to load memories');
+                }
+
+                const data = await response.json();
+                const memories = data.memories || [];
+                const totalCount = data.count || memories.length;
+                console.log(`Loaded ${memories.length} memories (total: ${totalCount})`);
+
+                // Update total count
+                if (totalMemoriesSpan) {
+                    totalMemoriesSpan.textContent = totalCount;
+                }
+
+                // Display memories
+                if (memoriesList) {
+                    if (memories.length === 0) {
+                        memoriesList.innerHTML = `
+                            <div class="text-xs text-zinc-500 italic p-3 bg-zinc-900/30 rounded border border-white/5">
+                                No memories yet. Upload a file to get started!
+                            </div>
+                        `;
+                    } else {
+                        memoriesList.innerHTML = memories.map(memory => {
+                            const date = memory.temporal_marker ? new Date(memory.temporal_marker).toLocaleDateString() : 'No date';
+                            const source = memory.data_sources?.source_name || memory.data_sources?.source_type || 'Unknown';
+                            const content = memory.content || memory.summary || '';
+                            const preview = content.substring(0, 60) + (content.length > 60 ? '...' : '');
+
+                            return `
+                                <div class="memory-item p-2 bg-zinc-900/30 rounded border border-white/5 hover:border-violet-500/20 transition-colors cursor-pointer group" data-memory-id="${memory.id}">
+                                    <div class="flex items-start justify-between gap-2 mb-1">
+                                        <span class="text-[10px] text-zinc-400 font-mono">${date}</span>
+                                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-300">${source}</span>
+                                    </div>
+                                    <p class="text-xs text-zinc-300 leading-relaxed">${preview}</p>
+                                </div>
+                            `;
+                        }).join('');
+
+                        // Add click handlers to memory items
+                        document.querySelectorAll('.memory-item').forEach(item => {
+                            item.addEventListener('click', () => {
+                                const memoryId = item.dataset.memoryId;
+                                const content = item.querySelector('p').textContent;
+                                // Insert memory reference into chat input
+                                if (chatInput) {
+                                    chatInput.value = `Tell me more about: "${content.replace('...', '')}"`;
+                                    chatInput.focus();
+                                }
+                            });
+                        });
+                    }
+                }
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                if (memoriesList) {
+                    memoriesList.innerHTML = '<div class="text-xs text-red-400">Failed to load memories</div>';
+                }
+            }
+        }
+
+        // Refresh memories button
+        if (refreshMemoriesBtn) {
+            refreshMemoriesBtn.addEventListener('click', () => {
+                loadMemories();
+            });
+        }
+
+        // Check if first time after onboarding and send welcome message
+        async function sendInitialWelcomeMessage() {
+            const hasSeenWelcome = localStorage.getItem('fuguestate_chat_welcome_shown');
+            const justCompletedOnboarding = localStorage.getItem('fuguestate_onboarding_completed') === 'true';
+
+            if (justCompletedOnboarding && !hasSeenWelcome) {
+                // Mark as shown
+                localStorage.setItem('fuguestate_chat_welcome_shown', 'true');
+                localStorage.removeItem('fuguestate_onboarding_completed');
+
+                // Get user name
+                const userName = localStorage.getItem('fuguestate_username') || 'friend';
+
+                // Fetch most recent memory to reference
+                try {
+                    const response = await fetch('/api/memories', {
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+
+                    if (data.memories && data.memories.length > 0) {
+                        const recentMemory = data.memories[0];
+                        const memoryTitle = recentMemory.title || 'your memory';
+                        const memoryType = recentMemory.source_type || 'text';
+                        const timestamp = new Date(recentMemory.created_at).toLocaleDateString();
+
+                        // Show initial greeting
+                        const initialGreeting = `Welcome to your creative space, ${userName}! 🌙
+
+I've received **${memoryTitle}** (uploaded ${timestamp}).
+
+Let me show you what I can do...`;
+
+                        addAIMessageToDOM(initialGreeting);
+
+                        // Add "generating" indicator
+                        addTypingIndicator();
+                        document.querySelector('#typing-indicator .flex')?.innerHTML = `
+                            <span class="text-xs text-violet-400">Analyzing your memory with Echo mode...</span>
+                        `;
+
+                        // Auto-generate Echo analysis to demonstrate capabilities
+                        try {
+                            const echoResponse = await fetch('/api/generate/echo', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    memoryIds: [recentMemory.id],
+                                    lookback: 'all'
+                                })
+                            });
+
+                            const echoData = await echoResponse.json();
+                            removeTypingIndicator();
+
+                            if (echoData.success && echoData.result) {
+                                const result = echoData.result;
+
+                                // Use rich creative card for Echo results
+                                addCreativeCard('echo', result, memoryTitle);
+
+                                // Auto-generate image to showcase the feature
+                                if (result.imagePrompt) {
+                                    setTimeout(async () => {
+                                        addAIMessageToDOM("Let me also generate a visual representation of your memory...");
+                                        await generateImage(result.imagePrompt);
+                                    }, 1500);
+                                }
+
+                                // Now show all capabilities (after image generation completes)
+                                setTimeout(() => {
+                                    const capabilitiesMessage = `---
+
+Now you've seen what I can do - **Echo analysis** + **AI image generation** from your memories! 🎨
+
+Here are **all 9 creative modes** available:
+
+**🎨 Creative Transformation:**
+- **Dream**: Transform memories into surreal, symbolic narratives
+- **Collage**: Layer fragments into unexpected compositions
+- **Remix**: Reimagine experiences with different techniques
+- **Metamorphosis**: Track how themes transform over time
+
+**🔍 Pattern Analysis:**
+- **Echo**: Find recurring patterns (you just saw this!)
+- **Fugue**: Deep structural theme analysis like musical fugue
+- **Weave**: Create knowledge graphs of interconnections
+
+**🗺️ Narrative & Journey:**
+- **Journey**: Map your hero's journey through memories
+- **Surprise**: Random connections using the Fugue Engine
+
+**Plus:**
+- ✨ **AI Image Generation** from any creative output (powered by Google Cloud Vertex AI)
+- 🎙️ **Voice Conversation** with speech-to-text and text-to-speech
+- 🎵 **Audio Narration** for immersive experiences
+- 💾 **Save Artifacts** to your personal gallery
+
+**Quick Start - Try a Mode:**
+<div class="grid grid-cols-2 gap-2 mt-4 not-prose">
+    <button onclick="tryMode('dream')" class="px-4 py-3 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 rounded-lg text-sm text-violet-300 transition-all hover:scale-105 flex items-center gap-2">
+        <i data-lucide="moon" class="w-4 h-4"></i>
+        Dream
+    </button>
+    <button onclick="tryMode('fugue')" class="px-4 py-3 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg text-sm text-indigo-300 transition-all hover:scale-105 flex items-center gap-2">
+        <i data-lucide="music" class="w-4 h-4"></i>
+        Fugue
+    </button>
+    <button onclick="tryMode('journey')" class="px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-lg text-sm text-amber-300 transition-all hover:scale-105 flex items-center gap-2">
+        <i data-lucide="map" class="w-4 h-4"></i>
+        Journey
+    </button>
+    <button onclick="tryMode('weave')" class="px-4 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-lg text-sm text-emerald-300 transition-all hover:scale-105 flex items-center gap-2">
+        <i data-lucide="network" class="w-4 h-4"></i>
+        Weave
+    </button>
+    <button onclick="tryMode('collage')" class="px-4 py-3 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg text-sm text-purple-300 transition-all hover:scale-105 flex items-center gap-2">
+        <i data-lucide="layers" class="w-4 h-4"></i>
+        Collage
+    </button>
+    <button onclick="tryMode('metamorphosis')" class="px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg text-sm text-rose-300 transition-all hover:scale-105 flex items-center gap-2">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        Metamorphosis
+    </button>
+</div>
+
+Or ask me anything about your memories!`;
+
+                                    addAIMessageToDOM(capabilitiesMessage);
+                                }, 12000); // Wait for image generation to complete
+
+                            } else {
+                                // If Echo fails, show static message
+                                const fallbackMessage = `I've analyzed **${memoryTitle}** and I'm ready to transform it in fascinating ways.
+
+**All 9 Creative Modes:**
+
+🎨 **Dream** • **Collage** • **Remix** • **Metamorphosis**
+🔍 **Echo** • **Fugue** • **Weave**
+🗺️ **Journey** • **Surprise**
+
+Try asking: *"Dream about ${memoryTitle}"* or *"Analyze patterns with Echo"*
+
+What would you like to create?`;
+
+                                addAIMessageToDOM(fallbackMessage);
+                            }
+                        } catch (error) {
+                            console.error('Auto-demo error:', error);
+                            removeTypingIndicator();
+
+                            // Fallback message if auto-generation fails
+                            const fallbackMessage = `I've received your memory and I'm ready to explore it with you.
+
+**9 Creative Modes Available:**
+
+🎨 **Dream** • **Collage** • **Remix** • **Metamorphosis**
+🔍 **Echo** • **Fugue** • **Weave**
+🗺️ **Journey** • **Surprise**
+
+What would you like to create first?`;
+
+                            addAIMessageToDOM(fallbackMessage);
+                        }
+
+                    } else {
+                        // No memories found, send generic welcome
+                        const genericWelcome = `Welcome to your creative space, ${userName}! 🌙
+
+I'm Dameris, your creative muse. I'm ready to help you explore your memories in fascinating ways.
+
+Once you upload some memories, I can:
+- Transform them into dreams and art
+- Discover hidden patterns and connections
+- Generate audio and visual experiences
+- Provide deep insights and analysis
+
+Upload your first memory using the sidebar, or navigate to the **Studio** to get started.`;
+
+                        addMessageToChat('assistant', genericWelcome);
+                    }
+                } catch (error) {
+                    console.error('Error fetching memories for welcome:', error);
+                    // Send basic welcome if fetch fails
+                    const basicWelcome = `Welcome back, ${userName}! I'm ready to explore your memories together. What would you like to create today?`;
+                    addMessageToChat('assistant', basicWelcome);
+                }
+            }
+        }
+
+        // Enhanced Audio Player Controls
+        function setupAudioPlayers() {
+            // Find all audio elements in messages
+            const audioElements = document.querySelectorAll('audio');
+
+            audioElements.forEach(audio => {
+                const container = audio.closest('.bg-zinc-900\\/90, .bg-zinc-900\\/80, [class*="bg-zinc-900"]');
+                if (!container) return;
+
+                const playButton = container.querySelector('button, .cursor-pointer');
+                const waveformBars = container.querySelectorAll('[class*="waveform"]');
+                const progressBar = container.querySelector('[class*="progress"]');
+
+                if (playButton) {
+                    // Play/Pause toggle
+                    playButton.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (audio.paused) {
+                            audio.play();
+                        } else {
+                            audio.pause();
+                        }
+                    });
+                }
+
+                // On play - activate visualizations
+                audio.addEventListener('play', () => {
+                    // Animate waveform bars
+                    waveformBars.forEach(bar => {
+                        bar.classList.add('waveform-active');
+                    });
+
+                    // Add glow effect to container
+                    if (container) {
+                        container.classList.add('audio-playing');
+                        container.style.borderColor = 'rgba(251, 191, 36, 0.3)';
+                        container.style.transition = 'all 0.3s ease';
+                    }
+
+                    // Change play icon to pause
+                    if (playButton) {
+                        const icon = playButton.querySelector('i[data-lucide]');
+                        if (icon) {
+                            icon.setAttribute('data-lucide', 'pause');
+                            lucide.createIcons();
+                        }
+                    }
+                });
+
+                // On pause - deactivate visualizations
+                audio.addEventListener('pause', () => {
+                    // Stop waveform animation
+                    waveformBars.forEach(bar => {
+                        bar.classList.remove('waveform-active');
+                    });
+
+                    // Remove glow effect
+                    if (container) {
+                        container.classList.remove('audio-playing');
+                        container.style.borderColor = '';
+                    }
+
+                    // Change pause icon to play
+                    if (playButton) {
+                        const icon = playButton.querySelector('i[data-lucide]');
+                        if (icon) {
+                            icon.setAttribute('data-lucide', 'play');
+                            lucide.createIcons();
+                        }
+                    }
+                });
+
+                // Update progress bar
+                audio.addEventListener('timeupdate', () => {
+                    if (progressBar && audio.duration) {
+                        const progress = (audio.currentTime / audio.duration) * 100;
+                        progressBar.style.width = `${progress}%`;
+                    }
+                });
+
+                // Reset on end
+                audio.addEventListener('ended', () => {
+                    waveformBars.forEach(bar => {
+                        bar.classList.remove('waveform-active');
+                    });
+                    if (container) {
+                        container.classList.remove('audio-playing');
+                        container.style.borderColor = '';
+                    }
+                    if (progressBar) {
+                        progressBar.style.width = '0%';
+                    }
+
+                    // Reset play button icon
+                    if (playButton) {
+                        const icon = playButton.querySelector('i[data-lucide]');
+                        if (icon) {
+                            icon.setAttribute('data-lucide', 'play');
+                            lucide.createIcons();
+                        }
+                    }
+                });
+            });
+        }
+
+        // Observe DOM for new audio players added dynamically
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                    setupAudioPlayers();
+                }
+            });
+        });
+
+        // Start observing the messages container
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+            observer.observe(messagesContainer, {
+                childList: true,
+                subtree: true
+            });
+        }
+
+        // Load memories on page load
+        loadMemories();
+
+        // Send welcome message if first time after onboarding
+        sendInitialWelcomeMessage();
+
+        // Generate image from prompt
+        async function generateImage(prompt, buttonElement = null) {
+            try {
+                // Disable button and show loading
+                if (buttonElement) {
+                    buttonElement.disabled = true;
+                    buttonElement.innerHTML = `
+                        <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                        <span>Generating...</span>
+                    `;
+                    lucide.createIcons();
+                }
+
+                showVoiceStatus('Creating your image...');
+
+                const response = await fetch('/api/generate/image', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt,
+                        width: 1024,
+                        height: 1024
+                    })
+                });
+
+                const data = await response.json();
+                hideVoiceStatus();
+
+                if (data.success && data.image) {
+                    // Display generated image with beautiful card
+                    displayGeneratedImage(data.image, prompt, data.metadata);
+                } else {
+                    addAIMessageToDOM(`✨ Couldn't generate the image: ${data.error || 'Please try again.'}`);
+                }
+
+                // Re-enable button
+                if (buttonElement) {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = `
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Generate Image</span>
+                    `;
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Image generation error:', error);
+                hideVoiceStatus();
+                addAIMessageToDOM('✨ An error occurred while generating the image. Please try again.');
+
+                if (buttonElement) {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = `
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Generate Image</span>
+                    `;
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        // Display generated image with beautiful card
+        function displayGeneratedImage(imageDataUrl, prompt, metadata = {}) {
+            const chatMessages = document.getElementById('messages-container');
+            if (!chatMessages) return;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex gap-4 pr-8 group message-ai';
+
+            messageDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-950 to-amber-950 border border-white/10 flex-shrink-0 flex items-center justify-center shadow-lg relative">
+                    <span class="font-serif-custom italic text-amber-200/80 text-xs">D</span>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-fuchsia-500 rounded-full border-2 border-[#0c0c0e]"></div>
+                </div>
+                <div class="flex-1 space-y-3">
+                    <div class="bg-gradient-to-br from-fuchsia-500/10 to-violet-500/10 border border-fuchsia-500/20 rounded-xl overflow-hidden backdrop-blur-sm">
+                        <div class="p-4 border-b border-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-fuchsia-500/20 flex items-center justify-center">
+                                    <i data-lucide="image" class="w-5 h-5 text-fuchsia-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-medium text-zinc-100">Generated Image</h3>
+                                    <p class="text-xs text-zinc-400">${metadata.model || 'AI Generated'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative group/image">
+                            <img src="${imageDataUrl}"
+                                 alt="${prompt}"
+                                 class="w-full aspect-square object-cover cursor-pointer transition-transform hover:scale-[1.02]"
+                                 onclick="window.open(this.src, '_blank')">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity pointer-events-none"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-4 text-xs text-white/90 opacity-0 group-hover/image:opacity-100 transition-opacity">
+                                <p class="line-clamp-2">${prompt}</p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-black/20 flex items-center justify-between gap-2 flex-wrap">
+                            <button onclick="window.open('${imageDataUrl}', '_blank')"
+                                    class="flex items-center gap-2 px-3 py-1.5 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 border border-fuchsia-500/20 rounded-lg text-xs text-fuchsia-300 transition-colors">
+                                <i data-lucide="maximize-2" class="w-3 h-3"></i>
+                                View Full
+                            </button>
+                            <button onclick="downloadImage('${imageDataUrl}', '${prompt.substring(0, 30).replace(/'/g, "\\'")}')"
+                                    class="flex items-center gap-2 px-3 py-1.5 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 rounded-lg text-xs text-violet-300 transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                                Download
+                            </button>
+                            <a href="gallery.html" target="_blank"
+                               class="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-lg text-xs text-amber-300 transition-colors">
+                                <i data-lucide="image" class="w-3 h-3"></i>
+                                View in Gallery
+                            </a>
+                        </div>
+                    </div>
+                    <span class="text-[9px] text-zinc-400 font-mono-custom">${getTimeString()}</span>
+                </div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            lucide.createIcons();
+            checkAndHideBigVoiceButton();
+        }
+
+        // Download image helper
+        function downloadImage(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `${filename || 'dameris-creation'}-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Speak text using TTS
+        async function speakText(text) {
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text.substring(0, 500) }) // Limit length
+                });
+
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+
+                    // Show audio indicator
+                    addAIMessageToDOM('🔊 Playing audio narration...');
+                }
+            } catch (error) {
+                console.error('TTS error:', error);
+            }
+        }
+
+        // Save creation to artifacts
+        async function saveToArtifacts(modeType, result) {
+            try {
+                const title = `${modeType.charAt(0).toUpperCase() + modeType.slice(1)} Creation`;
+                const description = result.narrative || result.synthesis || JSON.stringify(result);
+
+                const response = await fetch('/api/artefacts', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        artefact_type: 'text',
+                        title,
+                        description: description.substring(0, 500),
+                        metadata: { mode: modeType, ...result }
+                    })
+                });
+
+                if (response.ok) {
+                    addAIMessageToDOM('✅ Saved to your artifacts!');
+                } else {
+                    addAIMessageToDOM('Failed to save. Please try again.');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+            }
+        }
+
+        // Quick-try a creative mode
+        async function tryMode(modeType) {
+            try {
+                // Show user message
+                addUserMessageToDOM(`Try ${modeType.charAt(0).toUpperCase() + modeType.slice(1)} mode`);
+
+                // Show generating indicator
+                addTypingIndicator();
+                const modeNames = {
+                    dream: 'Dream',
+                    fugue: 'Fugue',
+                    journey: 'Journey',
+                    weave: 'Weave',
+                    collage: 'Collage',
+                    metamorphosis: 'Metamorphosis',
+                    remix: 'Remix',
+                    surprise: 'Surprise'
+                };
+                document.querySelector('#typing-indicator .flex')?.innerHTML = `
+                    <span class="text-xs text-violet-400">Generating ${modeNames[modeType]} analysis...</span>
+                `;
+
+                // Call the appropriate API endpoint
+                const response = await fetch(`/api/generate/${modeType}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({}) // Use default settings
+                });
+
+                const data = await response.json();
+                removeTypingIndicator();
+
+                if (data.success && data.result) {
+                    // Display with rich creative card
+                    addCreativeCard(modeType, data.result);
+                } else {
+                    addAIMessageToDOM(`I couldn't generate a ${modeNames[modeType]} analysis. ${data.error || 'Please try again.'}`);
+                }
+            } catch (error) {
+                console.error(`Mode ${modeType} error:`, error);
+                removeTypingIndicator();
+                addAIMessageToDOM(`An error occurred while generating ${modeType}. Please try again.`);
+            }
+        }
+
+        // Setup existing audio players
+        setTimeout(() => {
+            setupAudioPlayers();
+        }, 500);
+    </script>
+
+    <!-- Markdown Renderer -->
+    <script src="/js/markdown-renderer.js"></script>
+</body></html>

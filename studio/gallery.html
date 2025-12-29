@@ -1,0 +1,399 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Gallery</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-serif-custom { font-family: 'Newsreader', serif; }
+
+    /* Hover Glow */
+    @keyframes subtle-glow {
+        0%, 100% { box-shadow: 0 0 20px -10px rgba(99, 102, 241, 0.3); }
+        50% { box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.5); }
+    }
+
+    .gallery-item:hover .item-frame {
+        animation: subtle-glow 2s ease-in-out infinite;
+    }
+
+    /* Custom Scrollbar */
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+
+    /* Background Color Shift Animation */
+    @keyframes hue-rotate {
+        0% { filter: hue-rotate(0deg) saturate(1.2); }
+        100% { filter: hue-rotate(360deg) saturate(1.2); }
+    }
+    .color-shift-bg {
+        animation: hue-rotate 20s linear infinite;
+    }
+</style>
+</head>
+<body class="bg-[#09090b] lg:bg-[#020408] min-h-screen flex flex-col lg:items-center lg:justify-center p-0 lg:p-8 antialiased selection:bg-indigo-500/30 selection:text-indigo-200 overflow-x-hidden text-zinc-300">
+
+    <!-- Background -->
+    <div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full color-shift-bg">
+            <div data-us-project="NMlvqnkICwYYJ6lYb064" class="absolute w-full h-full left-0 top-0 -z-10"></div>
+            <script type="text/javascript">
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="min-h-screen lg:h-[94vh] flex flex-col lg:max-w-[1800px] w-full lg:rounded-[1.5rem] lg:border lg:border-white/10 lg:shadow-2xl lg:shadow-black bg-black/20 relative backdrop-blur-xl overflow-hidden">
+
+        <!-- Header -->
+        <header class="relative z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-zinc-900/10 backdrop-blur-sm h-14 shrink-0">
+            <div class="flex items-center gap-4">
+                <a href="workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span class="text-xs tracking-widest uppercase">Studio</span>
+                </a>
+                <div class="h-4 w-px bg-white/10"></div>
+                <h1 class="text-sm tracking-tight text-white font-serif-custom italic">
+                    Memory Gallery
+                </h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="filter-select" onchange="filterGallery(this.value)"
+                        class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all cursor-pointer">
+                    <option value="all">All Images</option>
+                    <option value="vertex">Vertex AI Imagen</option>
+                    <option value="huggingface">Hugging Face</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Gallery Grid -->
+        <div class="flex-1 overflow-y-auto custom-scroll p-6 lg:p-12">
+            <!-- Loading State -->
+            <div id="loading-state" class="flex items-center justify-center h-64">
+                <div class="text-center">
+                    <i data-lucide="loader-2" class="w-8 h-8 text-violet-400 animate-spin mx-auto mb-3"></i>
+                    <p class="text-sm text-zinc-400">Loading your creations...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center h-64 text-center">
+                <i data-lucide="image-off" class="w-12 h-12 text-zinc-600 mb-4"></i>
+                <h3 class="text-lg font-serif-custom text-zinc-300 mb-2">No images yet</h3>
+                <p class="text-sm text-zinc-500 mb-4">Generate your first image from a creative mode!</p>
+                <a href="chat.html" class="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-sm transition-colors">
+                    Go to Chat
+                </a>
+            </div>
+
+            <!-- Gallery Items -->
+            <div id="gallery-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+
+                <!-- Gallery Item 1 -->
+                <a href="artefact.html" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop" alt="Neon Orchard" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&w=800'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Neon Orchard</h3>
+                            <p class="text-xs text-zinc-400">Oct 24, 03:42 AM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 2 - Video -->
+                <a href="artefact.html?type=video" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <video class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=800&auto=format&fit=crop">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-waves-2884-large.mp4" type="video/mp4">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-waves-2884-small.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="video" class="w-3 h-3 text-white"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Digital Dream</h3>
+                            <p class="text-xs text-zinc-400">Oct 23, 11:15 PM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 3 -->
+                <a href="artefact.html" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" alt="Memory Fragment" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.pexels.com/photos/1323712/pexels-photo-1323712.jpeg?auto=compress&cs=tinysrgb&w=800'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Memory Fragment</h3>
+                            <p class="text-xs text-zinc-400">Oct 22, 02:30 AM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 4 - Video -->
+                <a href="artefact.html?type=video" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <video class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1635241161466-541f065683ba?q=80&w=800&auto=format&fit=crop">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-large.mp4" type="video/mp4">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-small.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="video" class="w-3 h-3 text-white"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Synthetic Memories</h3>
+                            <p class="text-xs text-zinc-400">Oct 21, 09:45 PM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 5 -->
+                <a href="artefact.html" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <img src="https://images.unsplash.com/photo-1617791160536-598cf32026fb?q=80&w=800&auto=format&fit=crop" alt="Fractal Thoughts" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=800'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Fractal Thoughts</h3>
+                            <p class="text-xs text-zinc-400">Oct 20, 01:12 AM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 6 -->
+                <a href="artefact.html" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <img src="https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=800&auto=format&fit=crop" alt="Echo Chamber" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&w=800'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Echo Chamber</h3>
+                            <p class="text-xs text-zinc-400">Oct 19, 10:28 PM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 7 - Video -->
+                <a href="artefact.html?type=video" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <video class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=800&auto=format&fit=crop">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-large.mp4" type="video/mp4">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-small.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="video" class="w-3 h-3 text-white"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Cosmic Drift</h3>
+                            <p class="text-xs text-zinc-400">Oct 18, 08:22 PM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 8 -->
+                <a href="artefact.html" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=800&auto=format&fit=crop" alt="Neural Network" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.pexels.com/photos/1323712/pexels-photo-1323712.jpeg?auto=compress&cs=tinysrgb&w=800'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Neural Network</h3>
+                            <p class="text-xs text-zinc-400">Oct 17, 04:15 AM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 9 - Video -->
+                <a href="artefact.html?type=video" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <video class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-large.mp4" type="video/mp4">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-small.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="video" class="w-3 h-3 text-white"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Void Reflection</h3>
+                            <p class="text-xs text-zinc-400">Oct 16, 11:58 PM</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Gallery Item 10 - Video -->
+                <a href="artefact.html?type=video" class="gallery-item group cursor-pointer">
+                    <div class="item-frame relative aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                        <video class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=800&auto=format&fit=crop">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-large.mp4" type="video/mp4">
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-particles-2883-small.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="video" class="w-3 h-3 text-white"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 class="text-sm font-serif-custom italic text-white mb-1">Luminous Echo</h3>
+                            <p class="text-xs text-zinc-400">Oct 15, 07:33 AM</p>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="h-8 border-t border-white/5 bg-black/40 flex items-center justify-center px-6 z-20 shrink-0">
+            <p class="text-[10px] text-zinc-300 font-serif-custom italic">Your memory archive • 253 dreams captured</p>
+        </footer>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Load artefacts from API
+        async function loadGallery() {
+            const loadingState = document.getElementById('loading-state');
+            const emptyState = document.getElementById('empty-state');
+            const galleryGrid = document.getElementById('gallery-grid');
+
+            try {
+                const response = await fetch('/api/artefacts', {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load gallery');
+                }
+
+                const data = await response.json();
+                const artefacts = data.artefacts || [];
+
+                // Store for filtering
+                allArtefacts = artefacts.filter(a => a.artefact_type === 'image');
+
+                // Hide loading
+                loadingState.classList.add('hidden');
+
+                if (allArtefacts.length === 0) {
+                    // Show empty state
+                    emptyState.classList.remove('hidden');
+                    emptyState.classList.add('flex');
+                } else {
+                    // Show gallery
+                    galleryGrid.classList.remove('hidden');
+
+                    // Clear placeholder items
+                    galleryGrid.innerHTML = '';
+
+                    // Add real artefacts
+                    allArtefacts.forEach(artefact => {
+                        const item = createGalleryItem(artefact);
+                        galleryGrid.appendChild(item);
+                    });
+
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Gallery loading error:', error);
+                loadingState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            }
+        }
+
+        function createGalleryItem(artefact) {
+            const item = document.createElement('a');
+            item.href = `artefact.html?id=${artefact.id}`;
+            item.className = 'gallery-item group cursor-pointer';
+
+            const date = new Date(artefact.created_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+
+            // Extract title from metadata or use default
+            const title = artefact.title || artefact.generation_prompt?.substring(0, 50) || 'Generated Image';
+            const model = artefact.metadata?.model || artefact.generation_model || 'AI Generated';
+
+            item.innerHTML = `
+                <div class="item-frame relative aspect-square bg-black/40 rounded-lg border border-white/5 overflow-hidden transition-all duration-500 group-hover:border-white/20">
+                    <img src="${artefact.file_url}"
+                         alt="${title}"
+                         class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%2318181b%27 width=%27400%27 height=%27400%27/%3E%3Ctext fill=%27%2371717a%27 font-family=%27sans-serif%27 font-size=%2720%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27%3EImage%3C/text%3E%3C/svg%3E'">
+                    <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div class="flex items-center gap-1">
+                            <i data-lucide="sparkles" class="w-3 h-3 text-violet-300"></i>
+                            <span class="text-[10px] text-violet-200">${model.includes('vertex') ? 'Imagen' : 'AI'}</span>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                        <h3 class="text-sm font-serif-custom italic text-white mb-1 line-clamp-1">${title}</h3>
+                        <p class="text-xs text-zinc-400">${date}</p>
+                    </div>
+                </div>
+            `;
+
+            return item;
+        }
+
+        // Store all artefacts for filtering
+        let allArtefacts = [];
+
+        // Load gallery on page load
+        document.addEventListener('DOMContentLoaded', loadGallery);
+
+        // Filter gallery
+        function filterGallery(filterType) {
+            const galleryGrid = document.getElementById('gallery-grid');
+            galleryGrid.innerHTML = '';
+
+            let filtered = [...allArtefacts];
+
+            // Apply filter
+            if (filterType === 'vertex') {
+                filtered = filtered.filter(a => a.generation_model?.includes('vertex') || a.metadata?.model?.includes('vertex'));
+            } else if (filterType === 'huggingface') {
+                filtered = filtered.filter(a => !a.generation_model?.includes('vertex') && !a.metadata?.model?.includes('vertex'));
+            } else if (filterType === 'today') {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                filtered = filtered.filter(a => new Date(a.created_at) >= today);
+            } else if (filterType === 'week') {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                filtered = filtered.filter(a => new Date(a.created_at) >= weekAgo);
+            } else if (filterType === 'month') {
+                const monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                filtered = filtered.filter(a => new Date(a.created_at) >= monthAgo);
+            }
+
+            // Display filtered items
+            if (filtered.length === 0) {
+                galleryGrid.innerHTML = '<div class="col-span-full text-center text-zinc-500 py-12">No images match this filter</div>';
+            } else {
+                filtered.forEach(artefact => {
+                    const item = createGalleryItem(artefact);
+                    galleryGrid.appendChild(item);
+                });
+                lucide.createIcons();
+            }
+        }
+    </script>
+
+</body></html>

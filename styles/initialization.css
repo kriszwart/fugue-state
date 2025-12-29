@@ -1,0 +1,166 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-serif-custom {
+  font-family: 'Newsreader', serif;
+}
+
+/* Input/Toggle Animations */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #818cf8;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #4f46e5;
+}
+
+/* Fade Transition */
+.step-content {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  transform: scale(0.98);
+}
+
+.step-content.active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+  transform: scale(1);
+}
+
+/* Halo Animation for Step 3 */
+@keyframes pulse-halo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.4);
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  70% {
+    box-shadow: 0 0 0 40px rgba(167, 139, 250, 0);
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(167, 139, 250, 0);
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.halo-ring {
+  animation: pulse-halo 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom Scrollbar for list */
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  /* Reduce padding on mobile */
+  .p-8, .p-10, .p-12 {
+    padding: 1.5rem !important;
+  }
+
+  .px-8, .px-10, .px-12 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  .py-8, .py-10, .py-12 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  /* Adjust text sizes for readability */
+  .text-4xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+  }
+
+  .text-5xl {
+    font-size: 2.25rem !important;
+    line-height: 2.5rem !important;
+  }
+
+  .text-6xl {
+    font-size: 2.5rem !important;
+    line-height: 1 !important;
+  }
+
+  /* Muse card grid - stack on mobile */
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+
+  /* Data source cards - 2 columns on mobile */
+  .grid.gap-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  .p-8, .p-10, .p-12 {
+    padding: 1rem !important;
+  }
+
+  .text-4xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+
+  .text-5xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+  }
+
+  /* Single column for data sources on very small screens */
+  .grid.gap-4 {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

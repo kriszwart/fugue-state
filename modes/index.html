@@ -1,0 +1,701 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Studio Modes</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-serif-custom { font-family: 'Newsreader', serif; }
+
+    /* Animations */
+    @keyframes breathe {
+        0% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.02); }
+        100% { opacity: 0.3; transform: scale(1); }
+    }
+    .canvas-pulse { animation: breathe 8s ease-in-out infinite; }
+
+    @keyframes drift {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .float-slow { animation: drift 6s ease-in-out infinite; }
+    .float-delayed { animation: drift 7s ease-in-out infinite 1s; }
+
+    /* Custom Scrollbar */
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+    /* Heartbeat */
+    @keyframes heartbeat {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.5); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .heartbeat-dot { animation: heartbeat 2s ease-in-out infinite; }
+
+    /* Tab Transitions */
+    .mode-content {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: none;
+    }
+    .mode-content.active {
+        opacity: 1;
+        pointer-events: auto;
+        display: flex;
+        position: relative;
+    }
+
+    /* Active Tab Glow */
+    .tab-active {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(167, 139, 250, 0.3);
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.1), inset 0 0 10px rgba(139, 92, 246, 0.05);
+        color: #e2e8f0;
+    }
+    .tab-inactive {
+        opacity: 0.6;
+    }
+    .tab-inactive:hover {
+        opacity: 0.9;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Stream Animation */
+    @keyframes stream-flow {
+        0% { transform: translateY(0); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(-100px); opacity: 0; }
+    }
+    .stream-particle { animation: stream-flow 3s ease-in-out infinite; }
+</style>
+</head>
+<body class="bg-[#09090b] lg:bg-[#020408] min-h-screen flex flex-col lg:items-center lg:justify-center p-0 lg:p-6 antialiased selection:bg-indigo-500/30 selection:text-indigo-200 overflow-hidden text-zinc-400">
+
+    <!-- Background -->
+    <div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+            <div data-us-project="NMlvqnkICwYYJ6lYb064" class="absolute w-full h-full left-0 top-0 -z-10"></div>
+            <script type="text/javascript">
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="h-screen lg:h-[94vh] flex flex-col lg:max-w-[1800px] w-full lg:rounded-[1.5rem] lg:border lg:border-white/10 lg:shadow-2xl lg:shadow-black bg-black/20 relative backdrop-blur-xl overflow-hidden">
+
+        <!-- Grid Lines Background -->
+        <div class="absolute inset-0 w-full h-full pointer-events-none z-0 flex justify-between px-6 opacity-20">
+            <div class="w-px h-full bg-white/5"></div>
+            <div class="w-px h-full bg-white/5 hidden md:block"></div>
+            <div class="w-px h-full bg-white/5 hidden xl:block"></div>
+            <div class="w-px h-full bg-white/5"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="relative z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-zinc-900/10 backdrop-blur-sm h-14 shrink-0">
+            <div class="flex items-center gap-4">
+                <a href="../studio/workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span class="text-xs tracking-widest uppercase">Studio</span>
+                </a>
+                <div class="h-4 w-px bg-white/10"></div>
+                <div class="flex items-center gap-3">
+                    <i data-lucide="brain-circuit" class="w-5 h-5 text-indigo-400" stroke-width="1.5"></i>
+                    <h1 class="text-sm tracking-tight text-white font-serif-custom italic">
+                        <span class="font-normal opacity-90">FugueState AI</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/5">
+                    <div class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)] animate-pulse"></div>
+                    <span class="text-xs font-medium text-amber-100 tracking-wide">Dameris Live</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mode Navigation -->
+        <div class="relative z-40 border-b border-white/5 bg-black/10 backdrop-blur-md px-6 py-3 flex items-center justify-center">
+            <nav class="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/5">
+                <button onclick="switchMode('reflective')" id="tab-reflective" class="tab-inactive px-4 py-1.5 rounded-md text-xs font-medium transition-all duration-300 flex items-center gap-2 border border-transparent">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    Reflective
+                </button>
+                <button onclick="switchMode('creative')" id="tab-creative" class="tab-active px-4 py-1.5 rounded-md text-xs font-medium transition-all duration-300 flex items-center gap-2 border border-transparent">
+                    <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+                    Creative
+                </button>
+                <button onclick="switchMode('autonomous')" id="tab-autonomous" class="tab-inactive px-4 py-1.5 rounded-md text-xs font-medium transition-all duration-300 flex items-center gap-2 border border-transparent">
+                    <i data-lucide="infinity" class="w-3.5 h-3.5"></i>
+                    Autonomous
+                </button>
+                <button onclick="switchMode('curatorial')" id="tab-curatorial" class="tab-inactive px-4 py-1.5 rounded-md text-xs font-medium transition-all duration-300 flex items-center gap-2 border border-transparent">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    Curatorial
+                </button>
+            </nav>
+        </div>
+
+        <!-- Viewport Area -->
+        <div class="flex-1 relative overflow-hidden z-20 bg-zinc-950/20">
+
+            <!-- MODE 1: REFLECTIVE (Enhanced) -->
+            <section id="mode-reflective" class="mode-content flex-row h-full w-full">
+                <!-- Sidebar: Entry List -->
+                <aside class="w-72 border-r border-white/5 bg-zinc-900/30 backdrop-blur-md flex flex-col">
+                    <div class="p-4 border-b border-white/5">
+                        <div class="relative">
+                            <input type="text" placeholder="Search entries..." class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 pl-8 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50 placeholder-zinc-600">
+                            <i data-lucide="search" class="w-3.5 h-3.5 text-zinc-300 absolute left-2.5 top-2.5"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto custom-scroll p-3 space-y-2">
+                        <!-- Entry Items -->
+                        <div class="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 cursor-pointer hover:bg-indigo-500/20 transition-colors">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-xs font-medium text-indigo-200">The Geometry of Solitude</h3>
+                                <span class="text-[9px] text-zinc-300">Oct 24</span>
+                            </div>
+                            <p class="text-[10px] text-zinc-400 line-clamp-2">The dream began with a sound—a low hum...</p>
+                        </div>
+                        <div class="p-3 rounded-lg border border-white/5 bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-xs font-medium text-zinc-300">Coastal Memory Stream</h3>
+                                <span class="text-[9px] text-zinc-300">Oct 21</span>
+                            </div>
+                            <p class="text-[10px] text-zinc-400 line-clamp-2">Recurring theme of coastal solitude...</p>
+                        </div>
+                        <div class="p-3 rounded-lg border border-white/5 bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-xs font-medium text-zinc-300">The Digital Garden</h3>
+                                <span class="text-[9px] text-zinc-300">Oct 18</span>
+                            </div>
+                            <p class="text-[10px] text-zinc-400 line-clamp-2">A recursive dream of organic circuitry...</p>
+                        </div>
+                    </div>
+                    <div class="p-3 border-t border-white/5">
+                        <button class="w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            New Entry
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- Main: Entry Content -->
+                <div class="flex-1 overflow-y-auto custom-scroll">
+                    <div class="max-w-2xl w-full py-16 px-8 mx-auto relative">
+                        <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-900/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+                        <div class="relative z-10 space-y-8">
+                            <!-- Entry Header -->
+                            <div class="text-center space-y-3 mb-12">
+                                <div class="flex items-center justify-center gap-2 mb-2">
+                                    <span class="px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-300">dream</span>
+                                    <span class="px-2 py-0.5 rounded bg-violet-500/10 border border-violet-500/20 text-[9px] text-violet-300">memory</span>
+                                </div>
+                                <span class="text-[10px] uppercase tracking-widest text-zinc-300 font-semibold">October 24, 2024</span>
+                                <h2 class="text-4xl font-serif-custom italic text-zinc-100 leading-tight">The Geometry of Solitude</h2>
+                            </div>
+
+                            <!-- Entry Body -->
+                            <div class="prose prose-invert prose-sm mx-auto font-serif-custom text-zinc-400 leading-relaxed">
+                                <p class="first-letter:text-4xl first-letter:float-left first-letter:mr-2 first-letter:text-zinc-200 first-letter:font-serif-custom">
+                                    The dream began with a sound—a low hum that seemed to originate from the walls themselves. I found myself walking through a corridor of polished obsidian, where my reflection was not my own but a version of myself from a time I couldn't quite place.
+                                </p>
+                                <p>
+                                    Dameris whispered, "This is not a memory, but a projection of what memory becomes when filtered through the geometry of consciousness."
+                                </p>
+                            </div>
+
+                            <!-- Embedded Visual -->
+                            <div class="my-8 rounded-lg overflow-hidden border border-white/5 relative group">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                                <div class="h-80 bg-zinc-800/50 flex items-center justify-center relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/40 via-black to-black"></div>
+                                    <i data-lucide="waves" class="w-16 h-16 text-zinc-300 opacity-20 relative z-0"></i>
+                                </div>
+                                <div class="absolute bottom-4 left-4 z-20 text-xs text-zinc-400 italic font-serif-custom">
+                                    Fig 1. The Obsidian Corridor
+                                </div>
+                            </div>
+
+                            <div class="prose prose-invert prose-sm mx-auto font-serif-custom text-zinc-400 leading-relaxed">
+                                <p>
+                                    I tried to touch the surface, but my hand passed through, rippling the glass like water. The geometry shifted. The corridor became a cathedral, then a forest of wireframes, then a constellation of points in n-dimensional space.
+                                </p>
+                                <p>
+                                    Each transformation felt like remembering something I had never forgotten, like recognizing a stranger who had always been familiar.
+                                </p>
+                            </div>
+
+                            <!-- Action Bar -->
+                            <div class="flex items-center justify-between pt-8 border-t border-white/5">
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all flex items-center gap-2">
+                                        <i data-lucide="download" class="w-3 h-3"></i>
+                                        Export PDF
+                                    </button>
+                                    <button class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all flex items-center gap-2">
+                                        <i data-lucide="share-2" class="w-3 h-3"></i>
+                                        Share
+                                    </button>
+                                </div>
+                                <button class="text-xs text-zinc-300 hover:text-zinc-300 transition-colors">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODE 2: CREATIVE (Enhanced) -->
+            <section id="mode-creative" class="mode-content active flex-row h-full w-full">
+                <!-- Left: Enhanced Controls -->
+                <div class="w-80 md:w-96 border-r border-white/5 bg-zinc-900/30 backdrop-blur-md flex flex-col z-30">
+                    <div class="p-6 space-y-6 flex-1 overflow-y-auto custom-scroll">
+
+                        <!-- Prompt Input -->
+                        <div class="space-y-3">
+                            <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Prompt Stream</label>
+                            <div class="relative">
+                                <textarea id="prompt-textarea" class="w-full h-32 bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-zinc-200 font-serif-custom focus:outline-none focus:border-indigo-500/50 resize-none placeholder-zinc-700 leading-relaxed" placeholder="Describe the scene... a city of glass suspended in a nebula, cinematic lighting, 8k resolution..."></textarea>
+                                <button class="absolute bottom-2 right-2 p-1.5 rounded bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors">
+                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Style Presets -->
+                        <div class="space-y-3">
+                            <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Aesthetic Presets</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="p-3 rounded border border-indigo-500/30 bg-indigo-500/5 cursor-pointer flex items-center gap-2 hover:bg-indigo-500/10 transition-colors">
+                                    <div class="w-2 h-2 rounded-full bg-indigo-400"></div>
+                                    <span class="text-xs text-indigo-100">Ethereal</span>
+                                </button>
+                                <button class="p-3 rounded border border-white/5 bg-white/5 hover:bg-white/10 cursor-pointer flex items-center gap-2 transition-colors">
+                                    <div class="w-2 h-2 rounded-full bg-zinc-600"></div>
+                                    <span class="text-xs text-zinc-400">Cybernetic</span>
+                                </button>
+                                <button class="p-3 rounded border border-white/5 bg-white/5 hover:bg-white/10 cursor-pointer flex items-center gap-2 transition-colors">
+                                    <div class="w-2 h-2 rounded-full bg-amber-600"></div>
+                                    <span class="text-xs text-zinc-400">Organic</span>
+                                </button>
+                                <button class="p-3 rounded border border-white/5 bg-white/5 hover:bg-white/10 cursor-pointer flex items-center gap-2 transition-colors">
+                                    <div class="w-2 h-2 rounded-full bg-violet-600"></div>
+                                    <span class="text-xs text-zinc-400">Dreamlike</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Parameters -->
+                        <div class="space-y-5">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Chaos</label>
+                                    <span class="text-[10px] text-zinc-400 font-mono">0.75</span>
+                                </div>
+                                <input type="range" min="0" max="100" value="75" class="w-full h-1 bg-white/5 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-indigo-500">
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Abstraction</label>
+                                    <span class="text-[10px] text-zinc-400 font-mono">0.40</span>
+                                </div>
+                                <input type="range" min="0" max="100" value="40" class="w-full h-1 bg-white/5 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-zinc-500">
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Coherence</label>
+                                    <span class="text-[10px] text-zinc-400 font-mono">0.85</span>
+                                </div>
+                                <input type="range" min="0" max="100" value="85" class="w-full h-1 bg-white/5 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-violet-500">
+                            </div>
+                        </div>
+
+                        <!-- Dimensions -->
+                        <div class="space-y-3">
+                            <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Dimensions</label>
+                            <select class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50">
+                                <option>1024 x 1024 (Square)</option>
+                                <option>1792 x 1024 (Landscape)</option>
+                                <option>1024 x 1792 (Portrait)</option>
+                                <option>1536 x 1536 (Large Square)</option>
+                            </select>
+                        </div>
+
+                        <!-- Batch Generation -->
+                        <div class="space-y-3">
+                            <label class="text-[10px] uppercase tracking-wider text-zinc-300 font-semibold">Variations</label>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all">1</button>
+                                <button class="flex-1 py-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-xs text-indigo-200 transition-all">4</button>
+                                <button class="flex-1 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all">9</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="p-4 border-t border-white/5 bg-zinc-950/50 space-y-2">
+                        <button onclick="generateCreative()" class="w-full py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-medium tracking-wide hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            Generate Vision
+                        </button>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all flex items-center justify-center gap-1">
+                                <i data-lucide="save" class="w-3 h-3"></i>
+                                Save
+                            </button>
+                            <button class="flex-1 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all flex items-center justify-center gap-1">
+                                <i data-lucide="history" class="w-3 h-3"></i>
+                                History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Live Preview -->
+                <div class="flex-1 relative flex flex-col bg-black/40">
+                    <div class="flex-1 relative flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-black/0 to-black/0"></div>
+
+                        <!-- Canvas -->
+                        <div id="creative-canvas" class="relative w-[85%] h-[85%] border border-white/5 bg-zinc-900/20 rounded-lg overflow-hidden shadow-2xl flex items-center justify-center group">
+                            <div class="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity duration-700" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+
+                            <div class="relative z-10 text-center space-y-3">
+                                <div class="w-16 h-16 rounded-full border border-white/10 bg-zinc-900/50 flex items-center justify-center mx-auto mb-3">
+                                    <i data-lucide="sparkles" class="w-8 h-8 text-indigo-300/50"></i>
+                                </div>
+                                <p class="text-sm font-serif-custom italic text-zinc-400">Canvas ready for your vision</p>
+                                <span class="px-3 py-1 bg-black/50 backdrop-blur rounded-full border border-white/10 text-[10px] text-zinc-400">4096 x 4096 @ 300 DPI</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODE 3: AUTONOMOUS (Enhanced) -->
+            <section id="mode-autonomous" class="mode-content flex-col h-full w-full relative">
+                <!-- Controls Bar -->
+                <div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+                    <button id="stream-toggle" onclick="toggleStream()" class="px-4 py-2 rounded-lg border border-white/10 bg-black/40 backdrop-blur-md text-xs text-zinc-300 hover:bg-black/60 transition-all flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Streaming</span>
+                    </button>
+                    <select class="px-3 py-2 rounded-lg border border-white/10 bg-black/40 backdrop-blur-md text-xs text-zinc-300 focus:outline-none">
+                        <option>Visual Stream</option>
+                        <option>Text Stream</option>
+                        <option>Hybrid Stream</option>
+                    </select>
+                    <button class="px-3 py-2 rounded-lg border border-white/10 bg-black/40 backdrop-blur-md text-xs text-zinc-300 hover:bg-black/60 transition-all">
+                        <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Full Viewport Stream Visualization -->
+                <div class="absolute inset-0 w-full h-full flex items-center justify-center">
+                    <div class="w-[600px] h-[600px] rounded-full border border-indigo-500/10 float-slow flex items-center justify-center">
+                        <div class="w-[400px] h-[400px] rounded-full border border-amber-500/10 float-delayed flex items-center justify-center">
+                             <div class="w-[200px] h-[200px] rounded-full bg-gradient-to-tr from-indigo-500/10 to-amber-500/10 blur-3xl animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Info -->
+                <div class="relative z-10 flex flex-col items-center justify-center h-full gap-8">
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-black/40 backdrop-blur">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-[10px] font-mono text-zinc-400">Stream Active • 247 Memories Generated</span>
+                    </div>
+
+                    <h3 class="text-3xl font-serif-custom italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-violet-300 to-amber-300">
+                        Dreaming in Realtime
+                    </h3>
+
+                    <!-- Live Feed Preview Cards -->
+                    <div class="flex gap-4 mt-8">
+                        <div class="w-32 h-32 rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group">
+                            <div class="absolute inset-0 bg-indigo-900/20"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+                                <span class="text-[9px] text-zinc-400">Just now</span>
+                            </div>
+                        </div>
+                        <div class="w-32 h-32 rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative opacity-70">
+                            <div class="absolute inset-0 bg-violet-900/20"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+                                <span class="text-[9px] text-zinc-400">2m ago</span>
+                            </div>
+                        </div>
+                        <div class="w-32 h-32 rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative opacity-50">
+                            <div class="absolute inset-0 bg-amber-900/20"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+                                <span class="text-[9px] text-zinc-400">5m ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Waveform -->
+                    <div class="flex items-end gap-1 h-12 mt-4">
+                        <div class="w-1 bg-indigo-500/40 h-4 animate-pulse"></div>
+                        <div class="w-1 bg-indigo-500/40 h-8 animate-pulse delay-75"></div>
+                        <div class="w-1 bg-indigo-500/40 h-6 animate-pulse delay-100"></div>
+                        <div class="w-1 bg-indigo-500/40 h-12 animate-pulse delay-150"></div>
+                        <div class="w-1 bg-indigo-500/40 h-7 animate-pulse delay-200"></div>
+                        <div class="w-1 bg-indigo-500/40 h-3 animate-pulse delay-300"></div>
+                        <div class="w-1 bg-indigo-500/40 h-9 animate-pulse delay-100"></div>
+                        <div class="w-1 bg-indigo-500/40 h-5 animate-pulse delay-200"></div>
+                    </div>
+                </div>
+
+                <!-- Bottom Stream History -->
+                <div class="absolute bottom-6 left-6 right-6 z-20">
+                    <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                        <span class="text-[9px] text-zinc-300 uppercase tracking-wider shrink-0">Recent Stream</span>
+                        <div class="h-px flex-1 bg-white/5"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODE 4: CURATORIAL (Enhanced) -->
+            <section id="mode-curatorial" class="mode-content flex-col h-full w-full">
+                <!-- Enhanced Toolbar -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-zinc-900/20 backdrop-blur-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <input type="text" placeholder="Search gallery..." class="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 pl-8 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500/50 placeholder-zinc-600 w-64">
+                            <i data-lucide="search" class="w-3 h-3 text-zinc-300 absolute left-2.5 top-2"></i>
+                        </div>
+                        <div class="h-4 w-px bg-white/10"></div>
+                        <select class="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none">
+                            <option>All Types</option>
+                            <option>Images</option>
+                            <option>Text</option>
+                            <option>Audio</option>
+                        </select>
+                        <select class="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none">
+                            <option>Newest First</option>
+                            <option>Oldest First</option>
+                            <option>Most Liked</option>
+                            <option>A-Z</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all">
+                            <i data-lucide="grid-3x3" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all">
+                            <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="flex-1 overflow-y-auto custom-scroll p-6">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        <!-- Gallery Items -->
+                        <a href="../studio/artefact.html" class="aspect-square rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group cursor-pointer hover:border-indigo-500/30 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1620641788421-7f1c338b852c?q=80&w=400');"></div>
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-6 h-6 rounded-full bg-black/60 backdrop-blur flex items-center justify-center hover:bg-black/80">
+                                    <i data-lucide="heart" class="w-3 h-3 text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <p class="text-[10px] text-zinc-300 truncate">Neon Orchard</p>
+                                <span class="text-[9px] text-zinc-300">Oct 24 • 2048x1280</span>
+                            </div>
+                        </a>
+
+                        <a href="../studio/artefact.html" class="aspect-square rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group cursor-pointer hover:border-violet-500/30 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400');"></div>
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-6 h-6 rounded-full bg-black/60 backdrop-blur flex items-center justify-center hover:bg-black/80">
+                                    <i data-lucide="heart" class="w-3 h-3 text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <p class="text-[10px] text-zinc-300 truncate">Digital Dreams</p>
+                                <span class="text-[9px] text-zinc-300">Oct 23 • 1792x1024</span>
+                            </div>
+                        </a>
+
+                        <a href="../studio/artefact.html" class="aspect-square rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group cursor-pointer hover:border-amber-500/30 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=400');"></div>
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-6 h-6 rounded-full bg-black/60 backdrop-blur flex items-center justify-center hover:bg-black/80">
+                                    <i data-lucide="heart" class="w-3 h-3 text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <p class="text-[10px] text-zinc-300 truncate">Memory Fragment</p>
+                                <span class="text-[9px] text-zinc-300">Oct 21 • 1024x1024</span>
+                            </div>
+                        </a>
+
+                        <a href="../studio/artefact.html" class="aspect-square rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group cursor-pointer hover:border-emerald-500/30 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1635241161466-541f065683ba?q=80&w=400');"></div>
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-6 h-6 rounded-full bg-black/60 backdrop-blur flex items-center justify-center hover:bg-black/80">
+                                    <i data-lucide="heart" class="w-3 h-3 text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <p class="text-[10px] text-zinc-300 truncate">Synthetic Memories</p>
+                                <span class="text-[9px] text-zinc-300">Oct 18 • 1536x1536</span>
+                            </div>
+                        </a>
+
+                        <a href="../studio/artefact.html" class="aspect-square rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group cursor-pointer hover:border-indigo-500/30 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1617791160536-598cf32026fb?q=80&w=400');"></div>
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-6 h-6 rounded-full bg-black/60 backdrop-blur flex items-center justify-center hover:bg-black/80">
+                                    <i data-lucide="heart" class="w-3 h-3 text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <p class="text-[10px] text-zinc-300 truncate">Fractal Thoughts</p>
+                                <span class="text-[9px] text-zinc-300">Oct 15 • 1024x1792</span>
+                            </div>
+                        </a>
+
+                        <a href="../studio/artefact.html" class="aspect-square rounded-lg border border-white/5 bg-zinc-900/30 overflow-hidden relative group cursor-pointer hover:border-rose-500/30 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=400');"></div>
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-6 h-6 rounded-full bg-black/60 backdrop-blur flex items-center justify-center hover:bg-black/80">
+                                    <i data-lucide="heart" class="w-3 h-3 text-zinc-300"></i>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <p class="text-[10px] text-zinc-300 truncate">Echo Chamber</p>
+                                <span class="text-[9px] text-zinc-300">Oct 14 • 2048x1280</span>
+                            </div>
+                        </a>
+
+                        <!-- Empty Slots -->
+                        <div class="aspect-square rounded-lg border border-dashed border-white/5 bg-transparent flex items-center justify-center opacity-30 hover:opacity-50 transition-opacity cursor-pointer">
+                            <i data-lucide="plus" class="w-6 h-6 text-zinc-300"></i>
+                        </div>
+                        <div class="aspect-square rounded-lg border border-dashed border-white/5 bg-transparent flex items-center justify-center opacity-30">
+                            <span class="text-[10px] text-zinc-300">Empty</span>
+                        </div>
+                        <div class="aspect-square rounded-lg border border-dashed border-white/5 bg-transparent flex items-center justify-center opacity-30">
+                            <span class="text-[10px] text-zinc-300">Empty</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Footer -->
+                <div class="px-6 py-3 border-t border-white/5 bg-zinc-900/20 backdrop-blur-sm flex items-center justify-between">
+                    <span class="text-[10px] text-zinc-300">247 items • 18.4 GB</span>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-[10px] text-zinc-300 transition-all">
+                            Export Selected
+                        </button>
+                        <button class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-[10px] text-zinc-300 transition-all">
+                            New Collection
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="h-8 border-t border-white/5 bg-black/40 flex items-center justify-between px-6 z-20 shrink-0 backdrop-blur-md">
+            <div class="flex items-center gap-4">
+                 <div class="flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-opacity">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 heartbeat-dot"></span>
+                    <span class="text-[10px] font-mono text-zinc-300">Redis: Connected</span>
+                 </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <span class="text-[10px] text-zinc-300 font-mono">v.2.1.0</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-zinc-300">Model:</span>
+                    <span class="text-[10px] text-zinc-300 font-medium bg-white/5 px-1.5 py-0.5 rounded">Claude 3.5 Sonnet</span>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function switchMode(modeName) {
+            document.querySelectorAll('.mode-content').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            document.getElementById('mode-' + modeName).classList.add('active');
+
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+            });
+
+            const activeTab = document.getElementById('tab-' + modeName);
+            activeTab.classList.remove('tab-inactive');
+            activeTab.classList.add('tab-active');
+
+            // Update URL hash
+            window.location.hash = modeName;
+        }
+
+        // Handle URL hash on load
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && ['reflective', 'creative', 'autonomous', 'curatorial'].includes(hash)) {
+                switchMode(hash);
+            }
+            lucide.createIcons();
+        });
+
+        // Creative Mode - Generate Demo
+        function generateCreative() {
+            const canvas = document.getElementById('creative-canvas');
+            canvas.classList.add('animate-pulse');
+            setTimeout(() => {
+                canvas.classList.remove('animate-pulse');
+            }, 2000);
+        }
+
+        // Autonomous Mode - Toggle Stream
+        let isStreaming = true;
+        function toggleStream() {
+            isStreaming = !isStreaming;
+            const btn = document.getElementById('stream-toggle');
+            if (isStreaming) {
+                btn.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Streaming</span>';
+            } else {
+                btn.innerHTML = '<span class="w-2 h-2 rounded-full bg-zinc-500"></span><span>Paused</span>';
+            }
+        }
+    </script>
+
+</body></html>

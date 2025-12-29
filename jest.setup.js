@@ -1,0 +1,19 @@
+// Jest setup file (kept intentionally minimal).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,695 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Memory Calendar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/toast-notifications.js"></script>
+<script src="/js/ux-enhancements.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-serif-custom { font-family: 'Newsreader', serif; }
+.font-mono-custom { font-family: 'JetBrains Mono', monospace; }
+
+/* Calendar Grid */
+.calendar-day {
+    transition: all 0.2s ease;
+}
+.calendar-day:hover {
+    transform: scale(1.02);
+}
+.calendar-day.has-memories {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+    border-color: rgba(139, 92, 246, 0.3);
+}
+.calendar-day.has-memories:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* Source Badge Colors */
+.source-gmail { background: rgba(234, 67, 53, 0.15); border-color: rgba(234, 67, 53, 0.3); color: #fca5a5; }
+.source-notion { background: rgba(0, 0, 0, 0.2); border-color: rgba(255, 255, 255, 0.2); color: #e5e7eb; }
+.source-drive { background: rgba(66, 133, 244, 0.15); border-color: rgba(66, 133, 244, 0.3); color: #93c5fd; }
+.source-local { background: rgba(107, 114, 128, 0.15); border-color: rgba(107, 114, 128, 0.3); color: #d1d5db; }
+.source-mcp { background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #c4b5fd; }
+
+/* Timeline Line */
+.timeline-line {
+    background: linear-gradient(to bottom, transparent, rgba(139, 92, 246, 0.3), transparent);
+}
+</style>
+<script src="/js/auth-check.js"></script>
+</head>
+<body class="bg-[#050505] text-zinc-300 min-h-screen flex flex-col overflow-hidden selection:bg-violet-500/20 selection:text-violet-200">
+
+    <!-- Background -->
+    <div class="fixed inset-0 w-full h-full -z-10 pointer-events-none">
+        <div class="absolute inset-0 bg-[#020204]"></div>
+        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-900/10 blur-[120px] rounded-full mix-blend-screen animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] bg-amber-900/10 blur-[100px] rounded-full mix-blend-screen"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/40 backdrop-blur-xl shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="text-xs tracking-widest uppercase">Studio</span>
+            </a>
+            <div class="h-4 w-px bg-white/10"></div>
+            <div class="flex items-center gap-3">
+                <i data-lucide="calendar" class="w-5 h-5 text-violet-400" stroke-width="1.5"></i>
+                <span class="font-serif-custom italic text-lg tracking-tight text-zinc-200">Memory Calendar</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="view-toggle" class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all flex items-center gap-2">
+                <i data-lucide="layout-grid" class="w-3 h-3"></i>
+                <span>Calendar</span>
+            </button>
+            <button id="timeline-toggle" class="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 transition-all flex items-center gap-2">
+                <i data-lucide="git-branch" class="w-3 h-3"></i>
+                <span>Timeline</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden relative z-10">
+        
+        <!-- Left Sidebar: Month Navigation & Filters -->
+        <aside class="w-64 flex-shrink-0 border-r border-white/5 bg-black/20 backdrop-blur-xl z-20 hidden md:flex flex-col">
+            <div class="p-6 border-b border-white/5">
+                <div class="flex items-center justify-between mb-4">
+                    <button id="prev-month" class="p-2 rounded-lg hover:bg-white/5 transition-colors">
+                        <i data-lucide="chevron-left" class="w-4 h-4 text-zinc-400"></i>
+                    </button>
+                    <h2 id="current-month" class="font-serif-custom italic text-lg text-zinc-200">December 2024</h2>
+                    <button id="next-month" class="p-2 rounded-lg hover:bg-white/5 transition-colors">
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-400"></i>
+                    </button>
+                </div>
+                <button id="today-btn" class="w-full px-3 py-2 rounded-lg border border-violet-500/30 bg-violet-500/10 hover:bg-violet-500/20 text-xs text-violet-300 transition-all">
+                    Go to Today
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Filter: Data Sources -->
+                <div>
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-300 font-medium mb-3">Data Sources</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer">
+                            <input type="checkbox" class="source-filter" value="all" checked>
+                            <span>All Sources</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer">
+                            <input type="checkbox" class="source-filter" value="gmail">
+                            <span class="source-badge source-gmail px-2 py-0.5 rounded text-[10px] uppercase">Gmail</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer">
+                            <input type="checkbox" class="source-filter" value="notion">
+                            <span class="source-badge source-notion px-2 py-0.5 rounded text-[10px] uppercase">Notion</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer">
+                            <input type="checkbox" class="source-filter" value="drive">
+                            <span class="source-badge source-drive px-2 py-0.5 rounded text-[10px] uppercase">Drive</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer">
+                            <input type="checkbox" class="source-filter" value="local">
+                            <span class="source-badge source-local px-2 py-0.5 rounded text-[10px] uppercase">Local</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="pt-4 border-t border-white/5">
+                    <h3 class="text-xs uppercase tracking-widest text-zinc-300 font-medium mb-3">This Month</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-zinc-400 mb-1">
+                                <span>Memories</span>
+                                <span id="month-memories-count" class="text-zinc-300 font-mono-custom">0</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-zinc-400 mb-1">
+                                <span>Days Active</span>
+                                <span id="month-days-count" class="text-zinc-300 font-mono-custom">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Calendar View -->
+        <div id="calendar-view" class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-6xl mx-auto">
+                <!-- Weekday Headers -->
+                <div class="grid grid-cols-7 gap-2 mb-4">
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Sun</div>
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Mon</div>
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Tue</div>
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Wed</div>
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Thu</div>
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Fri</div>
+                    <div class="text-center text-xs uppercase tracking-widest text-zinc-400 font-medium py-2">Sat</div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2">
+                    <!-- Days will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline View (Hidden by default) -->
+        <div id="timeline-view" class="flex-1 overflow-y-auto p-6 hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="relative">
+                    <!-- Timeline Line -->
+                    <div class="absolute left-8 top-0 bottom-0 w-px timeline-line"></div>
+                    
+                    <!-- Timeline Items -->
+                    <div id="timeline-items" class="space-y-8">
+                        <!-- Timeline items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar: Selected Day Details -->
+        <aside id="day-details" class="w-80 flex-shrink-0 border-l border-white/5 bg-black/20 backdrop-blur-xl z-20 hidden lg:flex flex-col">
+            <div class="p-6 border-b border-white/5">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <h3 id="selected-date" class="font-serif-custom italic text-lg text-zinc-200">Select a date</h3>
+                        <p id="selected-date-count" class="text-xs text-zinc-400 mt-1">0 memories</p>
+                    </div>
+                    <button id="add-entry-btn" onclick="showAddEntryModal()" class="p-2 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 text-violet-300 transition-all hidden" title="Add journal entry">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="day-memories" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <p class="text-sm text-zinc-500 text-center">Select a date to view memories</p>
+            </div>
+        </aside>
+
+        <!-- Add Entry Modal -->
+        <div id="add-entry-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="hideAddEntryModal()"></div>
+            <div class="relative bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 max-w-2xl w-full mx-4 z-10">
+                <button onclick="hideAddEntryModal()" class="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-zinc-200 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                
+                <h3 class="text-xl font-serif-custom italic text-zinc-200 mb-2">New Journal Entry</h3>
+                <p id="modal-date" class="text-sm text-zinc-400 mb-6"></p>
+                
+                <form id="entry-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-2">Entry Title (optional)</label>
+                        <input type="text" id="entry-title" placeholder="A title for this entry..." class="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 placeholder-zinc-600">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-2">Your thoughts</label>
+                        <textarea id="entry-content" rows="8" placeholder="Write your journal entry here..." class="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 placeholder-zinc-600 resize-none"></textarea>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <label class="block text-xs text-zinc-400 mb-2">Mood/Tags (comma separated)</label>
+                            <input type="text" id="entry-tags" placeholder="calm, reflective, creative..." class="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 placeholder-zinc-600">
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+                        <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 text-sm text-violet-300 transition-all">
+                            Save Entry
+                        </button>
+                        <button type="button" onclick="hideAddEntryModal()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-zinc-300 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Calendar State
+        let currentDate = new Date();
+        let memoriesData = [];
+        let selectedDate = null;
+
+        // Initialize
+        async function init() {
+            await loadMemories();
+            renderCalendar();
+            setupEventListeners();
+        }
+
+        // Load memories from API and distribute across dates
+        async function loadMemories() {
+            try {
+                const response = await fetch('/api/memories?limit=1000');
+                const data = await response.json();
+                const rawMemories = data.memories || [];
+
+                // Distribute memories across the past 90 days
+                if (rawMemories.length > 0) {
+                    const today = new Date();
+                    const daysToDistribute = 90; // Past 3 months
+
+                    memoriesData = rawMemories.map((memory, index) => {
+                        // If memory doesn't have a temporal_marker, assign one
+                        if (!memory.temporal_marker) {
+                            // Distribute evenly across the past days
+                            const daysAgo = Math.floor((index / rawMemories.length) * daysToDistribute);
+                            const syntheticDate = new Date(today);
+                            syntheticDate.setDate(syntheticDate.getDate() - daysAgo);
+
+                            // Add some randomness to the time
+                            const randomHour = Math.floor(Math.random() * 16) + 8; // Between 8am-11pm
+                            const randomMinute = Math.floor(Math.random() * 60);
+                            syntheticDate.setHours(randomHour, randomMinute, 0, 0);
+
+                            return {
+                                ...memory,
+                                temporal_marker: syntheticDate.toISOString(),
+                                _synthetic_date: true // Mark as synthetic for debugging
+                            };
+                        }
+                        return memory;
+                    });
+
+                    // Sort by temporal_marker descending
+                    memoriesData.sort((a, b) => {
+                        const dateA = new Date(a.temporal_marker || a.created_at);
+                        const dateB = new Date(b.temporal_marker || b.created_at);
+                        return dateB - dateA;
+                    });
+
+                    console.log('Loaded memories:', memoriesData.length, 'distributed across past', daysToDistribute, 'days');
+                } else {
+                    memoriesData = rawMemories;
+                }
+            } catch (error) {
+                console.error('Error loading memories:', error);
+                memoriesData = [];
+            }
+        }
+
+        // Render calendar
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update month header
+            document.getElementById('current-month').textContent = 
+                new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            // Get first day of month and days in month
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(createEmptyDay());
+            }
+
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dayMemories = getMemoriesForDate(date);
+                grid.appendChild(createDayCell(day, date, dayMemories));
+            }
+
+            // Update stats
+            updateMonthStats();
+        }
+
+        // Create day cell
+        function createDayCell(day, date, memories) {
+            const cell = document.createElement('div');
+            cell.className = `calendar-day p-3 rounded-lg border border-white/5 bg-zinc-900/20 cursor-pointer ${memories.length > 0 ? 'has-memories' : ''}`;
+            
+            const isToday = isSameDay(date, new Date());
+            if (isToday) {
+                cell.classList.add('ring-2', 'ring-violet-500/50');
+            }
+
+            const dayNum = document.createElement('div');
+            dayNum.className = `text-sm font-medium mb-2 ${isToday ? 'text-violet-300' : 'text-zinc-300'}`;
+            dayNum.textContent = day;
+            cell.appendChild(dayNum);
+
+            if (memories.length > 0) {
+                const count = document.createElement('div');
+                count.className = 'text-xs text-zinc-400 font-mono-custom mb-2';
+                count.textContent = `${memories.length} memory${memories.length > 1 ? 'ies' : ''}`;
+                cell.appendChild(count);
+
+                // Show source badges
+                const sources = [...new Set(memories.map(m => m.source_type || 'unknown'))];
+                const sourcesDiv = document.createElement('div');
+                sourcesDiv.className = 'flex flex-wrap gap-1';
+                sources.slice(0, 3).forEach(source => {
+                    const badge = document.createElement('span');
+                    badge.className = `source-badge source-${source} px-1.5 py-0.5 rounded text-[9px] uppercase`;
+                    badge.textContent = source === 'gmail' ? 'G' : source === 'notion' ? 'N' : source === 'drive' ? 'D' : 'L';
+                    badge.title = source;
+                    sourcesDiv.appendChild(badge);
+                });
+                if (sources.length > 3) {
+                    const more = document.createElement('span');
+                    more.className = 'text-[9px] text-zinc-500';
+                    more.textContent = `+${sources.length - 3}`;
+                    sourcesDiv.appendChild(more);
+                }
+                cell.appendChild(sourcesDiv);
+            }
+
+            cell.addEventListener('click', () => selectDate(date, memories));
+            return cell;
+        }
+
+        // Create empty day cell
+        function createEmptyDay() {
+            const cell = document.createElement('div');
+            cell.className = 'p-3';
+            return cell;
+        }
+
+        // Get memories for a specific date
+        function getMemoriesForDate(date) {
+            return memoriesData.filter(memory => {
+                const memoryDate = memory.temporal_marker ? new Date(memory.temporal_marker) : new Date(memory.created_at);
+                return isSameDay(memoryDate, date);
+            });
+        }
+
+        // Check if two dates are the same day
+        function isSameDay(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getDate() === date2.getDate();
+        }
+
+        // Select date and show details
+        function selectDate(date, memories) {
+            selectedDate = date;
+            const details = document.getElementById('day-details');
+            details.classList.remove('hidden');
+
+            document.getElementById('selected-date').textContent = 
+                date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('selected-date-count').textContent = 
+                `${memories.length} ${memories.length === 1 ? 'memory' : 'memories'}`;
+
+            // Show add entry button
+            document.getElementById('add-entry-btn').classList.remove('hidden');
+
+            const container = document.getElementById('day-memories');
+            container.innerHTML = '';
+
+            if (memories.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i data-lucide="book-open" class="w-12 h-12 text-zinc-600 mx-auto mb-3"></i>
+                        <p class="text-sm text-zinc-500 mb-4">No entries for this date</p>
+                        <button onclick="showAddEntryModal()" class="px-4 py-2 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 text-xs text-violet-300 transition-all">
+                            Add Journal Entry
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            memories.forEach(memory => {
+                const card = createMemoryCard(memory);
+                container.appendChild(card);
+            });
+        }
+
+        // Create memory card
+        function createMemoryCard(memory) {
+            const card = document.createElement('div');
+            card.className = 'p-4 rounded-lg border border-white/5 bg-zinc-900/30 hover:bg-zinc-900/50 transition-colors group';
+            
+            const source = memory.data_source?.source_type || 'local';
+            const sourceName = memory.data_source?.source_name || (source === 'local' ? 'Journal' : source);
+            const isJournal = source === 'local' || !memory.data_source;
+            
+            // Check if content has a title (starts with **title**)
+            const hasTitle = memory.content.startsWith('**') && memory.content.includes('**\n\n');
+            let title = '';
+            let content = memory.content;
+            if (hasTitle) {
+                const match = memory.content.match(/^\*\*(.+?)\*\*\n\n/);
+                if (match) {
+                    title = match[1];
+                    content = memory.content.substring(match[0].length);
+                }
+            }
+            
+            card.innerHTML = `
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="source-badge source-${source} px-2 py-0.5 rounded text-[10px] uppercase">${sourceName}</span>
+                        ${isJournal ? '<i data-lucide="book-open" class="w-3 h-3 text-violet-400/60"></i>' : ''}
+                    </div>
+                    <span class="text-[10px] text-zinc-500 font-mono-custom">${new Date(memory.temporal_marker || memory.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                </div>
+                ${title ? `<h4 class="text-sm font-medium text-zinc-200 mb-2 font-serif-custom italic">${title}</h4>` : ''}
+                <p class="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">${content.substring(0, 300)}${content.length > 300 ? '...' : ''}</p>
+                ${memory.themes && memory.themes.length > 0 ? `
+                    <div class="mt-3 flex flex-wrap gap-1.5">
+                        ${memory.themes.map(theme => `<span class="px-2 py-0.5 rounded text-[9px] text-violet-400/70 bg-violet-500/10 border border-violet-500/20">#${theme}</span>`).join('')}
+                    </div>
+                ` : ''}
+                <div class="mt-3 pt-3 border-t border-white/5 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editEntry('${memory.id}')" class="text-xs text-zinc-400 hover:text-zinc-200 transition-colors flex items-center gap-1">
+                        <i data-lucide="edit" class="w-3 h-3"></i>
+                        Edit
+                    </button>
+                    <button onclick="deleteEntry('${memory.id}')" class="text-xs text-zinc-400 hover:text-red-400 transition-colors flex items-center gap-1">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        Delete
+                    </button>
+                </div>
+            `;
+            
+            lucide.createIcons();
+            return card;
+        }
+
+        // Edit entry
+        async function editEntry(memoryId) {
+            try {
+                const response = await fetch(`/api/memories?id=${memoryId}`);
+                const data = await response.json();
+                const memory = data.memory;
+                
+                if (!memory) {
+                    if (window.toastNotifications) {
+                        window.toastNotifications.warning('Entry not found');
+                    } else {
+                        alert('Entry not found');
+                    }
+                    return;
+                }
+                
+                // Parse title if exists
+                let title = '';
+                let content = memory.content;
+                if (memory.content.startsWith('**') && memory.content.includes('**\n\n')) {
+                    const match = memory.content.match(/^\*\*(.+?)\*\*\n\n/);
+                    if (match) {
+                        title = match[1];
+                        content = memory.content.substring(match[0].length);
+                    }
+                }
+                
+                // Populate form
+                document.getElementById('entry-title').value = title;
+                document.getElementById('entry-content').value = content;
+                document.getElementById('entry-tags').value = memory.themes?.join(', ') || '';
+                
+                // Store memory ID for update
+                document.getElementById('entry-form').dataset.memoryId = memoryId;
+                
+                // Show modal
+                showAddEntryModal();
+                
+            } catch (error) {
+                console.error('Error loading entry:', error);
+                if (window.toastNotifications) {
+                    window.toastNotifications.error('Failed to load entry for editing');
+                } else {
+                    alert('Failed to load entry for editing');
+                }
+            }
+        }
+
+        // Delete entry
+        async function deleteEntry(memoryId) {
+            const confirmed = window.confirm ? confirm('Are you sure you want to delete this entry?') : true;
+            if (!confirmed) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/memories?id=${memoryId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to delete entry');
+                }
+                
+                // Reload memories and refresh
+                await loadMemories();
+                renderCalendar();
+                
+                if (selectedDate) {
+                    const dayMemories = getMemoriesForDate(selectedDate);
+                    selectDate(selectedDate, dayMemories);
+                }
+                
+                if (window.toastNotifications) {
+                    window.toastNotifications.success('Entry deleted successfully');
+                }
+                
+            } catch (error) {
+                console.error('Error deleting entry:', error);
+                if (window.toastNotifications) {
+                    window.toastNotifications.error('Failed to delete entry');
+                } else {
+                    alert('Failed to delete entry');
+                }
+            }
+        }
+
+        // Update month stats
+        function updateMonthStats() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthStart = new Date(year, month, 1);
+            const monthEnd = new Date(year, month + 1, 0);
+
+            const monthMemories = memoriesData.filter(m => {
+                const memoryDate = m.temporal_marker ? new Date(m.temporal_marker) : new Date(m.created_at);
+                return memoryDate >= monthStart && memoryDate <= monthEnd;
+            });
+
+            const daysWithMemories = new Set();
+            monthMemories.forEach(m => {
+                const memoryDate = m.temporal_marker ? new Date(m.temporal_marker) : new Date(m.created_at);
+                daysWithMemories.add(memoryDate.toDateString());
+            });
+
+            document.getElementById('month-memories-count').textContent = monthMemories.length;
+            document.getElementById('month-days-count').textContent = daysWithMemories.size;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('prev-month').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+
+            document.getElementById('next-month').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            document.getElementById('today-btn').addEventListener('click', () => {
+                currentDate = new Date();
+                renderCalendar();
+            });
+
+            document.getElementById('view-toggle').addEventListener('click', () => {
+                document.getElementById('calendar-view').classList.remove('hidden');
+                document.getElementById('timeline-view').classList.add('hidden');
+            });
+
+            document.getElementById('timeline-toggle').addEventListener('click', () => {
+                document.getElementById('calendar-view').classList.add('hidden');
+                document.getElementById('timeline-view').classList.remove('hidden');
+                renderTimeline();
+            });
+        }
+
+        // Render timeline view
+        function renderTimeline() {
+            const container = document.getElementById('timeline-items');
+            container.innerHTML = '';
+
+            // Group memories by date
+            const grouped = {};
+            memoriesData.forEach(memory => {
+                const date = new Date(memory.temporal_marker || memory.created_at);
+                const dateKey = date.toDateString();
+                if (!grouped[dateKey]) {
+                    grouped[dateKey] = [];
+                }
+                grouped[dateKey].push(memory);
+            });
+
+            // Sort dates
+            const sortedDates = Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
+
+            sortedDates.forEach(dateKey => {
+                const date = new Date(dateKey);
+                const memories = grouped[dateKey];
+                
+                const item = document.createElement('div');
+                item.className = 'relative pl-12';
+                item.innerHTML = `
+                    <div class="absolute left-6 -top-1 w-4 h-4 rounded-full bg-violet-500 border-2 border-zinc-900"></div>
+                    <div class="text-xs text-zinc-400 font-mono-custom mb-2">${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                    <div class="space-y-3">
+                        ${memories.map(m => `
+                            <div class="p-3 rounded-lg border border-white/5 bg-zinc-900/30">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="source-badge source-${m.data_source?.source_type || 'unknown'} px-2 py-0.5 rounded text-[10px] uppercase">${m.data_source?.source_name || 'Unknown'}</span>
+                                    <span class="text-[10px] text-zinc-500">${new Date(m.temporal_marker || m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                                </div>
+                                <p class="text-sm text-zinc-300 line-clamp-2">${m.content.substring(0, 150)}...</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Quick add entry (for today)
+        function showQuickAddEntry() {
+            selectedDate = new Date();
+            showAddEntryModal();
+        }
+
+        // Initialize on load
+        init();
+        
+        // Initialize icons after modal is created
+        lucide.createIcons();
+    </script>
+</body></html>
+

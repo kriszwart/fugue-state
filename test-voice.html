@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Test - Dameris</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900 text-white min-h-screen flex items-center justify-center p-8">
+    <div class="max-w-2xl w-full">
+        <h1 class="text-3xl font-bold mb-8 text-center">Dameris Voice Test</h1>
+
+        <div class="bg-zinc-800 rounded-lg p-6 space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-lg font-semibold">Diagnostic Information:</h2>
+                <div class="text-sm space-y-1 font-mono">
+                    <p>Current URL: <span id="current-url" class="text-green-400"></span></p>
+                    <p>Protocol: <span id="protocol" class="text-green-400"></span></p>
+                    <p>Host: <span id="host" class="text-green-400"></span></p>
+                </div>
+            </div>
+
+            <div id="error-message" class="hidden bg-red-900/50 border border-red-500 rounded p-4 text-sm">
+                <p class="font-semibold">⚠️ Error:</p>
+                <p id="error-text"></p>
+            </div>
+
+            <div id="success-message" class="hidden bg-green-900/50 border border-green-500 rounded p-4 text-sm">
+                <p class="font-semibold">✅ Success!</p>
+                <p id="success-text"></p>
+            </div>
+
+            <div class="space-y-3 pt-4">
+                <button id="test-api" class="w-full bg-violet-600 hover:bg-violet-700 px-6 py-3 rounded-lg transition-colors">
+                    Test API Connection
+                </button>
+
+                <button id="test-voice" class="w-full bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-lg transition-colors" disabled>
+                    Test Voice (Click after API test passes)
+                </button>
+
+                <div id="loading" class="hidden text-center py-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+                    <p class="mt-2 text-sm">Processing...</p>
+                </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-zinc-700/50 rounded text-sm space-y-2">
+                <p class="font-semibold">🔧 Troubleshooting:</p>
+                <ul class="list-disc list-inside space-y-1 text-xs">
+                    <li>Make sure Next.js dev server is running: <code class="bg-zinc-900 px-2 py-1 rounded">npm run dev</code></li>
+                    <li>Access this page at: <code class="bg-zinc-900 px-2 py-1 rounded">http://localhost:3000/test-voice.html</code></li>
+                    <li>Don't open the HTML file directly (file:// won't work)</li>
+                    <li>Check browser console (F12) for errors</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/dameris-voice.js"></script>
+    <script>
+        // Display diagnostic info
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('host').textContent = window.location.host || 'None (file://)';
+
+        const errorMsg = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const successMsg = document.getElementById('success-message');
+        const successText = document.getElementById('success-text');
+        const loading = document.getElementById('loading');
+
+        function showError(message) {
+            errorMsg.classList.remove('hidden');
+            successMsg.classList.add('hidden');
+            errorText.textContent = message;
+            loading.classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            successMsg.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+            successText.textContent = message;
+            loading.classList.add('hidden');
+        }
+
+        // Test API connection
+        document.getElementById('test-api').addEventListener('click', async () => {
+            loading.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: 'Test',
+                        voiceId: '21m00Tcm4TlvDq8ikWAM'
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    throw new Error(`API returned ${response.status}: ${errorData}`);
+                }
+
+                showSuccess('API connection successful! You can now test the voice.');
+                document.getElementById('test-voice').disabled = false;
+            } catch (error) {
+                showError(`API test failed: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        });
+
+        // Test voice
+        document.getElementById('test-voice').addEventListener('click', async () => {
+            loading.classList.remove('hidden');
+            const testBtn = document.getElementById('test-voice');
+            testBtn.disabled = true;
+
+            try {
+                await window.damerisVoice.speak(
+                    'Hello. I am Dameris. If you can hear me, the voice system is working correctly.',
+                    () => {
+                        console.log('Voice started');
+                    },
+                    () => {
+                        showSuccess('Voice test completed! Audio played successfully.');
+                        testBtn.disabled = false;
+                    },
+                    (error) => {
+                        showError(`Voice test failed: ${error.message}`);
+                        testBtn.disabled = false;
+                    }
+                );
+            } catch (error) {
+                showError(`Voice test failed: ${error.message}`);
+                testBtn.disabled = false;
+            }
+        });
+
+        // Check if running on localhost
+        if (window.location.protocol === 'file:') {
+            showError('You are opening this file directly (file://). Please access it through the Next.js server at http://localhost:3000/test-voice.html');
+        }
+    </script>
+</body>
+</html>

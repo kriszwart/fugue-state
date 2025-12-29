@@ -1,0 +1,143 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-serif-custom {
+  font-family: 'Newsreader', serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Floating animation for subtle movement */
+@keyframes float-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float-subtle 6s ease-in-out infinite;
+}
+
+/* Beam Animation */
+@keyframes dash-flow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -1000;
+  }
+}
+
+.animate-beam {
+  stroke-dasharray: 40 400;
+  animation: dash-flow 10s linear infinite;
+}
+
+/* Button Gradient Border & Glows */
+[style*="--border-gradient"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: var(--border-radius-before, inherit);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  background: var(--border-gradient);
+  pointer-events: none;
+}
+
+/* Gradient Shimmer Animation - Full Color Spectrum */
+@keyframes shimmer-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-shimmer {
+  background: linear-gradient(90deg,
+    #a78bfa 0%,      /* violet */
+    #c084fc 8%,      /* purple */
+    #e879f9 16%,     /* fuchsia */
+    #f472b6 24%,     /* pink */
+    #fb7185 32%,     /* rose */
+    #fca5a5 40%,     /* red-light */
+    #fdba74 48%,     /* orange */
+    #fcd34d 56%,     /* amber */
+    #fde047 64%,     /* yellow */
+    #bef264 72%,     /* lime */
+    #86efac 80%,     /* green */
+    #6ee7b7 88%,     /* emerald */
+    #5eead4 96%,     /* teal */
+    #67e8f9 104%,    /* cyan */
+    #7dd3fc 112%,    /* sky */
+    #93c5fd 120%,    /* blue */
+    #a78bfa 128%     /* violet - back to start */
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-gradient 8s linear infinite;
+}
+
+/* Background Color Shift Animation */
+@keyframes hue-rotate {
+  0% {
+    filter: hue-rotate(0deg) saturate(1.2);
+  }
+  100% {
+    filter: hue-rotate(360deg) saturate(1.2);
+  }
+}
+
+.color-shift-bg {
+  animation: hue-rotate 20s linear infinite;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

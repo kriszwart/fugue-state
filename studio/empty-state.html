@@ -1,0 +1,283 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FugueState.ai - Getting Started</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-serif-custom { font-family: 'Newsreader', serif; }
+html { scroll-behavior: smooth; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Floating animation for subtle movement */
+@keyframes float-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+.animate-float { animation: float-subtle 6s ease-in-out infinite; }
+
+/* Gradient Shimmer Animation - Full Color Spectrum */
+@keyframes shimmer-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.gradient-shimmer {
+    background: linear-gradient(90deg,
+        #a78bfa 0%, #c084fc 8%, #e879f9 16%, #f472b6 24%,
+        #fb7185 32%, #fca5a5 40%, #fdba74 48%, #fcd34d 56%,
+        #fde047 64%, #bef264 72%, #86efac 80%, #6ee7b7 88%,
+        #5eead4 96%, #67e8f9 104%, #7dd3fc 112%, #93c5fd 120%,
+        #a78bfa 128%
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer-gradient 8s linear infinite;
+}
+
+/* Background Color Shift Animation */
+@keyframes hue-rotate {
+    0% { filter: hue-rotate(0deg) saturate(1.2); }
+    100% { filter: hue-rotate(360deg) saturate(1.2); }
+}
+.color-shift-bg {
+    animation: hue-rotate 20s linear infinite;
+}
+
+/* Pulse glow for cards */
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+    50% { opacity: 0.8; box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+}
+.pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+</style>
+</head>
+<body class="bg-[#050505] text-zinc-300 min-h-screen flex flex-col overflow-hidden selection:bg-violet-500/20 selection:text-violet-200">
+
+    <!-- Background with UnicornStudio -->
+    <div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full color-shift-bg">
+            <div data-us-project="NMlvqnkICwYYJ6lYb064" class="absolute w-full h-full left-0 top-0 -z-10"></div>
+            <script type="text/javascript">
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/40 backdrop-blur-xl shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="workspace.html" class="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="text-xs tracking-widest uppercase">Back</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-6 relative z-10">
+        <div class="max-w-4xl w-full text-center space-y-8">
+            
+            <!-- Icon/Illustration -->
+            <div class="flex justify-center mb-8">
+                <div class="relative w-32 h-32 animate-float">
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500/20 via-purple-500/20 to-indigo-500/20 pulse-glow"></div>
+                    <div class="absolute inset-4 rounded-full bg-zinc-900/50 border border-violet-500/30 flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-12 h-12 text-violet-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <div class="space-y-4">
+                <h1 class="text-4xl md:text-5xl font-serif-custom italic text-zinc-200 font-light tracking-tight">
+                    Your memory stream is <span class="gradient-shimmer font-medium">empty</span>
+                </h1>
+                <p class="text-lg text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed">
+                    But that doesn't mean you can't explore. Fugue State is a creative playground even without your data.
+                </p>
+            </div>
+
+            <!-- What You Can Do -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                
+                <!-- Creative Generation -->
+                <div class="p-6 rounded-xl border border-violet-500/20 bg-zinc-900/30 hover:border-violet-500/40 hover:bg-zinc-900/50 transition-all group">
+                    <div class="w-12 h-12 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mb-4 group-hover:bg-violet-500/30 transition-colors mx-auto">
+                        <i data-lucide="palette" class="w-6 h-6 text-violet-300"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-zinc-200 mb-2">Creative Generation</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Generate images from any prompt. Create art, explore ideas, visualize concepts—no memories needed.
+                    </p>
+                    <button onclick="startCreativeGeneration()" class="mt-4 px-4 py-2 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 border border-violet-500/30 text-sm text-violet-300 transition-all">
+                        Try It
+                    </button>
+                </div>
+
+                <!-- Chat with Dameris -->
+                <div class="p-6 rounded-xl border border-amber-500/20 bg-zinc-900/30 hover:border-amber-500/40 hover:bg-zinc-900/50 transition-all group">
+                    <div class="w-12 h-12 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center mb-4 group-hover:bg-amber-500/30 transition-colors mx-auto">
+                        <i data-lucide="message-circle" class="w-6 h-6 text-amber-300"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-zinc-200 mb-2">Chat with Dameris</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Have conversations, ask questions, explore ideas. Dameris is ready to talk even without your memories.
+                    </p>
+                    <a href="chat.html" class="mt-4 inline-block px-4 py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-sm text-amber-300 transition-all">
+                        Start Chatting
+                    </a>
+                </div>
+
+                <!-- Connect Sources -->
+                <div class="p-6 rounded-xl border border-indigo-500/20 bg-zinc-900/30 hover:border-indigo-500/40 hover:bg-zinc-900/50 transition-all group">
+                    <div class="w-12 h-12 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mb-4 group-hover:bg-indigo-500/30 transition-colors mx-auto">
+                        <i data-lucide="link" class="w-6 h-6 text-indigo-300"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-zinc-200 mb-2">Connect Your Data</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Link Gmail, Notion, Drive, or upload files. Transform your digital life into explorable memories.
+                    </p>
+                    <a href="privacy.html" class="mt-4 inline-block px-4 py-2 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-sm text-indigo-300 transition-all">
+                        Connect Sources
+                    </a>
+                </div>
+            </div>
+
+            <!-- Demo Mode -->
+            <div class="mt-12 p-6 rounded-xl border border-white/5 bg-zinc-900/20">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <i data-lucide="play-circle" class="w-5 h-5 text-zinc-400"></i>
+                    <h3 class="text-lg font-medium text-zinc-200">Explore Demo Mode</h3>
+                </div>
+                <p class="text-sm text-zinc-400 mb-4 max-w-xl mx-auto">
+                    See what Fugue State can do with sample data. Experience pattern detection, memory analysis, and creative generation.
+                </p>
+                <button onclick="loadDemoData()" class="px-6 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-zinc-300 transition-all">
+                    Load Demo Memories
+                </button>
+            </div>
+
+            <!-- Inspiration Prompts -->
+            <div class="mt-12 text-left">
+                <h3 class="text-sm uppercase tracking-widest text-zinc-400 mb-4 text-center">Try These Prompts</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button onclick="generateFromPrompt('A dreamscape of floating islands connected by bridges of light')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "A dreamscape of floating islands connected by bridges of light"
+                    </button>
+                    <button onclick="generateFromPrompt('Neon city at night, cyberpunk aesthetic, rain-soaked streets')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "Neon city at night, cyberpunk aesthetic, rain-soaked streets"
+                    </button>
+                    <button onclick="generateFromPrompt('Abstract representation of memory and time, ethereal and flowing')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "Abstract representation of memory and time, ethereal and flowing"
+                    </button>
+                    <button onclick="generateFromPrompt('A library of infinite books, each containing a different universe')" class="p-3 rounded-lg border border-white/5 bg-zinc-900/20 hover:bg-zinc-900/40 text-left text-sm text-zinc-300 transition-all">
+                        "A library of infinite books, each containing a different universe"
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function startCreativeGeneration() {
+            // Redirect to visualise mode or open generation interface
+            window.location.href = '../modes/index.html#creative';
+        }
+
+        async function generateFromPrompt(prompt) {
+            try {
+                const response = await fetch('/api/generate/image', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        width: 1024,
+                        height: 1024
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate image');
+                }
+
+                const data = await response.json();
+                // Open in new tab or show in modal
+                if (data.image) {
+                    window.open(data.image, '_blank');
+                } else if (data.artefact?.file_url) {
+                    window.open(data.artefact.file_url, '_blank');
+                }
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('Failed to generate image. Please try again.');
+            }
+        }
+
+        async function loadDemoData() {
+            // Create sample memories for demonstration
+            const demoMemories = [
+                {
+                    content: "Watched the sunset from the coastal cliffs. The way the light fractured across the water reminded me of something I can't quite place.",
+                    themes: ["nature", "reflection", "coastal"],
+                    emotional_tags: ["calm", "nostalgic"],
+                    temporal_marker: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    content: "Found an old notebook in the attic. Pages filled with sketches and half-formed thoughts from years ago.",
+                    themes: ["memory", "past", "creativity"],
+                    emotional_tags: ["curious", "reflective"],
+                    temporal_marker: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    content: "The city at 3am has a different energy. Empty streets, neon reflections, the feeling of being the only person awake.",
+                    themes: ["urban", "night", "solitude"],
+                    emotional_tags: ["contemplative", "peaceful"],
+                    temporal_marker: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+
+            try {
+                for (const memory of demoMemories) {
+                    await fetch('/api/memories', {
+                        credentials: 'include',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            content: memory.content,
+                            themes: memory.themes,
+                            emotional_tags: memory.emotional_tags,
+                            temporal_marker: memory.temporal_marker,
+                            content_type: 'text'
+                        })
+                    });
+                }
+                
+                alert('Demo memories loaded! Refresh the page to see them.');
+                setTimeout(() => {
+                    window.location.href = 'workspace.html';
+                }, 1000);
+            } catch (error) {
+                console.error('Error loading demo data:', error);
+                alert('Failed to load demo data. Please try again.');
+            }
+        }
+    </script>
+</body></html>
+
+
