@@ -2,7 +2,6 @@
 import { createServiceRoleClient } from '@/lib/supabase'
 import { DataExtractor } from '@/lib/processors/data-extractor'
 import { MemoryParser } from '@/lib/processors/memory-parser'
-import { PatternDetector } from '@/lib/processors/pattern-detector'
 
 export interface ToolhouseScrapeOptions {
   url: string
@@ -30,7 +29,6 @@ export class ToolhouseService {
   private supabase = createServiceRoleClient()
   private dataExtractor = new DataExtractor()
   private memoryParser = new MemoryParser()
-  private patternDetector = new PatternDetector()
 
   constructor(apiKey: string) {
     this.apiKey = apiKey
