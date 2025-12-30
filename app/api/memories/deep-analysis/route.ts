@@ -11,7 +11,7 @@ import { getEnhancedVertexGeminiLLM } from '@/lib/ai/providers/vertex-enhanced'
 export const runtime = 'nodejs'
 export const maxDuration = 300 // 5 minutes for deep analysis
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const supabase = createServerSupabaseClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     console.log(`[Deep Analysis] Processing ${memories.length} memories...`)
 
     // Format as complete life narrative
-    const lifeNarrative = memories.map((m) => {
+    const lifeNarrative = memories.map((m, i) => {
       const dateStr = new Date(m.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -63,8 +63,8 @@ ${m.metadata ? `\nContext: ${JSON.stringify(m.metadata).substring(0, 200)}` : ''
     const gemini = getEnhancedVertexGeminiLLM()
 
     // Calculate timespan
-    const firstDate = new Date(memories[0].created_at)
-    const lastDate = new Date(memories[memories.length - 1].created_at)
+    const firstDate = new Date(memories[0]?.created_at || new Date())
+    const lastDate = new Date(memories[memories.length - 1]?.created_at || new Date())
     const daysDiff = Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24))
     const yearsDiff = (daysDiff / 365).toFixed(1)
 
@@ -181,8 +181,8 @@ Be profound, empathetic, and insightful. This is someone's life.`
         metadata: {
           memoryCount: memories.length,
           timespan: {
-            start: memories[0].created_at,
-            end: memories[memories.length - 1].created_at,
+            start: memories[0]?.created_at || new Date().toISOString(),
+            end: memories[memories.length - 1]?.created_at || new Date().toISOString(),
             years: parseFloat(yearsDiff),
             days: daysDiff
           },
@@ -232,7 +232,7 @@ Be profound, empathetic, and insightful. This is someone's life.`
 }
 
 // Get previous analyses
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = createServerSupabaseClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
