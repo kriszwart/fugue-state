@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseClient } from '@/lib/supabase';
 import { userCache, dataSourceCache, memoryCache, conversationCache } from '@/lib/cache-service';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const supabase = createSupabaseClient();
     const { data: { session } } = await supabase.auth.getSession();
