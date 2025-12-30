@@ -5,7 +5,7 @@ import { createServerSupabaseClient } from '@/lib/supabase'
  * GET: List memories in workspace
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -66,7 +66,7 @@ export async function GET(
  * POST: Add memory to workspace
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {

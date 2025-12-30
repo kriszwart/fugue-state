@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     // Build echo analysis prompt
     const fragmentsText = memories
-      .map((m, i) => `[${new Date(m.created_at).toLocaleDateString()}] ${m.content.slice(0, 300)}`)
+      .map((m) => `[${new Date(m.created_at).toLocaleDateString()}] ${m.content.slice(0, 300)}`)
       .join('\n\n')
 
     const prompt = `You are Dameris, in ECHO MODE.

@@ -80,3 +80,4 @@ COMMENT ON COLUMN creative_analyses.writing_style IS 'Analysis of voice, tone, r
 
 
 
+

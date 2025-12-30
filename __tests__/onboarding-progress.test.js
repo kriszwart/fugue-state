@@ -138,3 +138,4 @@ describe('OnboardingProgress smart setup pill', () => {
 
 
 
+

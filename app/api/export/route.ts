@@ -117,9 +117,9 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      const zipBlob = await zip.generateAsync({ type: 'nodebuffer' })
+      const zipBlob = await zip.generateAsync({ type: 'arraybuffer' })
 
-      return new NextResponse(zipBlob, {
+      return new NextResponse(zipBlob as BodyInit, {
         headers: {
           'Content-Type': 'application/zip',
           'Content-Disposition': `attachment; filename="fugue-state-export-${Date.now()}.zip"`

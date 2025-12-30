@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     console.log(`[Deep Analysis] Processing ${memories.length} memories...`)
 
     // Format as complete life narrative
-    const lifeNarrative = memories.map((m, i) => {
+    const lifeNarrative = memories.map((m) => {
       const dateStr = new Date(m.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',

@@ -20,7 +20,7 @@ function createPublicSupabaseClient() {
 }
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { token: string } }
 ) {
   try {

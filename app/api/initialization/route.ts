@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { museType, dataSources, skip } = await request.json()
+    const { museType, dataSources: _dataSources, skip } = await request.json()
 
     // If skip flag is set, just mark skip status and return
     if (skip) {
@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
 
 
 

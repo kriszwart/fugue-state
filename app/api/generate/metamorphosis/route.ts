@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     // Build metamorphosis prompt
     const memoriesText = memories
-      .map((m, i) => {
+      .map((m) => {
         const date = m.temporal_marker || m.created_at
         return `[${new Date(date).toLocaleDateString()}]:
 ${m.content.slice(0, 350)}
