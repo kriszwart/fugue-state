@@ -1,4 +1,5 @@
-import { createServerSupabaseClient } from '@/lib/supabase'
+// OAuth implementation for Google
+// import { createServerSupabaseClient } from '@/lib/supabase'
 
 export interface GoogleOAuthConfig {
   clientId: string

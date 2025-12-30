@@ -1,4 +1,5 @@
-import { createServerSupabaseClient } from '@/lib/supabase'
+// OAuth implementation for Notion
+// import { createServerSupabaseClient } from '@/lib/supabase'
 
 export interface NotionOAuthConfig {
   clientId: string
@@ -76,6 +77,7 @@ export function getNotionOAuthHandler(): NotionOAuthHandler {
     redirectUri: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/oauth/callback?provider=notion`
   })
 }
+
 
 
 

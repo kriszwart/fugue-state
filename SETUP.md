@@ -29,10 +29,6 @@
    # Get your API key from: https://elevenlabs.io
    ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 
-   # Toolhouse.ai API (for website scraping and AI agent connections)
-   # Get your API key from: https://toolhouse.ai
-   TOOLHOUSE_API_KEY=your_toolhouse_api_key_here
-
    # OAuth Configuration
    GOOGLE_CLIENT_ID=your_google_client_id
    GOOGLE_CLIENT_SECRET=your_google_client_secret

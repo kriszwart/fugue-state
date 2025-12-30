@@ -103,9 +103,6 @@ NOTION_CLIENT_SECRET=your_notion_client_secret
 # ElevenLabs API
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 
-# Optional: Toolhouse API
-TOOLHOUSE_API_KEY=your_toolhouse_api_key
-
 # Optional: Redis (for caching - recommended for production)
 # Use managed Redis like Google Memorystore or Upstash
 REDIS_URL=redis://your-redis-host:6379
