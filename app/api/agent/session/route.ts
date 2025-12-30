@@ -137,7 +137,7 @@ Speak naturally and conversationally. Use the user's actual memories to ground y
 }
 
 // GET endpoint to check agent status
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const supabase = createServerSupabaseClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
