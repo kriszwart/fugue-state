@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase'
-import { streams, pubsub } from '@/lib/redis'
+import { streams } from '@/lib/redis'
 
 export async function GET(request: NextRequest) {
   try {

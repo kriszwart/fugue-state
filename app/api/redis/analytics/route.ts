@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase'
-import { analytics, sortedSets, hyperloglog } from '@/lib/redis'
+import { analytics, sortedSets } from '@/lib/redis'
 
 export async function GET() {
   try {
