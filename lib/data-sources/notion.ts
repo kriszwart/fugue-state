@@ -3,9 +3,9 @@ import crypto from 'crypto'
 
 function decrypt(encrypted: string, key: string): string {
   const parts = encrypted.split(':')
-  const iv = Buffer.from(parts[0], 'hex')
-  const encryptedText = parts[1]
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv)
+  const iv = Buffer.from(parts[0] || '', 'hex')
+  const encryptedText = parts[1] || ''
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key || '', 'hex'), iv)
   let decrypted = decipher.update(encryptedText, 'hex', 'utf8')
   decrypted += decipher.final('utf8')
   return decrypted
@@ -27,11 +27,9 @@ export interface NotionBlock {
 
 export class NotionService {
   private accessToken: string
-  private encryptionKey: string
 
   constructor(accessToken: string, encryptionKey: string) {
     this.accessToken = decrypt(accessToken, encryptionKey)
-    this.encryptionKey = encryptionKey
   }
 
   async searchPages(query?: string): Promise<NotionPage[]> {

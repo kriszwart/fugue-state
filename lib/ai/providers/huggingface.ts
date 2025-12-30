@@ -233,7 +233,7 @@ export class HuggingFaceLLM {
 
   private formatMessages(
     messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
-    modelConfig: HuggingFaceModel
+    _modelConfig: HuggingFaceModel
   ): string {
     // Format messages based on model requirements
     const systemMessage = messages.find(m => m.role === 'system')

@@ -156,8 +156,8 @@ export class NeuralThreading {
 
         if (strength > 0.3 && memoryIds[i] && memoryIds[j]) {
           connections.push({
-            from: memoryIds[i],
-            to: memoryIds[j],
+            from: memoryIds[i]!,
+            to: memoryIds[j]!,
             strength,
             type
           })

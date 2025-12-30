@@ -4,9 +4,9 @@ import crypto from 'crypto'
 // Simple decryption (in production, use proper encryption)
 function decrypt(encrypted: string, key: string): string {
   const parts = encrypted.split(':')
-  const iv = Buffer.from(parts[0], 'hex')
-  const encryptedText = parts[1]
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv)
+  const iv = Buffer.from(parts[0] || '', 'hex')
+  const encryptedText = parts[1] || ''
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key || '', 'hex'), iv)
   let decrypted = decipher.update(encryptedText, 'hex', 'utf8')
   decrypted += decipher.final('utf8')
   return decrypted
@@ -34,12 +34,10 @@ export interface GmailMessage {
 export class GmailService {
   private accessToken: string
   private refreshToken: string
-  private encryptionKey: string
 
   constructor(accessToken: string, refreshToken: string, encryptionKey: string) {
     this.accessToken = decrypt(accessToken, encryptionKey)
     this.refreshToken = decrypt(refreshToken, encryptionKey)
-    this.encryptionKey = encryptionKey
   }
 
   async getMessages(maxResults: number = 50): Promise<GmailMessage[]> {
@@ -94,12 +92,10 @@ export class GmailService {
     const tokens = await googleOAuth.refreshAccessToken(this.refreshToken)
     this.accessToken = tokens.access_token
 
-    // Update in database
-    const supabase = createServerSupabaseClient()
+    // Update in database (requires encryption key)
     if (!process.env.ENCRYPTION_KEY) {
       throw new Error('ENCRYPTION_KEY environment variable is required for secure token storage')
     }
-    const encryptionKey = process.env.ENCRYPTION_KEY
     
     // Note: In production, you'd need to know the user_id and data_source_id
     // This is a simplified version
