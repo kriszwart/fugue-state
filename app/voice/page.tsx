@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import AuthGuard from '../components/AuthGuard'
-import Button from '../components/ui/Button'
-import Card from '../components/ui/Card'
 import NotesUpload from '../components/NotesUpload'
 
 declare global {
@@ -53,13 +51,9 @@ function VoiceSession() {
   const [micHelp, setMicHelp] = useState<string | null>(null)
 
   const [connectedSources, setConnectedSources] = useState<string[]>([])
-  const [loadingSources, setLoadingSources] = useState(true)
 
   const [syncingSource, setSyncingSource] = useState<string | null>(null)
   const [syncResult, setSyncResult] = useState<string | null>(null)
-
-  const [demoVersion, setDemoVersion] = useState<string | null>(null)
-  const [clearingDemo, setClearingDemo] = useState(false)
 
   const [firstScan, setFirstScan] = useState<FirstScanResult | null>(null)
   const [pendingArtefacts, setPendingArtefacts] = useState<any | null>(null)
@@ -81,15 +75,11 @@ function VoiceSession() {
   const [playbackSpeed, setPlaybackSpeed] = useState(1)
   const [lastError, setLastError] = useState<{message: string, retry?: () => void} | null>(null)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
-  const [voiceActivityLevel, setVoiceActivityLevel] = useState(0)
   const [uploadedFiles, setUploadedFiles] = useState<Array<{id: string, name: string, uploadedAt: string}>>([])
   const [memoryRichness, setMemoryRichness] = useState<{score: number, level: string, memoryCount: number} | null>(null)
   const [autoStopCountdown, setAutoStopCountdown] = useState<number | null>(null)
   const [micPermissionStatus, setMicPermissionStatus] = useState<'granted' | 'denied' | 'prompt' | 'checking'>('checking')
-  const [quickReplies, setQuickReplies] = useState<string[]>([])
   const [sidebarTab, setSidebarTab] = useState<'context' | 'files' | 'insights' | 'history'>('context')
-  const [pinnedItems, setPinnedItems] = useState<Set<string>>(new Set())
-  const [connectionStatus, setConnectionStatus] = useState<'online' | 'offline'>('online')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const recordingStartTimeRef = useRef<number>(0)
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -117,7 +107,6 @@ function VoiceSession() {
   const canRecord = useMemo(() => typeof window !== 'undefined' && 'MediaRecorder' in window, [])
   const canSyncGmail = useMemo(() => connectedSources.includes('gmail'), [connectedSources])
   const canSyncDrive = useMemo(() => connectedSources.includes('drive'), [connectedSources])
-  const hasAnyGoogle = useMemo(() => canSyncGmail || canSyncDrive, [canSyncGmail, canSyncDrive])
   
   // Memoized filtered conversation history for performance
   const filteredHistory = useMemo(() => {
@@ -178,7 +167,7 @@ function VoiceSession() {
       // Draw ethereal waveform
       for (let i = 0; i < barCount; i++) {
         const dataIndex = Math.floor((i / barCount) * bufferLength)
-        const value = dataArray[dataIndex] / 255
+        const value = (dataArray[dataIndex] || 0) / 255
         const barHeight = value * maxBarHeight * (0.3 + value * 0.7)
         
         const x = i * barWidth + barWidth / 2
@@ -297,10 +286,10 @@ function VoiceSession() {
       // Calculate voice activity level for auto-stop
       let sum = 0
       for (let i = 0; i < bufferLength; i++) {
-        sum += Math.abs(dataArray[i] - 128)
+        sum += Math.abs((dataArray[i] || 0) - 128)
       }
       const activity = sum / bufferLength / 128
-      setVoiceActivityLevel(activity)
+      // Voice activity tracking (removed state variable)
       
       // Check for silence (auto-stop after 3 seconds of silence)
       const now = Date.now()
@@ -354,7 +343,7 @@ function VoiceSession() {
       // Draw bars and dots
       for (let i = 0; i < barCount; i++) {
         const dataIndex = Math.floor((i / barCount) * bufferLength)
-        const value = dataArray[dataIndex] / 255
+        const value = (dataArray[dataIndex] || 0) / 255
         const barHeight = value * maxBarHeight * (0.5 + intensity * 0.5)
         
         const x = i * barWidth + barWidth / 2
@@ -449,7 +438,6 @@ function VoiceSession() {
       setFirstScan(null)
       setPendingArtefacts(null)
       setPipelineError(null)
-      setDemoVersion(null)
       setTranscript('')
       setResponseText('')
       setSearchQuery('')
@@ -474,14 +462,7 @@ function VoiceSession() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem('fugue_demo_loaded')
-      if (v) setDemoVersion(v)
-    } catch {
-      // ignore
-    }
-  }, [])
+  // Removed demo version tracking - no longer used
 
   useEffect(() => {
     // Prevent double execution in React Strict Mode
@@ -738,7 +719,6 @@ function VoiceSession() {
     loadPendingArtefacts()
   }, [])
   const loadConnectedSources = useCallback(async () => {
-    setLoadingSources(true)
     try {
       const res = await fetch('/api/initialization/status')
       const data = await res.json()
@@ -747,8 +727,6 @@ function VoiceSession() {
       }
     } catch {
       // fail open; we can still demo uploads + voice
-    } finally {
-      setLoadingSources(false)
     }
   }, [])
 
@@ -915,11 +893,12 @@ function VoiceSession() {
     [loadConnectedSources]
   )
 
-  const syncAll = useCallback(async () => {
-    if (!hasAnyGoogle) return
-    if (canSyncGmail) await syncSource('gmail')
-    if (canSyncDrive) await syncSource('drive')
-  }, [canSyncDrive, canSyncGmail, hasAnyGoogle, syncSource])
+  // Sync all sources (unused but available for future use)
+  // const syncAll = useCallback(async () => {
+  //   if (!hasAnyGoogle) return
+  //   if (canSyncGmail) await syncSource('gmail')
+  //   if (canSyncDrive) await syncSource('drive')
+  // }, [canSyncDrive, canSyncGmail, hasAnyGoogle, syncSource])
 
   const isSpeakingRef = useRef(false)
 
@@ -1332,35 +1311,33 @@ function VoiceSession() {
     }
   }, [firstScan, speakText])
 
-  const clearDemo = useCallback(async () => {
-    if (!demoVersion) return
-    setError(null)
-    setSyncResult(null)
-    setClearingDemo(true)
-    try {
-      const res = await fetch('/api/demo/clear', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version: demoVersion })
-      })
-      const data = await res.json().catch(() => null)
-      if (!res.ok) {
-        throw new Error(data?.error || 'Failed to clear demo data')
-      }
-      try {
-        localStorage.removeItem('fugue_demo_loaded')
-      } catch {
-        // ignore
-      }
-      setDemoVersion(null)
-      setSyncResult(`Cleared demo data${demoVersion ? ` (${demoVersion})` : ''}.`)
-      await loadConnectedSources()
-    } catch (e: any) {
-      setError(e?.message || 'Failed to clear demo data.')
-    } finally {
-      setClearingDemo(false)
-    }
-  }, [demoVersion, loadConnectedSources])
+  // Clear demo data (unused but available for future use)
+  // const clearDemo = useCallback(async () => {
+  //   if (!demoVersion) return
+  //   setError(null)
+  //   setSyncResult(null)
+  //   try {
+  //     const res = await fetch('/api/demo/clear', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ version: demoVersion })
+  //     })
+  //     const data = await res.json().catch(() => null)
+  //     if (!res.ok) {
+  //       throw new Error(data?.error || 'Failed to clear demo data')
+  //     }
+  //     try {
+  //       localStorage.removeItem('fugue_demo_loaded')
+  //     } catch {
+  //       // ignore
+  //     }
+  //     setDemoVersion(null)
+  //     setSyncResult(`Cleared demo data${demoVersion ? ` (${demoVersion})` : ''}.`)
+  //     await loadConnectedSources()
+  //   } catch (e: any) {
+  //     setError(e?.message || 'Failed to clear demo data.')
+  //   }
+  // }, [demoVersion, loadConnectedSources])
 
   const retryPipeline = useCallback(async () => {
     if (!pipelineError) return
@@ -1429,8 +1406,10 @@ function VoiceSession() {
       script.src = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js'
       script.onload = () => {
         if (window.UnicornStudio && !window.UnicornStudio.isInitialized) {
-          window.UnicornStudio.init()
-          window.UnicornStudio.isInitialized = true
+          window.UnicornStudio.init?.()
+          if (window.UnicornStudio) {
+            window.UnicornStudio.isInitialized = true
+          }
         }
       }
       document.head.appendChild(script)
@@ -1789,17 +1768,6 @@ function VoiceSession() {
             
             {/* Conversation History */}
             {filteredHistory.map((msg) => {
-              // Highlight search matches
-              const highlightText = (text: string, query: string) => {
-                if (!query) return text
-                const parts = text.split(new RegExp(`(${query})`, 'gi'))
-                return parts.map((part, i) => 
-                  part.toLowerCase() === query.toLowerCase() ? (
-                    <mark key={i} className="bg-yellow-500/30 text-yellow-200">{part}</mark>
-                  ) : part
-                )
-              }
-              
               return (
               <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''} animate-fadeInSlide`}>
                 <div className={`flex-1 max-w-[80%] space-y-1 ${msg.role === 'user' ? 'flex flex-col items-end' : ''}`}>

@@ -6,7 +6,6 @@
 import type {
   FugueEngineConfig,
   FugueEnginResult,
-  FragmentType,
   RecomposeFormat
 } from '@/lib/types/fugue'
 
@@ -17,12 +16,6 @@ interface Fragment {
   emotionalTags?: string[]
   temporalMarker?: string
   created_at?: string
-}
-
-interface FragmentScore {
-  fragment: Fragment
-  score: number
-  reason: string
 }
 
 /**
@@ -110,14 +103,15 @@ export class FugueEngine {
       selectedThemes.forEach((theme) => {
         const matching = fragments.filter((f) => f.themes?.includes(theme))
         if (matching.length > 0) {
-          selected.push(matching[Math.floor(Math.random() * matching.length)])
+          const randomIndex = Math.floor(Math.random() * matching.length)
+          selected.push(matching[randomIndex]!)
         }
       })
 
       // Fill remaining with random
       while (selected.length < count && selected.length < fragments.length) {
-        const random =
-          fragments[Math.floor(Math.random() * fragments.length)]
+        const randomIndex = Math.floor(Math.random() * fragments.length)
+        const random = fragments[randomIndex]!
         if (!selected.includes(random)) {
           selected.push(random)
         }
@@ -127,6 +121,7 @@ export class FugueEngine {
     } else {
       // Low creativity: stick to one theme
       const mainTheme = sortedThemes[0]
+      if (!mainTheme) return fragments.slice(0, count)
       const themeFragments = fragments.filter((f) =>
         f.themes?.includes(mainTheme)
       )
@@ -188,7 +183,8 @@ export class FugueEngine {
       emotions.forEach((emotion) => {
         const pool = emotionalMap.get(emotion) || []
         if (pool.length > 0 && selected.length < count) {
-          selected.push(pool[Math.floor(Math.random() * pool.length)])
+          const randomIndex = Math.floor(Math.random() * pool.length)
+          selected.push(pool[randomIndex]!)
         }
       })
       return selected.slice(0, count)
@@ -214,7 +210,7 @@ export class FugueEngine {
 
     for (let i = 0; i < fragments.length; i++) {
       for (let j = i + 1; j < fragments.length; j++) {
-        const connection = this.detectConnection(fragments[i], fragments[j])
+        const connection = this.detectConnection(fragments[i]!, fragments[j]!)
         if (connection) {
           connections.push({
             fragment1: i,
@@ -273,7 +269,7 @@ export class FugueEngine {
    */
   generatePrompt(
     fragments: Fragment[],
-    connections: Array<{ fragment1: number; fragment2: number; connection: string }>,
+    _connections: Array<{ fragment1: number; fragment2: number; connection: string }>,
     creativity: number
   ): string {
     const prompts = [
@@ -283,17 +279,17 @@ export class FugueEngine {
       `Find the thread that ties these ideas together.`,
 
       // Medium creativity
-      `What would happen if ${this.preview(fragments[0])} met ${this.preview(fragments[1])} in an unexpected way?`,
+      `What would happen if ${this.preview(fragments[0]!)} met ${this.preview(fragments[1]!)} in an unexpected way?`,
       `Imagine a world where these ${fragments.length} fragments are chapters in the same book.`,
       `What new insight emerges when you layer these memories on top of each other?`,
 
       // High creativity
-      `Create a surreal narrative where ${this.preview(fragments[0])} becomes the metaphor for ${this.preview(fragments[fragments.length - 1])}.`,
+      `Create a surreal narrative where ${this.preview(fragments[0]!)} becomes the metaphor for ${this.preview(fragments[fragments.length - 1]!)}.`,
       `Build a collage from these fragments that reveals a truth you haven't seen before.`,
       `Transform these ${fragments.length} memories into a dreamlike journey. Where does it lead?`,
 
       // Very high creativity
-      `What if ${this.preview(fragments[0])} and ${this.preview(fragments[Math.floor(fragments.length / 2)])} were two sides of the same coin, viewed from parallel universes?`,
+      `What if ${this.preview(fragments[0]!)} and ${this.preview(fragments[Math.floor(fragments.length / 2)]!)} were two sides of the same coin, viewed from parallel universes?`,
       `Remix these fragments into something completely unexpected. Break all rules.`,
       `Let these memories collide and see what new reality emerges from the wreckage.`,
     ]
@@ -302,7 +298,7 @@ export class FugueEngine {
       Math.floor(creativity * prompts.length),
       prompts.length - 1
     )
-    return prompts[index]
+    return prompts[index]!
   }
 
   /**
@@ -337,7 +333,7 @@ export class FugueEngine {
   /**
    * Generate reason for selection
    */
-  generateSelectionReason(fragment: Fragment, mode: string): string {
+  generateSelectionReason(_fragment: Fragment, mode: string): string {
     const reasons = {
       random: [
         'Chosen by chance - sometimes randomness reveals truth',
@@ -362,7 +358,8 @@ export class FugueEngine {
     }
 
     const pool = reasons[mode as keyof typeof reasons] || reasons.random
-    return pool[Math.floor(Math.random() * pool.length)]
+    const randomIndex = Math.floor(Math.random() * pool.length)
+    return pool[randomIndex]!
   }
 
   /**

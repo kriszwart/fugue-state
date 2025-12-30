@@ -231,7 +231,6 @@ export function getReturningUserGreeting(
   userName?: string,
   lastVisit?: Date
 ): string {
-  const personality = MUSE_PERSONALITIES[museType];
   const greeting = userName ? `Welcome back, ${userName}` : 'Welcome back';
 
   const timeAway = lastVisit
@@ -292,8 +291,9 @@ export function getContextualPrompt(
     ]
   };
 
-  const musePrompts = prompts[museType];
-  return musePrompts[Math.floor(Math.random() * musePrompts.length)];
+  const musePrompts = prompts[museType] || prompts.synthesis;
+  const randomIndex = Math.floor(Math.random() * musePrompts.length);
+  return musePrompts[randomIndex]!;
 }
 
 /**

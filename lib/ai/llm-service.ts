@@ -1,9 +1,8 @@
-import { HuggingFaceLLM, getHuggingFaceLLM } from './providers/huggingface'
-import { VertexGeminiLLM, getVertexGeminiLLM } from './providers/vertex'
-import { EnhancedVertexGeminiLLM, getEnhancedVertexGeminiLLM } from './providers/vertex-enhanced'
-import { selectRandomModel } from './providers/random-selector'
+import { HuggingFaceLLM } from './providers/huggingface'
+import { VertexGeminiLLM } from './providers/vertex'
+import { EnhancedVertexGeminiLLM } from './providers/vertex-enhanced'
 
-export type LLMProvider = 'huggingface' | 'vertex'
+export type LLMProvider = 'huggingface' | 'vertex' | 'anthropic' | 'google' | 'openai'
 export type LLMModel = string // Model names (provider-specific)
 
 export interface LLMMessage {
@@ -122,7 +121,7 @@ class LLMService {
         throw new Error(errorMsg)
       }
       try {
-        const vertexInstance = this.vertex || this.enhancedVertex!
+        const vertexInstance = (this.vertex || this.enhancedVertex) as VertexGeminiLLM
         return await vertexInstance.generateResponse(
           effectiveMessages,
           {

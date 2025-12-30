@@ -9,7 +9,7 @@ import NotesUpload from '../components/NotesUpload';
 declare global {
   interface Window {
     UnicornStudio?: {
-      isInitialized: boolean;
+      isInitialized?: boolean;
       init?: () => void;
     };
     lucide?: {
@@ -60,7 +60,7 @@ export default function InitializationPage() {
         }
         
         if (statusData.connectedSources) {
-          const connected = new Set(statusData.connectedSources);
+          const connected = new Set<string>(statusData.connectedSources);
           setConnectedSources(connected);
           
           // Only pre-select sources that are actually connected
@@ -77,7 +77,7 @@ export default function InitializationPage() {
           const data = await response.json();
           
           if (data.dataSources) {
-            const connected = new Set(
+            const connected = new Set<string>(
               data.dataSources
                 .filter((ds: any) => ds.is_active)
                 .map((ds: any) => ds.source_type)

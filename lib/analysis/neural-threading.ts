@@ -15,7 +15,7 @@ export interface Thread {
 }
 
 export class NeuralThreading {
-  async createThreads(userId: string, memories: MemoryFragment[]): Promise<Thread[]> {
+  async createThreads(_userId: string, memories: MemoryFragment[]): Promise<Thread[]> {
     const threads: Thread[] = []
 
     // Group memories by themes
@@ -34,7 +34,7 @@ export class NeuralThreading {
           id: `thread_${theme}_${Date.now()}`,
           title: `Thread: ${theme}`,
           memories: memoryIds,
-          connections: this.buildConnections(memoryIds, memories, 'thematic'),
+          connections: this.buildConnections(memoryIds, memories, 'thematic' as const),
           narrative: this.generateNarrative(memoryIds, memories, theme)
         })
       }
@@ -46,7 +46,7 @@ export class NeuralThreading {
           id: `thread_${period}_${Date.now()}`,
           title: `Period: ${period}`,
           memories: memoryIds,
-          connections: this.buildConnections(memoryIds, memories, 'temporal'),
+          connections: this.buildConnections(memoryIds, memories, 'temporal' as const),
           narrative: this.generateNarrative(memoryIds, memories, period)
         })
       }
@@ -58,7 +58,7 @@ export class NeuralThreading {
           id: `thread_${emotion}_${Date.now()}`,
           title: `Emotional Arc: ${emotion}`,
           memories: memoryIds,
-          connections: this.buildConnections(memoryIds, memories, 'emotional'),
+          connections: this.buildConnections(memoryIds, memories, 'emotional' as const),
           narrative: this.generateNarrative(memoryIds, memories, emotion)
         })
       }
@@ -119,13 +119,13 @@ export class NeuralThreading {
     memoryIds: string[],
     memories: MemoryFragment[],
     type: 'temporal' | 'thematic' | 'emotional' | 'topical'
-  ): Array<{ from: string; to: string; strength: number; type: string }> {
-    const connections: Array<{ from: string; to: string; strength: number; type: string }> = []
+  ): Array<{ from: string; to: string; strength: number; type: 'temporal' | 'thematic' | 'emotional' | 'topical' }> {
+    const connections: Array<{ from: string; to: string; strength: number; type: 'temporal' | 'thematic' | 'emotional' | 'topical' }> = []
 
     for (let i = 0; i < memoryIds.length; i++) {
       for (let j = i + 1; j < memoryIds.length; j++) {
-        const fromIndex = parseInt(memoryIds[i].split('_')[1])
-        const toIndex = parseInt(memoryIds[j].split('_')[1])
+        const fromIndex = parseInt(memoryIds[i]?.split('_')[1] || '0')
+        const toIndex = parseInt(memoryIds[j]?.split('_')[1] || '0')
         const fromMemory = memories[fromIndex]
         const toMemory = memories[toIndex]
 
@@ -154,7 +154,7 @@ export class NeuralThreading {
           strength = commonKeywords.length / Math.max(fromMemory.keywords.length, toMemory.keywords.length, 1)
         }
 
-        if (strength > 0.3) {
+        if (strength > 0.3 && memoryIds[i] && memoryIds[j]) {
           connections.push({
             from: memoryIds[i],
             to: memoryIds[j],
@@ -175,7 +175,7 @@ export class NeuralThreading {
   ): string {
     const selectedMemories = memoryIds
       .map(id => {
-        const index = parseInt(id.split('_')[1])
+        const index = parseInt(id?.split('_')[1] || '0')
         return memories[index]
       })
       .filter(Boolean)
@@ -186,7 +186,7 @@ export class NeuralThreading {
 
     const snippets = selectedMemories
       .slice(0, 5)
-      .map(m => m.content.substring(0, 100))
+      .map(m => m?.content.substring(0, 100) || '')
       .join('... ')
 
     return `This thread weaves together ${selectedMemories.length} memories related to ${context}. ${snippets}...`

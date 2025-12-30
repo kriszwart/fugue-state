@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useRef, useState, useEffect, ReactNode, CSSProperties } from 'react';
+import { useRef, useState, ReactNode } from 'react';
 
 interface VirtualListProps<T> {
   items: T[];
@@ -122,17 +122,17 @@ export function VirtualListVariable<T>({
     return pos;
   });
 
-  const totalHeight = positions[positions.length - 1] + (itemHeights[items.length - 1] || estimatedItemHeight);
+  const totalHeight = (positions[positions.length - 1] || 0) + (itemHeights[items.length - 1] || estimatedItemHeight);
 
   // Find visible range
   let startIndex = 0;
   let endIndex = items.length;
 
   for (let i = 0; i < positions.length; i++) {
-    if (positions[i] < scrollTop) {
+    if ((positions[i] || 0) < scrollTop) {
       startIndex = i;
     }
-    if (positions[i] > scrollTop + height) {
+    if ((positions[i] || 0) > scrollTop + height) {
       endIndex = i;
       break;
     }

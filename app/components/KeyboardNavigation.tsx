@@ -37,7 +37,7 @@ export default function KeyboardNavigation() {
 
         // Clear focus from search inputs
         const activeInput = document.activeElement as HTMLElement;
-        if (activeInput && activeInput.tagName === 'INPUT' && activeInput.type === 'search') {
+        if (activeInput && activeInput.tagName === 'INPUT' && (activeInput as HTMLInputElement).type === 'search') {
           activeInput.blur();
         }
       }

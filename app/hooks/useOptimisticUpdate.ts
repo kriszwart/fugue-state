@@ -5,7 +5,6 @@
  */
 
 import { useState, useCallback } from 'react';
-import { cache } from '@/lib/redis';
 
 interface OptimisticUpdateOptions<T> {
   initialData: T;
@@ -33,7 +32,7 @@ export function useOptimisticUpdate<T>({
       serverUpdate: (data: T) => Promise<void>
     ) => {
       const rollbackData = data;
-      const updatedData = typeof newData === 'function' ? newData(data) : newData;
+      const updatedData = typeof newData === 'function' ? (newData as (prev: T) => T)(data) : newData;
 
       // Update UI immediately
       setData(updatedData);
@@ -71,7 +70,7 @@ export function useOptimisticUpdate<T>({
    * Force set data without server sync
    */
   const setOptimisticData = useCallback((newData: T | ((prev: T) => T)) => {
-    setData(typeof newData === 'function' ? newData(data) : newData);
+    setData(typeof newData === 'function' ? (newData as (prev: T) => T)(data) : newData);
   }, [data]);
 
   /**

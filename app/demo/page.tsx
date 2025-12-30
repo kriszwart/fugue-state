@@ -18,7 +18,7 @@ export default function DemoPage() {
         setStatus('Creating demo account...')
 
         // Try to sign up (will fail if account exists, which is fine)
-        const signupResponse = await fetch('/api/auth', {
+        await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

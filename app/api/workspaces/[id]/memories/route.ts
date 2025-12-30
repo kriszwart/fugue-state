@@ -80,7 +80,7 @@ export async function POST(
       )
     }
 
-    const body = await request.json()
+    const body = await _request.json()
     const { memoryId } = body
 
     if (!memoryId) {

@@ -34,11 +34,11 @@ export default function StudioPage() {
   const [damerisIntro, setDamerisIntro] = useState<string>('');
   const [firstScan, setFirstScan] = useState<FirstScanResult | null>(null);
   const [showCreationPrompt, setShowCreationPrompt] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [actionResult, setActionResult] = useState<{ type: string; message: string; data?: any } | null>(null);
+  const [isProcessing, _setIsProcessing] = useState(false);
+  const [actionResult, _setActionResult] = useState<{ type: string; message: string; data?: any } | null>(null);
   const [showSkipButton, setShowSkipButton] = useState(false);
   const [welcomeProgress, setWelcomeProgress] = useState(0);
-  const [typingIndicator, setTypingIndicator] = useState(false);
+  const [typingIndicator, _setTypingIndicator] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<Array<{id: string; name: string; uploadedAt: string}>>([]);
   const [isRecording, setIsRecording] = useState(false);

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { Sparkles, Brain, Feather, Eye, Mic2, Wand2 } from 'lucide-react'
 import { getReturningUserGreeting, getContextualPrompt, type MuseType } from '@/lib/ai/muse-personalities'
-import MemoryRichnessIndicator from './MemoryRichnessIndicator'
 
 interface DamerisGreetingProps {
   museType: MuseType;

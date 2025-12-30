@@ -73,7 +73,7 @@ export class HuggingFaceLLM {
 
     if (options?.model) {
       selectedModel = options.model
-      modelConfig = this.allModels.find(m => m.name === selectedModel) || this.chatModels[0]
+      modelConfig = this.allModels.find(m => m.name === selectedModel) || this.chatModels[0]!
     } else if (options?.modelType === 'thinking') {
       modelConfig = this.selectRandomModelFromCategory('thinking')
       selectedModel = modelConfig.name
@@ -105,7 +105,7 @@ export class HuggingFaceLLM {
 
         response = result.generated_text || ''
       } else if (modelConfig.type === 'text2text-generation') {
-        const result = await this.client.textToText({
+        const result = await this.client.textGeneration({
           model: selectedModel,
           inputs: prompt,
           parameters: {
@@ -116,19 +116,11 @@ export class HuggingFaceLLM {
 
         response = Array.isArray(result) ? result[0]?.generated_text || '' : result.generated_text || ''
       } else {
-        // Conversational
-        const result = await this.client.conversational({
+        // Conversational - use last message as input
+        const lastMessage = messages[messages.length - 1]
+        const result = await this.client.textGeneration({
           model: selectedModel,
-          inputs: {
-            past_user_inputs: messages
-              .filter(m => m.role === 'user')
-              .slice(0, -1)
-              .map(m => m.content),
-            generated_responses: messages
-              .filter(m => m.role === 'assistant')
-              .map(m => m.content),
-            text: messages[messages.length - 1].content
-          },
+          inputs: lastMessage ? lastMessage.content : prompt,
           parameters: {
             temperature: options?.temperature || 0.7,
             max_length: options?.maxTokens || 512
@@ -173,7 +165,7 @@ export class HuggingFaceLLM {
 
     if (options?.model) {
       selectedModel = options.model
-      modelConfig = this.allModels.find(m => m.name === selectedModel) || this.chatModels[0]
+      modelConfig = this.allModels.find(m => m.name === selectedModel) || this.chatModels[0]!
     } else if (options?.modelType === 'thinking') {
       modelConfig = this.selectRandomModelFromCategory('thinking')
       selectedModel = modelConfig.name
@@ -223,13 +215,10 @@ export class HuggingFaceLLM {
     }
   }
 
-  private selectRandomModel(): string {
-    return this.chatModels[Math.floor(Math.random() * this.chatModels.length)].name
-  }
-
   private selectRandomModelFromCategory(category: 'thinking' | 'chat'): HuggingFaceModel {
     const models = category === 'thinking' ? this.thinkingModels : this.chatModels
-    return models[Math.floor(Math.random() * models.length)]
+    const randomIndex = Math.floor(Math.random() * models.length)
+    return models[randomIndex]!
   }
 
   // Get thinking model for memory analysis

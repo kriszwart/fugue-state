@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { LucideIcon } from 'lucide-react'
 import { GalleryGridSkeleton } from './LoadingSkeleton'
 import FadeIn from './FadeIn'
 

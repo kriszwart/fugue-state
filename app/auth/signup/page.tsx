@@ -28,7 +28,6 @@ export default function SignupPage() {
 
     try {
       // Check if user came from approval link (bypass waitlist check)
-      const approvedParam = searchParams.get('approved')
       const skipWaitlistCheck = true // DEMO MODE: Disabled waitlist check for seamless signup
 
       // Step 1: Check waitlist status (unless pre-approved via URL)

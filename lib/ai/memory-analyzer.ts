@@ -155,8 +155,8 @@ Be specific and insightful. Look for patterns that might not be immediately obvi
     })
 
     return {
-      emotionalPatterns: Object.keys(emotionCounts).sort((a, b) => emotionCounts[b] - emotionCounts[a]).slice(0, 5),
-      themes: Object.keys(themeCounts).sort((a, b) => themeCounts[b] - themeCounts[a]).slice(0, 5),
+      emotionalPatterns: Object.keys(emotionCounts).sort((a, b) => (emotionCounts[b] || 0) - (emotionCounts[a] || 0)).slice(0, 5),
+      themes: Object.keys(themeCounts).sort((a, b) => (themeCounts[b] || 0) - (themeCounts[a] || 0)).slice(0, 5),
       connections: [],
       narrative: `Analysis of ${memories.length} memories reveals patterns in themes and emotions.`,
       insights: []

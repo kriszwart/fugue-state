@@ -1,3 +1,4 @@
+// @ts-ignore - Optional provider, package may not be installed
 import Anthropic from '@anthropic-ai/sdk'
 import type { LLMMessage, LLMResponse } from '../llm-service'
 
@@ -30,7 +31,7 @@ export async function generateAnthropicResponse(
   return {
     content,
     model,
-    provider: 'anthropic',
+    provider: 'anthropic' as const,
     usage: {
       promptTokens: response.usage.input_tokens,
       completionTokens: response.usage.output_tokens,

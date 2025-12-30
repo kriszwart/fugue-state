@@ -371,9 +371,9 @@ export default function CreationPrompt({ firstScan, onAction }: CreationPromptPr
                 onFocus={() => setFocusedIndex(index)}
                 className={`
                   group relative p-4 rounded-xl border-2 transition-all duration-300 ease-out
-                  bg-gradient-to-br ${style.gradient}
-                  ${style.borderColor} ${style.hoverBorder}
-                  hover:shadow-xl ${style.shadowColor}
+                  bg-gradient-to-br ${style?.gradient || ''}
+                  ${style?.borderColor || ''} ${style?.hoverBorder || ''}
+                  hover:shadow-xl ${style?.shadowColor || ''}
                   hover:scale-[1.02] active:scale-[0.98]
                   hover:-translate-y-0.5
                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900
@@ -398,21 +398,21 @@ export default function CreationPrompt({ firstScan, onAction }: CreationPromptPr
                   {/* Icon with enhanced styling */}
                   <div className={`
                     w-10 h-10 rounded-xl flex items-center justify-center
-                    ${style.iconBg} border-2 ${style.iconBorder}
-                    ${style.iconHoverBg} ${style.iconHoverBorder}
+                    ${style?.iconBg || ''} border-2 ${style?.iconBorder || ''}
+                    ${style?.iconHoverBg || ''} ${style?.iconHoverBorder || ''}
                     group-hover:scale-110 group-hover:rotate-3
                     transition-all duration-300 shadow-lg
                   `}>
-                    <i 
-                      data-lucide={action.icon} 
-                      className={`w-5 h-5 ${style.textColor} group-hover:scale-110 transition-transform duration-300`}
+                    <i
+                      data-lucide={action.icon}
+                      className={`w-5 h-5 ${style?.textColor || ''} group-hover:scale-110 transition-transform duration-300`}
                       aria-hidden="true"
                     ></i>
                   </div>
                   
                   {/* Label and Description */}
                   <div className="flex-1 text-left min-w-0">
-                    <div className={`text-sm font-semibold ${style.textColor} ${style.hoverTextColor} transition-colors duration-300 mb-0.5`}>
+                    <div className={`text-sm font-semibold ${style?.textColor || ''} ${style?.hoverTextColor || ''} transition-colors duration-300 mb-0.5`}>
                       {action.label}
                     </div>
                     <div 
@@ -431,7 +431,7 @@ export default function CreationPrompt({ firstScan, onAction }: CreationPromptPr
                   {/* Arrow indicator with animation */}
                   <div className={`
                     opacity-0 group-hover:opacity-100 transition-all duration-300
-                    ${style.textColor} transform translate-x-0 group-hover:translate-x-1
+                    ${style?.textColor || ''} transform translate-x-0 group-hover:translate-x-1
                   `}>
                     <i data-lucide="arrow-right" className="w-5 h-5" aria-hidden="true"></i>
                   </div>

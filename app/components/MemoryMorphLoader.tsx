@@ -42,7 +42,7 @@ export default function MemoryMorphLoader({
   ];
 
   const content = (
-    <div className={`flex flex-col items-center justify-center ${className}`} role="status" aria-live="polite" aria-label={message || stages[stage].label}>
+    <div className={`flex flex-col items-center justify-center ${className}`} role="status" aria-live="polite" aria-label={message || stages[stage]?.label || 'Processing'}>
       <div className="relative" style={{ width: iconSize, height: iconSize }}>
         <svg
           width={iconSize}
@@ -219,7 +219,7 @@ export default function MemoryMorphLoader({
 
       {!message && (
         <p className="mt-6 text-zinc-400 text-sm font-medium animate-pulse">
-          {stages[stage].label}
+          {stages[stage]?.label || 'Processing...'}
         </p>
       )}
     </div>

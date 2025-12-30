@@ -1,3 +1,4 @@
+// @ts-ignore - Optional provider, package may not be installed
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { LLMMessage, LLMResponse } from '../llm-service'
 
@@ -35,7 +36,7 @@ export async function generateGoogleResponse(
   return {
     content,
     model,
-    provider: 'google'
+    provider: 'google' as const
   }
 }
 

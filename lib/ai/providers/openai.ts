@@ -1,3 +1,4 @@
+// @ts-ignore - Optional provider, package may not be installed
 import OpenAI from 'openai'
 import type { LLMMessage, LLMResponse } from '../llm-service'
 
@@ -22,7 +23,7 @@ export async function generateOpenAIResponse(
   return {
     content,
     model,
-    provider: 'openai',
+    provider: 'openai' as const,
     usage: {
       promptTokens: response.usage?.prompt_tokens,
       completionTokens: response.usage?.completion_tokens,

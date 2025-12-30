@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Card from '@/app/components/ui/Card'
 import { DashboardSkeleton } from '@/app/components/LoadingSkeleton'
 import FadeIn from '@/app/components/FadeIn'
@@ -20,7 +19,6 @@ interface Stats {
 }
 
 export default function StatsPage() {
-  const router = useRouter()
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')

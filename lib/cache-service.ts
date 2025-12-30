@@ -217,7 +217,7 @@ export const dataSourceCache = {
   /**
    * Invalidate when sources change
    */
-  async invalidateDataSources(userId: string) {
+  async invalidateDataSources(_userId: string) {
     await smartCache.invalidateTag('data_sources');
   },
 };
