@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase'
+import { createServerSupabaseClient } from '@/lib/supabase'
 import { getGoogleOAuthHandler } from '@/lib/oauth/google'
 import { getNotionOAuthHandler } from '@/lib/oauth/notion'
 import crypto from 'crypto'
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
-    const state = searchParams.get('state')
     const error = searchParams.get('error')
     const provider = searchParams.get('provider') || 'google'
 
