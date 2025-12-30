@@ -149,7 +149,7 @@ Extract:
 
     // Upload image to Supabase Storage
     const fileName = `${user.id}/${Date.now()}-${image.name}`
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('memories')
       .upload(fileName, image, {
         contentType: image.type,
