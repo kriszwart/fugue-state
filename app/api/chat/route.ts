@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create conversation
-    let convId = conversationId
+    let convId: string = conversationId || ''
     if (!convId) {
       const { data: newConv, error: convError } = await supabase
         .from('conversations')
@@ -313,7 +313,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Get or create conversation
-        let convId = conversationId
+        let convId: string = conversationId || ''
         if (!convId) {
           const { data: newConv, error: convError } = await supabase
             .from('conversations')
@@ -348,6 +348,9 @@ export async function GET(request: NextRequest) {
 
         // Build context
         const contextManager = getContextManager()
+        if (!convId) {
+          throw new Error('Conversation ID is required')
+        }
         const context = await contextManager.buildContext(user.id, convId, message)
 
         // Stream LLM response
