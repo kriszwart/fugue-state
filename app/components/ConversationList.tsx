@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { createSupabaseClient } from '@/lib/supabase'
+import { ListItemSkeleton } from './LoadingSkeleton'
+import FadeIn from './FadeIn'
 
 interface Conversation {
   id: string
@@ -113,13 +115,18 @@ export default function ConversationList({ onSelect, selectedId, onNewConversati
       
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="p-3 text-xs text-zinc-500">Loading...</div>
+          <div className="space-y-2 p-2">
+            {[...Array(5)].map((_, i) => (
+              <ListItemSkeleton key={i} />
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="p-3 text-xs text-zinc-500 text-center">
             {searchQuery ? 'No conversations found' : 'No conversations yet'}
           </div>
         ) : (
-          <div className="space-y-1 p-2">
+          <FadeIn duration={300}>
+            <div className="space-y-1 p-2">
             {filtered.map(conv => (
               <div
                 key={conv.id}
@@ -150,6 +157,7 @@ export default function ConversationList({ onSelect, selectedId, onNewConversati
               </div>
             ))}
           </div>
+          </FadeIn>
         )}
       </div>
     </div>

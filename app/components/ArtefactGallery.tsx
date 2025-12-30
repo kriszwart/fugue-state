@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import { GalleryGridSkeleton } from './LoadingSkeleton'
+import FadeIn from './FadeIn'
 
 interface Artefact {
   id: string
@@ -18,10 +20,38 @@ export default function ArtefactGallery() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'image' | 'text' | 'poem' | 'journal'>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [sharingId, setSharingId] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   useEffect(() => {
     loadArtefacts()
   }, [filter])
+
+  const handleShare = async (artefactId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSharingId(artefactId)
+
+    try {
+      const response = await fetch(`/api/artefacts/${artefactId}/share`, {
+        method: 'POST'
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const shareUrl = data.share_url
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(shareUrl)
+        setCopiedId(artefactId)
+        setTimeout(() => setCopiedId(null), 2000)
+      }
+    } catch (error) {
+      console.error('Error sharing artefact:', error)
+      alert('Failed to generate share link')
+    } finally {
+      setSharingId(null)
+    }
+  }
 
   const loadArtefacts = async () => {
     setLoading(true)
@@ -100,11 +130,12 @@ export default function ArtefactGallery() {
 
       {/* Grid */}
       {loading ? (
-        <div className="text-center py-12 text-zinc-500 text-sm">Loading artefacts...</div>
+        <GalleryGridSkeleton count={6} />
       ) : artefacts.length === 0 ? (
         <div className="text-center py-12 text-zinc-500 text-sm">No artefacts found</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <FadeIn duration={400}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {artefacts.map((artefact) => (
             <div
               key={artefact.id}
@@ -123,12 +154,34 @@ export default function ArtefactGallery() {
               <div className="text-xs text-zinc-500 line-clamp-2 mb-2">
                 {artefact.description}
               </div>
-              <div className="text-[10px] text-zinc-600 font-mono">
-                {new Date(artefact.created_at).toLocaleDateString()}
+              <div className="flex items-center justify-between">
+                <div className="text-[10px] text-zinc-600 font-mono">
+                  {new Date(artefact.created_at).toLocaleDateString()}
+                </div>
+                <button
+                  onClick={(e) => handleShare(artefact.id, e)}
+                  disabled={sharingId === artefact.id}
+                  className="px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all text-[10px] font-medium disabled:opacity-50"
+                  title="Share artefact"
+                >
+                  {copiedId === artefact.id ? (
+                    <span className="flex items-center gap-1">
+                      ✓ Copied
+                    </span>
+                  ) : sharingId === artefact.id ? (
+                    'Sharing...'
+                  ) : (
+                    <span className="flex items-center gap-1">
+                      <i data-lucide="share-2" className="w-3 h-3"></i>
+                      Share
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
           ))}
         </div>
+        </FadeIn>
       )}
     </div>
   )

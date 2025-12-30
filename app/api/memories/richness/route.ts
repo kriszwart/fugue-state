@@ -51,7 +51,7 @@ export async function GET() {
     // Fetch all user memories
     const { data: memories, error: memoriesError } = await supabase
       .from('memories')
-      .select('id, content, themes, created_at, temporal_markers')
+      .select('id, content, themes, created_at, temporal_marker')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
