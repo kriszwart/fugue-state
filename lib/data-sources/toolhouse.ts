@@ -171,29 +171,6 @@ export class ToolhouseService {
       userId
     )
 
-    // Note: Pattern detection could be added here in the future
-    // For now, just return the created memory IDs
-    return memoryIds
-  }
-
-  /**
-   * Legacy pattern detection code (preserved for reference)
-   * TODO: Re-implement pattern detection after memory fragments are stored
-   */
-  private async detectPatternsForMemories(userId: string, memoryIds: string[]): Promise<void> {
-    // Future implementation: detect patterns across stored memories
-    // const patterns = await this.patternDetector.detectPatterns(userId, fragments)
-    // for (const pattern of patterns) {
-    //   await this.supabase.from('memory_patterns').insert({
-    //     user_id: userId,
-    //     pattern_type: pattern.type,
-    //     pattern_data: pattern.patternData,
-          confidence_score: pattern.patternData.confidence,
-          memory_ids: [memory.id]
-        })
-      }
-    }
-
     // Store data source record
     await this.supabase
       .from('data_sources')
@@ -212,7 +189,27 @@ export class ToolhouseService {
         onConflict: 'user_id,source_type'
       })
 
+    // Note: Pattern detection could be added here in the future
+    // For now, just return the created memory IDs
     return memoryIds
+  }
+
+  /**
+   * Legacy pattern detection code (preserved for reference)
+   * TODO: Re-implement pattern detection after memory fragments are stored
+   */
+  private async detectPatternsForMemories(userId: string, memoryIds: string[]): Promise<void> {
+    // Future implementation: detect patterns across stored memories
+    // const patterns = await this.patternDetector.detectPatterns(userId, fragments)
+    // for (const pattern of patterns) {
+    //   await this.supabase.from('memory_patterns').insert({
+    //     user_id: userId,
+    //     pattern_type: pattern.type,
+    //     pattern_data: pattern.patternData,
+    //     confidence_score: pattern.patternData.confidence,
+    //     memory_ids: [memory.id]
+    //   })
+    // }
   }
 }
 
