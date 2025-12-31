@@ -491,16 +491,31 @@
                                     </div>
                                 </div>
                             </a>
+                            
+                            <!-- Option 5: Upload Files / Voice -->
+                            <a href="/voice" class="group relative bg-zinc-900/50 backdrop-blur-sm border border-cyan-500/20 rounded-xl p-6 hover:border-cyan-500/40 hover:bg-zinc-900/70 transition-all cursor-pointer">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center group-hover:bg-cyan-500/30 transition-colors">
+                                        <i data-lucide="upload" class="w-6 h-6 text-cyan-300"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-base font-medium text-zinc-200 mb-1">Upload Files</h4>
+                                        <p class="text-xs text-zinc-400 leading-relaxed">Upload notes and start a voice conversation with Dameris</p>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
                         
                         <!-- Alternative: Start with Chat -->
                         <div class="mt-6 text-center">
-                            <button 
-                                onclick="window.startWithChat()" 
-                                class="text-xs text-zinc-400 hover:text-zinc-200 transition-colors underline underline-offset-4 cursor-pointer"
+                            <a 
+                                href="/voice" 
+                                class="group inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-200 transition-colors underline underline-offset-4 cursor-pointer"
                             >
-                                Or start by chatting with Dameris →
-                            </button>
+                                <i data-lucide="mic" class="w-3.5 h-3.5" stroke-width="1.5"></i>
+                                <span>Or upload files & chat with Dameris</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+                            </a>
                         </div>
                     </div>
                 </div>

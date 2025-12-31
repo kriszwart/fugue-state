@@ -25,7 +25,7 @@ export class MemoryParser {
     return {
       content: cleanedText,
       emotionalTags: this.detectEmotions(cleanedText),
-      themes: this.detectThemes(cleanedText, keywords),
+      themes: this.detectThemes(cleanedText),
       keywords,
       temporalMarker: extracted.metadata.timestamp,
       source: extracted.metadata.source
@@ -55,7 +55,7 @@ export class MemoryParser {
     return detected.length > 0 ? detected : ['neutral']
   }
 
-  private detectThemes(text: string, keywords: string[]): string[] {
+  private detectThemes(text: string): string[] {
     // Simple theme detection
     // In production, use topic modeling or classification
     const themeKeywords: Record<string, string[]> = {
@@ -129,7 +129,7 @@ export class MemoryParser {
     const fragment: MemoryFragment = {
       content: cleanedText,
       emotionalTags: this.detectEmotions(cleanedText),
-      themes: this.detectThemes(cleanedText, keywords),
+      themes: this.detectThemes(cleanedText),
       keywords,
       temporalMarker: metadata.timestamp || new Date().toISOString(),
       source: metadata.source || sourceType

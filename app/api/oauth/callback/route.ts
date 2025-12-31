@@ -4,6 +4,8 @@ import { getGoogleOAuthHandler } from '@/lib/oauth/google'
 import { getNotionOAuthHandler } from '@/lib/oauth/notion'
 import crypto from 'crypto'
 
+export const dynamic = 'force-dynamic'
+
 // Simple encryption for storing tokens (in production, use proper encryption)
 function encrypt(text: string, key: string): string {
   const iv = crypto.randomBytes(16)

@@ -179,7 +179,7 @@ class DamerisWelcome {
           </div>
 
           <!-- Audio indicator -->
-          <div id="audio-indicator" class="mt-6 flex items-center justify-center gap-2 opacity-0 transition-opacity">
+          <div id="audio-indicator" class="mt-8 mb-4 flex items-center justify-center gap-2 opacity-0 transition-opacity">
             <div class="flex items-center gap-1">
               <div class="w-1 h-6 bg-violet-500 rounded-full animate-wave" style="animation-delay: 0s;"></div>
               <div class="w-1 h-8 bg-violet-500 rounded-full animate-wave" style="animation-delay: 0.1s;"></div>
@@ -192,7 +192,7 @@ class DamerisWelcome {
         </div>
 
         <!-- Creative Modes Showcase (appears on step 3) -->
-        <div id="modes-showcase" class="hidden mt-12 grid grid-cols-3 gap-4 max-w-2xl w-full">
+        <div id="modes-showcase" class="hidden mt-16 grid grid-cols-3 gap-4 max-w-2xl w-full">
           <div class="mode-card opacity-0 transform translate-y-4" style="animation-delay: 0.1s;">
             <div class="bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-xl p-4 border border-pink-500/20">
               <div class="text-2xl mb-2">🎨</div>
@@ -232,15 +232,29 @@ class DamerisWelcome {
         </div>
 
         <!-- Begin button (appears on last step) -->
-        <div id="begin-button-container" class="hidden mt-12">
+        <div id="begin-button-container" class="hidden mt-16 mb-8">
           <button id="begin-button" class="group relative px-12 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 rounded-2xl text-white font-medium text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-violet-500/50">
             <span class="relative z-10">Begin Your Journey</span>
             <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-400 to-fuchsia-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
           </button>
+          <!-- Keyboard shortcuts for button -->
+          <div class="mt-4 flex items-center justify-center gap-3 text-xs text-zinc-500">
+            <div class="flex items-center gap-1.5">
+              <kbd class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-zinc-400 font-mono text-[10px]">Space</kbd>
+              <span>or</span>
+              <kbd class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-zinc-400 font-mono text-[10px]">Esc</kbd>
+              <span>to skip</span>
+            </div>
+            <span class="text-zinc-600">•</span>
+            <div class="flex items-center gap-1.5">
+              <kbd class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-zinc-400 font-mono text-[10px]">Enter</kbd>
+              <span>to begin</span>
+            </div>
+          </div>
         </div>
 
         <!-- Progress dots -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-2">
           ${this.steps.map((_, i) => `<div class="step-dot w-2 h-2 rounded-full bg-zinc-700 transition-all duration-300" data-step="${i}"></div>`).join('')}
         </div>
 
@@ -255,17 +269,13 @@ class DamerisWelcome {
           <span class="text-xs text-zinc-600">Press Esc or Space</span>
         </div>
 
-        <!-- Keyboard shortcuts hint -->
-        <div id="keyboard-hints" class="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-4 opacity-0 animate-fade-in" style="animation-delay: 2s;">
+        <!-- Keyboard shortcuts hint (only shown when button is not visible) -->
+        <div id="keyboard-hints" class="absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-4 opacity-0 animate-fade-in" style="animation-delay: 2s;">
           <div class="flex items-center gap-2 text-xs text-zinc-600">
             <kbd class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-zinc-400 font-mono">Space</kbd>
             <span>or</span>
             <kbd class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-zinc-400 font-mono">Esc</kbd>
             <span>to skip</span>
-          </div>
-          <div id="enter-hint" class="hidden items-center gap-2 text-xs text-zinc-600">
-            <kbd class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-zinc-400 font-mono">Enter</kbd>
-            <span>to begin</span>
           </div>
         </div>
       </div>
@@ -823,9 +833,9 @@ class DamerisWelcome {
         window.history.replaceState({}, '', url);
       }
 
-      // Navigate to chat page if not already there
-      if (!window.location.pathname.includes('chat')) {
-        window.location.href = '/studio/chat.html';
+      // Navigate to voice page if not already there
+      if (!window.location.pathname.includes('voice')) {
+        window.location.href = '/voice';
       }
     }, 300);  // Reduced from 1000ms to 300ms
 

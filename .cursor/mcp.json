@@ -8,6 +8,14 @@
         "--access-token",
         "sbp_f21f917bcedc115e099eff86686bbd725612e801"
       ]
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-vercel",
+        "VHHB9qqAmwKFGBZYf4GmrAtQ"
+      ]
     }
   }
 }

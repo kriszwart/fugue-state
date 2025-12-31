@@ -804,8 +804,33 @@ function VoiceSession() {
       const tag = el?.tagName?.toLowerCase()
       const isInput = tag === 'input' || tag === 'textarea' || (el as any)?.isContentEditable
       
-      // Spacebar toggles mic (unless user is typing)
-      if (e.code === 'Space' && !isInput) {
+      // If speaking, handle pause/resume and stop (priority over other shortcuts)
+      if (status === 'speaking') {
+        // Space to pause/resume
+        if (e.code === 'Space' && !isInput) {
+          e.preventDefault()
+          if (audioRef.current) {
+            if (isPlaying) {
+              audioRef.current.pause()
+            } else {
+              audioRef.current.play()
+            }
+          }
+          return
+        }
+        
+        // Escape to stop completely (but allow closing shortcuts if open)
+        if (e.code === 'Escape' && !showShortcuts) {
+          e.preventDefault()
+          stopPlayback()
+          setStatus('idle')
+          isSpeakingRef.current = false
+          return
+        }
+      }
+      
+      // Spacebar toggles mic (unless user is typing or speaking)
+      if (e.code === 'Space' && !isInput && status !== 'speaking') {
         e.preventDefault()
         void handleMicClick()
         return
@@ -835,7 +860,7 @@ function VoiceSession() {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, canRecord, showShortcuts])
+  }, [status, canRecord, showShortcuts, isPlaying, stopPlayback])
   
   // Load conversation history from localStorage
   useEffect(() => {
@@ -2096,6 +2121,54 @@ function VoiceSession() {
                       <span className="text-xs font-mono text-purple-300 uppercase tracking-wider">Voice Synthesis</span>
                     </div>
                   </div>
+                </div>
+                
+                {/* Pause/Stop Controls - Top Right */}
+                <div className="absolute top-3 right-4 flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (audioRef.current) {
+                        if (isPlaying) {
+                          audioRef.current.pause()
+                        } else {
+                          audioRef.current.play()
+                        }
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-200 text-xs font-medium transition-all flex items-center gap-1.5 hover:scale-105 active:scale-95"
+                    title={isPlaying ? 'Pause (Space)' : 'Resume (Space)'}
+                  >
+                    {isPlaying ? (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                        </svg>
+                        <span>Pause</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span>Resume</span>
+                      </>
+                    )}
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      stopPlayback()
+                      setStatus('idle')
+                      isSpeakingRef.current = false
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-200 text-xs font-medium transition-all flex items-center gap-1.5 hover:scale-105 active:scale-95"
+                    title="Stop (Esc) - saves tokens"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 6h12v12H6z"/>
+                    </svg>
+                    <span>Stop</span>
+                  </button>
                 </div>
                 
                 {/* Progress indicator */}

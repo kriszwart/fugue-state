@@ -2,39 +2,46 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Handle .html extension redirects first
-  const { pathname } = request.nextUrl;
+  try {
+    // Handle .html extension redirects first
+    const { pathname } = request.nextUrl;
 
-  // List of paths that should have .html appended
-  const htmlPaths = [
-    '/studio/workspace',
-    '/studio/chat',
-    '/studio/calendar',
-    '/studio/archive',
-    '/studio/gallery',
-    '/studio/privacy',
-    '/about',
-    '/guide',
-    '/dameris',
-    '/architecture',
-  ];
+    // List of paths that should have .html appended
+    const htmlPaths = [
+      '/studio/workspace',
+      '/studio/chat',
+      '/studio/calendar',
+      '/studio/archive',
+      '/studio/gallery',
+      '/studio/privacy',
+      '/about',
+      '/guide',
+      '/dameris',
+      '/architecture',
+    ];
 
-  // If the path matches and doesn't have .html, redirect
-  if (htmlPaths.includes(pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = pathname + '.html';
-    return NextResponse.redirect(url);
-  }
+    // If the path matches and doesn't have .html, redirect
+    if (htmlPaths.includes(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = pathname + '.html';
+      return NextResponse.redirect(url);
+    }
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+    let response = NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    })
+
+    // Check if Supabase environment variables are available
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('Supabase environment variables not set in middleware')
+      return response
+    }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         get(name: string) {
@@ -130,6 +137,15 @@ export async function middleware(request: NextRequest) {
   }
 
   return response
+  } catch (error) {
+    console.error('Middleware error:', error)
+    // If middleware fails, allow the request through
+    return NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    })
+  }
 }
 
 export const config = {

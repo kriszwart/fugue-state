@@ -13,7 +13,7 @@ export interface Pattern {
 }
 
 export class PatternDetector {
-  async detectPatterns(userId: string, memories: MemoryFragment[]): Promise<Pattern[]> {
+  async detectPatterns(memories: MemoryFragment[]): Promise<Pattern[]> {
     const patterns: Pattern[] = []
 
     // Emotional patterns
@@ -56,7 +56,7 @@ export class PatternDetector {
             name: `Recurring ${emotion}`,
             description: `${emotion} appears in ${count} out of ${memories.length} memories`,
             confidence: count / memories.length,
-            memoryIds: emotionMemories[emotion]
+            memoryIds: emotionMemories[emotion]!
           }
         })
       }
@@ -90,7 +90,7 @@ export class PatternDetector {
             name: `Theme: ${theme}`,
             description: `${theme} appears in ${count} memories`,
             confidence: count / memories.length,
-            memoryIds: themeMemories[theme]
+            memoryIds: themeMemories[theme]!
           }
         })
       }
@@ -166,7 +166,7 @@ export class PatternDetector {
             name: `Topic: ${keyword}`,
             description: `${keyword} appears frequently`,
             confidence: count / memories.length,
-            memoryIds: keywordMemories[keyword]
+            memoryIds: keywordMemories[keyword]!
           }
         })
       }

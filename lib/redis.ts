@@ -382,7 +382,7 @@ export const sortedSets = {
       const results = await client.zrevrange(key, 0, count - 1, 'WITHSCORES')
       const top: Array<{ member: string; score: number }> = []
       for (let i = 0; i < results.length; i += 2) {
-        top.push({ member: results[i], score: parseFloat(results[i + 1]) })
+        top.push({ member: results[i]!, score: parseFloat(results[i + 1]!) })
       }
       return top
     } catch (error) {
@@ -397,7 +397,8 @@ export const sortedSets = {
   async increment(key: string, member: string, by: number = 1): Promise<number> {
     try {
       const client = getRedisClient()
-      return await client.zincrby(key, by, member)
+      const result = await client.zincrby(key, by, member)
+      return parseFloat(result)
     } catch (error) {
       console.error(`[Redis] Increment error for key ${key}:`, error)
       return 0

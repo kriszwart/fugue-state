@@ -43,6 +43,18 @@ class LLMService {
     if (config.provider === 'huggingface' && config.huggingfaceApiKey) {
       this.huggingface = new HuggingFaceLLM({ apiKey: config.huggingfaceApiKey })
     } else if (config.provider === 'vertex') {
+      // Validate Vertex configuration
+      if (!config.vertexProjectId) {
+        throw new Error('VERTEX_PROJECT_ID environment variable is required for Vertex AI provider')
+      }
+
+      console.log('[LLM Service] Initializing Vertex AI provider:', {
+        projectId: config.vertexProjectId,
+        location: config.vertexLocation,
+        hasCredentialsJson: !!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,
+        hasCredentialsFile: !!process.env.GOOGLE_APPLICATION_CREDENTIALS
+      })
+
       // Check if enhanced features are enabled
       this.useEnhanced = process.env.ENABLE_THINKING_MODE === 'true' ||
                          process.env.ENABLE_CONTEXT_CACHING === 'true' ||
@@ -51,7 +63,7 @@ class LLMService {
       if (this.useEnhanced) {
         console.log('[LLM Service] Using enhanced Vertex provider with thinking mode & caching')
         this.enhancedVertex = new EnhancedVertexGeminiLLM({
-          projectId: config.vertexProjectId!,
+          projectId: config.vertexProjectId,
           location: config.vertexLocation || 'us-central1',
           serviceAccountKey: process.env.GOOGLE_APPLICATION_CREDENTIALS,
           enableCaching: process.env.ENABLE_CONTEXT_CACHING === 'true',
@@ -59,8 +71,9 @@ class LLMService {
           enableMultimodal: process.env.ENABLE_MULTIMODAL === 'true'
         })
       } else {
+        console.log('[LLM Service] Using standard Vertex provider')
         this.vertex = new VertexGeminiLLM({
-          projectId: config.vertexProjectId!,
+          projectId: config.vertexProjectId,
           location: config.vertexLocation || 'us-central1',
           serviceAccountKey: process.env.GOOGLE_APPLICATION_CREDENTIALS
         })

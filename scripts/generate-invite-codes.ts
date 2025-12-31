@@ -62,7 +62,7 @@ async function createInviteCodes() {
     console.log(`Creating invite code: ${code}`)
     console.log(`For email: ${email}\n`)
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('invite_codes')
       .insert({
         code,

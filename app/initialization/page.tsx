@@ -352,7 +352,7 @@ export default function InitializationPage() {
           } catch {
             // ignore localStorage errors
           }
-          router.push('/studio/chat.html');
+          router.push('/voice');
         } catch (e: any) {
           console.error('Muse pipeline error:', e);
           setPipelineStatus('error');
@@ -368,8 +368,8 @@ export default function InitializationPage() {
             // ignore localStorage errors
           }
 
-          // Still route to /studio/chat.html so user can interact with Dameris
-          setTimeout(() => router.push('/studio/chat.html'), 1500);
+          // Still route to /voice so user can interact with Dameris
+          setTimeout(() => router.push('/voice'), 1500);
         }
       }, 2500);
     } catch (error: any) {

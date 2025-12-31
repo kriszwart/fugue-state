@@ -97,7 +97,7 @@ function detectErrorType(error: any): ErrorContext['errorType'] {
  */
 function isRetryableError(error: any): boolean {
   const errorType = detectErrorType(error)
-  return ['timeout', 'network', 'rate_limit'].includes(errorType)
+  return errorType ? ['timeout', 'network', 'rate_limit'].includes(errorType) : false
 }
 
 /**

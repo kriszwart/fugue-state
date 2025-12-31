@@ -28,12 +28,8 @@ export const VERTEX_IMAGE_MODELS = [
 
 export class VertexImageGenerationService {
   private vertexAI: VertexAI
-  private projectId: string
-  private location: string
 
   constructor(projectId: string, location: string = 'us-central1') {
-    this.projectId = projectId
-    this.location = location
     this.vertexAI = new VertexAI({
       project: projectId,
       location: location
@@ -44,7 +40,7 @@ export class VertexImageGenerationService {
     options: ImageGenerationOptions,
     modelVersion?: string
   ): Promise<GeneratedImage> {
-    const model = modelVersion || VERTEX_IMAGE_MODELS[0]
+    const model = modelVersion || VERTEX_IMAGE_MODELS[0]!
 
     try {
       console.log(`[Vertex Image] Generating with model: ${model}`)
@@ -79,7 +75,7 @@ export class VertexImageGenerationService {
       // Extract image data from response
       // Vertex AI Imagen returns base64 encoded images
       if (response.candidates && response.candidates.length > 0) {
-        const candidate = response.candidates[0]
+        const candidate = response.candidates[0]!
 
         // Look for image data in the response
         let imageData: string | null = null

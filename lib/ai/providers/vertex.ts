@@ -238,7 +238,54 @@ export class VertexGeminiLLM {
       return
     }
 
-    // Try service account authentication first (for local development)
+    // Try JSON credentials from environment variable (for Vercel/production)
+    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+    if (credentialsJson) {
+      try {
+        const credentials = JSON.parse(credentialsJson)
+
+        // Use service account JWT to get access token
+        const now = Math.floor(Date.now() / 1000)
+        const jwtPayload = {
+          iss: credentials.client_email,
+          sub: credentials.client_email,
+          scope: 'https://www.googleapis.com/auth/cloud-platform',
+          aud: 'https://oauth2.googleapis.com/token',
+          iat: now,
+          exp: now + 3600
+        }
+
+        // Create JWT
+        const { sign } = await import('jsonwebtoken')
+        const jwt = sign(jwtPayload, credentials.private_key, { algorithm: 'RS256' })
+
+        // Exchange JWT for access token
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: jwt
+          })
+        })
+
+        if (!tokenResponse.ok) {
+          const errorText = await tokenResponse.text()
+          throw new Error(`Token exchange failed: ${errorText}`)
+        }
+
+        const tokenData = await tokenResponse.json()
+        this.accessToken = tokenData.access_token
+        this.tokenExpiry = Date.now() + (tokenData.expires_in * 1000)
+        console.log('[Vertex] Successfully authenticated with service account JWT')
+        return
+      } catch (error) {
+        console.error('Failed to get access token from JSON credentials:', error)
+        throw new Error(`Failed to authenticate with service account JSON: ${error}`)
+      }
+    }
+
+    // Try service account authentication from file (for local development)
     if (this.serviceAccountKey) {
       try {
         const { GoogleAuth } = await import('google-auth-library')
