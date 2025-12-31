@@ -6,7 +6,7 @@ FugueState is an AI-powered creative companion built with **Google Vertex AI (Ge
 
 ## 🎬 Demo Video
 
-**[Link to your 3-minute demo video here]**
+**[Watch the 3-minute demo video](https://www.youtube.com/watch?v=ohKYzFGdVog)**
 
 ## ✨ Features
 
