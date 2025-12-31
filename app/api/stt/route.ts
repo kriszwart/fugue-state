@@ -3,6 +3,10 @@ import { createHash } from 'crypto'
 import { cache, rateLimit, analytics } from '@/lib/redis'
 import { createServerSupabaseClient } from '@/lib/supabase'
 
+// Token cache (module-level for reuse across requests in same container)
+let cachedAccessToken: string | null = null
+let tokenExpiry: number = 0
+
 function getEncodingFromMime(mimeType: string | null): 'WEBM_OPUS' | 'OGG_OPUS' | 'LINEAR16' {
   const mt = (mimeType || '').toLowerCase()
   if (mt.includes('webm')) return 'WEBM_OPUS'
@@ -20,9 +24,14 @@ function getAudioHash(bytes: Buffer): string {
 }
 
 /**
- * Get Google Cloud access token using JWT authentication
+ * Get Google Cloud access token using JWT authentication (with caching)
  */
 async function getGoogleAccessToken(): Promise<string> {
+  // Return cached token if still valid (with 5-minute buffer)
+  if (cachedAccessToken && Date.now() < tokenExpiry - 300000) {
+    console.log('[STT] ♻️ Using cached access token')
+    return cachedAccessToken
+  }
   const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
   if (!credentialsJson) {
     throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON not configured')
@@ -43,6 +52,7 @@ async function getGoogleAccessToken(): Promise<string> {
   const { sign } = await import('jsonwebtoken')
   const jwt = sign(jwtPayload, credentials.private_key, { algorithm: 'RS256' })
 
+  console.log('[STT] 🔑 Generating new access token...')
   const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -58,6 +68,12 @@ async function getGoogleAccessToken(): Promise<string> {
   }
 
   const tokenData = await tokenResponse.json()
+
+  // Cache the token (valid for 1 hour, we'll refresh after 55 minutes)
+  cachedAccessToken = tokenData.access_token
+  tokenExpiry = Date.now() + (tokenData.expires_in * 1000)
+  console.log('[STT] ✅ New token cached, expires in', tokenData.expires_in, 'seconds')
+
   return tokenData.access_token
 }
 
