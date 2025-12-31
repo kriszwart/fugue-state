@@ -1,5 +1,4 @@
 import { HfInference } from '@huggingface/inference'
-import { getVertexImageService, VertexImageGenerationService } from './vertex-image-service'
 
 export interface ImageGenerationOptions {
   prompt: string
@@ -45,11 +44,9 @@ export const IMAGE_MODELS = [
 
 export class ImageGenerationService {
   private client: HfInference
-  private defaultModel: string
 
-  constructor(apiKey: string, defaultModel?: string) {
+  constructor(apiKey: string) {
     this.client = new HfInference(apiKey)
-    this.defaultModel = defaultModel || IMAGE_MODELS[0]
   }
 
   async generateImage(
@@ -84,7 +81,7 @@ export class ImageGenerationService {
         })
 
         // Hugging Face returns a Blob directly
-        const blob = result instanceof Blob ? result : new Blob([result], { type: 'image/png' })
+        const blob = result as unknown as Blob
 
         console.log(`[Image Gen] Success with model: ${selectedModel}`)
         return {
@@ -123,18 +120,6 @@ export class ImageGenerationService {
       guidanceScale: 7.5
     })
   }
-
-  private selectRandomModel(): string {
-    return IMAGE_MODELS[Math.floor(Math.random() * IMAGE_MODELS.length)]
-  }
-
-  private selectRandomPremiumModel(): string {
-    return PREMIUM_IMAGE_MODELS[Math.floor(Math.random() * PREMIUM_IMAGE_MODELS.length)]
-  }
-
-  private selectRandomStandardModel(): string {
-    return STANDARD_IMAGE_MODELS[Math.floor(Math.random() * STANDARD_IMAGE_MODELS.length)]
-  }
 }
 
 // Unified image generation that tries Vertex AI first, then Hugging Face
@@ -148,6 +133,7 @@ export async function generateImageUnified(
   if (useVertex) {
     try {
       console.log('[Image Gen] Trying Google Cloud Vertex AI Imagen...')
+      const { getVertexImageService } = await import('./vertex-image-service')
       const vertexService = getVertexImageService()
       const result = await vertexService.generateImageWithFallback({
         prompt: options.prompt,
