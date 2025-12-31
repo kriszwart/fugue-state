@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SpeechClient } from '@google-cloud/speech'
 import { createHash } from 'crypto'
 import { cache, rateLimit, analytics } from '@/lib/redis'
 import { createServerSupabaseClient } from '@/lib/supabase'
@@ -18,6 +17,48 @@ function getEncodingFromMime(mimeType: string | null): 'WEBM_OPUS' | 'OGG_OPUS' 
  */
 function getAudioHash(bytes: Buffer): string {
   return createHash('sha256').update(bytes).digest('hex').slice(0, 16)
+}
+
+/**
+ * Get Google Cloud access token using JWT authentication
+ */
+async function getGoogleAccessToken(): Promise<string> {
+  const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+  if (!credentialsJson) {
+    throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON not configured')
+  }
+
+  const credentials = JSON.parse(credentialsJson)
+
+  const now = Math.floor(Date.now() / 1000)
+  const jwtPayload = {
+    iss: credentials.client_email,
+    sub: credentials.client_email,
+    scope: 'https://www.googleapis.com/auth/cloud-platform',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600
+  }
+
+  const { sign } = await import('jsonwebtoken')
+  const jwt = sign(jwtPayload, credentials.private_key, { algorithm: 'RS256' })
+
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt
+    })
+  })
+
+  if (!tokenResponse.ok) {
+    const errorText = await tokenResponse.text()
+    throw new Error(`Token exchange failed: ${errorText}`)
+  }
+
+  const tokenData = await tokenResponse.json()
+  return tokenData.access_token
 }
 
 export async function POST(request: NextRequest) {
@@ -79,7 +120,6 @@ export async function POST(request: NextRequest) {
 
     console.log('[STT] 🔄 Cache MISS - processing audio:', audioHash.slice(0, 8))
 
-    const client = new SpeechClient()
     const encoding = getEncodingFromMime(audio.type)
 
     console.log('[STT] Processing audio:', {
@@ -89,22 +129,46 @@ export async function POST(request: NextRequest) {
       mimeType: audio.type
     })
 
-    const [result] = await client.recognize({
-      config: {
-        encoding,
-        languageCode,
-        // Opus is typically 48kHz. Speech API can often infer, but this helps stability.
-        sampleRateHertz: encoding === 'WEBM_OPUS' || encoding === 'OGG_OPUS' ? 48000 : undefined,
-        enableAutomaticPunctuation: true,
-        model: 'latest_short',
-        // Add these to improve detection
-        enableWordTimeOffsets: false,
-        maxAlternatives: 1,
-        profanityFilter: false,
-        useEnhanced: true
-      },
-      audio: { content }
-    })
+    // Get access token using JWT (same as Vertex AI)
+    const accessToken = await getGoogleAccessToken()
+
+    // Call Speech-to-Text API directly with JWT auth
+    const projectId = process.env.VERTEX_PROJECT_ID || process.env.GCP_PROJECT_ID
+    if (!projectId) {
+      throw new Error('VERTEX_PROJECT_ID or GCP_PROJECT_ID required for STT')
+    }
+
+    const sttResponse = await fetch(
+      `https://speech.googleapis.com/v1/speech:recognize`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          config: {
+            encoding,
+            languageCode,
+            sampleRateHertz: encoding === 'WEBM_OPUS' || encoding === 'OGG_OPUS' ? 48000 : undefined,
+            enableAutomaticPunctuation: true,
+            model: 'latest_short',
+            enableWordTimeOffsets: false,
+            maxAlternatives: 1,
+            profanityFilter: false,
+            useEnhanced: true
+          },
+          audio: { content }
+        })
+      }
+    )
+
+    if (!sttResponse.ok) {
+      const errorText = await sttResponse.text()
+      throw new Error(`STT API error: ${sttResponse.statusText} - ${errorText}`)
+    }
+
+    const result = await sttResponse.json()
 
     console.log('[STT] Recognition result:', {
       resultsCount: result.results?.length || 0,
@@ -113,7 +177,7 @@ export async function POST(request: NextRequest) {
 
     const transcript =
       result.results
-        ?.map(r => r.alternatives?.[0]?.transcript || '')
+        ?.map((r: any) => r.alternatives?.[0]?.transcript || '')
         .filter(Boolean)
         .join(' ')
         .trim() || ''
