@@ -71,12 +71,6 @@ function cleanBriefingText(text: string): string {
   return cleaned
 }
 
-function clampText(s: string, maxChars: number) {
-  if (!s) return ''
-  if (s.length <= maxChars) return s
-  return s.slice(0, maxChars) + '\n\n[TRUNCATED]'
-}
-
 function coerceStringArray(v: any, max = 8): string[] {
   if (!Array.isArray(v)) return []
   return v
@@ -171,9 +165,69 @@ export async function POST(request: NextRequest) {
       }))
     )
 
-    const memExcerpt = memories
-      .slice(0, 8)
-      .map((m: any, i: number) => `Memory ${i + 1} (id: ${m.id})\n${clampText(String(m.content || ''), 900)}`)
+    // Smart sampling: Use full content with Gemini's extended context (1M tokens)
+    // Approximate: 1 token ≈ 4 characters, so we can use ~400k characters safely
+    const MAX_CHARS = 350000 // Conservative limit to leave room for prompt + response
+
+    const allMemories = memories.map((m: any) => ({
+      id: m.id,
+      content: String(m.content || ''),
+      length: String(m.content || '').length
+    }))
+
+    const totalLength = allMemories.reduce((sum, m) => sum + m.length, 0)
+
+    let selectedMemories: typeof allMemories
+
+    if (totalLength <= MAX_CHARS) {
+      // Use all memories - no truncation needed!
+      selectedMemories = allMemories
+      console.log('[First Scan] Using all content:', totalLength, 'characters')
+    } else {
+      // Smart sampling: prioritize diversity across the collection
+      console.log('[First Scan] Large collection detected:', totalLength, 'chars. Smart sampling...')
+
+      // Strategy: Take first 20%, random sample from middle 60%, last 20%
+      const firstChunk = Math.floor(allMemories.length * 0.2)
+      const lastChunk = Math.floor(allMemories.length * 0.2)
+
+      // Take first and last chunks
+      const first = allMemories.slice(0, firstChunk)
+      const last = allMemories.slice(-lastChunk)
+
+      // Random sample from middle
+      const middle = allMemories.slice(firstChunk, allMemories.length - lastChunk)
+      const shuffled = middle.sort(() => Math.random() - 0.5)
+
+      // Combine and fit to budget
+      selectedMemories = [...first, ...shuffled, ...last]
+      let currentLength = 0
+      const fitted: typeof allMemories = []
+
+      for (const mem of selectedMemories) {
+        if (currentLength + mem.length <= MAX_CHARS) {
+          fitted.push(mem)
+          currentLength += mem.length
+        } else if (fitted.length < 3) {
+          // Ensure at least 3 memories, truncate if needed
+          const remaining = MAX_CHARS - currentLength
+          fitted.push({
+            ...mem,
+            content: mem.content.substring(0, remaining) + '\n\n[TRUNCATED - see full text in next scan]',
+            length: remaining
+          })
+          break
+        } else {
+          break
+        }
+      }
+
+      selectedMemories = fitted
+      console.log('[First Scan] Sampled to:', selectedMemories.length, 'memories,', currentLength, 'chars')
+    }
+
+    const memExcerpt = selectedMemories
+      .map((m, i) => `Memory ${i + 1} (id: ${m.id})\n${m.content}`)
       .join('\n\n---\n\n')
 
     const museStyle = (() => {
@@ -187,10 +241,10 @@ export async function POST(request: NextRequest) {
     const prompt = `You are Dameris. Muse mode: ${muse}.
 ${museStyle}
 
-Your job: spark the muse by finding hidden threads, missing ideas, and creative next steps — quickly.
+Your job: spark the muse by finding hidden threads, missing ideas, and creative next steps — with access to the FULL creative work.
 
 You will be given:
-- A short set of user memories/notes (raw text)
+- The user's complete creative collection (full text, not truncated - explore all of it!)
 - A high-level analysis (themes, emotions, narrative, insights, missingIdeas)
 
 CRITICAL: Return ONLY the raw JSON object. DO NOT wrap it in markdown code blocks. DO NOT include \`\`\`json or \`\`\`. Start your response with { and end with }. Return ONLY valid JSON for this exact TypeScript shape:
@@ -206,10 +260,11 @@ CRITICAL: Return ONLY the raw JSON object. DO NOT wrap it in markdown code block
 
 Rules:
 - For creative writing collections: Focus ONLY on the writing itself. Ignore any social media posts, event attendance, or biographical side-notes. Give deep psychological insight into their creative themes and voice.
+- You have the ENTIRE collection - reference pieces from beginning, middle, and end. Notice how their voice evolves or what themes recur across different works.
 - Use the user's language; do not invent biographical facts.
-- Be specific: quote exact phrases from the memory in quotes when helpful.
+- Be specific: quote exact phrases from different parts of the collection when helpful. Show you've read deeply.
 - Keep everything compact; optimize for meaningful insight.
-- The briefing should feel like a wise creative mentor understanding their work deeply.
+- The briefing should feel like a wise creative mentor who has read EVERYTHING and sees the whole arc.
 
 MEMORIES:
 ${memExcerpt}
@@ -241,7 +296,7 @@ ${JSON.stringify(
       llm.generateResponse(messages, {
         modelType: 'chat',
         temperature: 0.7,
-        maxTokens: 1400,
+        maxTokens: 4096, // Increased for richer analysis with full context
       }),
       TIMEOUTS.LLM,
       'Memory scan timed out. The LLM service may be slow or unavailable. Please try again.'
