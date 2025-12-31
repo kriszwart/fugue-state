@@ -9,8 +9,6 @@
  * - Multimodal support (images, audio, video)
  */
 
-import { GoogleAuth } from 'google-auth-library'
-
 export interface EnhancedVertexConfig {
   projectId: string
   location: string
@@ -72,6 +70,46 @@ export class EnhancedVertexGeminiLLM {
     this.projectId = config.projectId
     this.location = config.location
     this.serviceAccountKey = config.serviceAccountKey
+  }
+
+  /**
+   * Standard generate response (for compatibility with VertexGeminiLLM interface)
+   */
+  async generateResponse(
+    messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
+    options?: {
+      model?: string
+      modelType?: 'thinking' | 'chat' | 'auto'
+      temperature?: number
+      maxTokens?: number
+    }
+  ): Promise<{
+    content: string
+    model: string
+    provider: 'vertex'
+    usage?: {
+      promptTokens?: number
+      completionTokens?: number
+      totalTokens?: number
+    }
+  }> {
+    const response = await this.generateWithThinking(messages, {
+      model: options?.model,
+      temperature: options?.temperature,
+      maxTokens: options?.maxTokens,
+      useThinking: options?.modelType === 'thinking'
+    })
+
+    return {
+      content: response.content,
+      model: response.model,
+      provider: 'vertex',
+      usage: {
+        promptTokens: response.usage?.promptTokens,
+        completionTokens: response.usage?.completionTokens,
+        totalTokens: response.usage?.totalTokens
+      }
+    }
   }
 
   /**
@@ -159,6 +197,94 @@ export class EnhancedVertexGeminiLLM {
         totalTokens: usage.totalTokenCount,
         cachedTokens: usage.cachedContentTokenCount || 0
       }
+    }
+  }
+
+  /**
+   * Generate streaming response (for compatibility with VertexGeminiLLM interface)
+   */
+  async *generateStreamingResponse(
+    messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
+    options?: {
+      model?: string
+      modelType?: 'thinking' | 'chat' | 'auto'
+      temperature?: number
+      maxTokens?: number
+    }
+  ): AsyncGenerator<{ content: string; done: boolean; model?: string }> {
+    await this.ensureAccessToken()
+
+    const modelName = this.selectBestModel({
+      model: options?.model,
+      useThinking: options?.modelType === 'thinking'
+    })
+
+    const { contents, systemInstruction } = this.formatMessages(messages)
+
+    const endpoint = `https://${this.location}-aiplatform.googleapis.com/v1/projects/${this.projectId}/locations/${this.location}/publishers/google/models/${modelName}:streamGenerateContent`
+
+    const requestBody: any = {
+      contents,
+      generationConfig: {
+        temperature: options?.temperature ?? 0.7,
+        maxOutputTokens: options?.maxTokens ?? 2048,
+      }
+    }
+
+    if (systemInstruction) {
+      requestBody.systemInstruction = systemInstruction
+    }
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Vertex AI streaming error: ${response.statusText} - ${error}`)
+    }
+
+    const reader = response.body?.getReader()
+    if (!reader) {
+      throw new Error('No response body')
+    }
+
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6)
+            try {
+              const data = JSON.parse(jsonStr)
+              const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+              if (text) {
+                yield { content: text, done: false, model: modelName }
+              }
+            } catch (e) {
+              continue
+            }
+          }
+        }
+      }
+
+      yield { content: '', done: true, model: modelName }
+    } finally {
+      reader.releaseLock()
     }
   }
 
@@ -419,8 +545,56 @@ export class EnhancedVertexGeminiLLM {
       return
     }
 
+    // Try JSON credentials from environment variable (for Vercel/production)
+    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+    if (credentialsJson) {
+      try {
+        const credentials = JSON.parse(credentialsJson)
+
+        // Use service account JWT to get access token
+        const now = Math.floor(Date.now() / 1000)
+        const jwtPayload = {
+          iss: credentials.client_email,
+          sub: credentials.client_email,
+          scope: 'https://www.googleapis.com/auth/cloud-platform',
+          aud: 'https://oauth2.googleapis.com/token',
+          iat: now,
+          exp: now + 3600
+        }
+
+        // Create JWT
+        const { sign } = await import('jsonwebtoken')
+        const jwt = sign(jwtPayload, credentials.private_key, { algorithm: 'RS256' })
+
+        // Exchange JWT for access token
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: jwt
+          })
+        })
+
+        if (!tokenResponse.ok) {
+          const errorText = await tokenResponse.text()
+          throw new Error(`Token exchange failed: ${errorText}`)
+        }
+
+        const tokenData = await tokenResponse.json()
+        this.accessToken = tokenData.access_token
+        this.tokenExpiry = Date.now() + (tokenData.expires_in * 1000)
+        console.log('[Vertex Enhanced] Successfully authenticated with service account JWT')
+        return
+      } catch (error) {
+        console.error('Failed to get access token from JSON credentials:', error)
+        throw new Error(`Failed to authenticate with service account JSON: ${error}`)
+      }
+    }
+
     if (this.serviceAccountKey) {
       try {
+        const { GoogleAuth } = await import('google-auth-library')
         const auth = new GoogleAuth({
           keyFilename: this.serviceAccountKey,
           scopes: ['https://www.googleapis.com/auth/cloud-platform']
